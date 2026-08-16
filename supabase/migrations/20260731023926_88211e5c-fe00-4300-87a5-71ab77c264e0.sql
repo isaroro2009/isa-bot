@@ -1,0 +1,1 @@
+ALTER TABLE public.tech_news ADD COLUMN IF NOT EXISTS title_es TEXT;
