@@ -1,0 +1,3 @@
+CREATE POLICY "isaspace_read" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'isaspace');
+CREATE POLICY "isaspace_insert_own" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'isaspace' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "isaspace_delete_own" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'isaspace' AND (storage.foldername(name))[1] = auth.uid()::text);

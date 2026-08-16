@@ -9,38 +9,416 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as EmpresasRouteImport } from './routes/empresas'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UUsernameRouteImport } from './routes/u.$username'
+import { Route as ICodeRouteImport } from './routes/i.$code'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiAgentRouteImport } from './routes/api/agent'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
+import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
+import { Route as ApiVoiceVisionRouteImport } from './routes/api/voice/vision'
+import { Route as ApiVoiceTranscribeRouteImport } from './routes/api/voice/transcribe'
+import { Route as ApiVoiceSpeakRouteImport } from './routes/api/voice/speak'
+import { Route as ApiPublicUnsubscribeRouteImport } from './routes/api/public/unsubscribe'
+import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticated/studio.$id'
+import { Route as AuthenticatedOnboardingOrgRouteImport } from './routes/_authenticated/onboarding.org'
+import { Route as AuthenticatedESlugRouteRouteImport } from './routes/_authenticated/e.$slug.route'
+import { Route as AuthenticatedESlugIndexRouteImport } from './routes/_authenticated/e.$slug.index'
+import { Route as ApiPublicHooksWeeklyGiftPublishRouteImport } from './routes/api/public/hooks/weekly-gift-publish'
+import { Route as ApiPublicHooksWeeklyFeedbackRouteImport } from './routes/api/public/hooks/weekly-feedback'
+import { Route as ApiPublicHooksTechNewsRouteImport } from './routes/api/public/hooks/tech-news'
+import { Route as ApiPublicHooksNightSalesRouteImport } from './routes/api/public/hooks/night-sales'
+import { Route as ApiPublicHooksInactivityRemindersRouteImport } from './routes/api/public/hooks/inactivity-reminders'
+import { Route as ApiPublicHooksDueRemindersRouteImport } from './routes/api/public/hooks/due-reminders'
+import { Route as AuthenticatedESlugJoinRouteImport } from './routes/_authenticated/e.$slug.join'
+import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authenticated/e.$slug.admin'
 
+const EmpresasRoute = EmpresasRouteImport.update({
+  id: '/empresas',
+  path: '/empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UUsernameRoute = UUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ICodeRoute = ICodeRouteImport.update({
+  id: '/i/$code',
+  path: '/i/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentRoute = ApiAgentRouteImport.update({
+  id: '/api/agent',
+  path: '/api/agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
+  id: '/isaspace',
+  path: '/isaspace',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStudioIndexRoute =
+  AuthenticatedStudioIndexRouteImport.update({
+    id: '/studio/',
+    path: '/studio/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiVoiceVisionRoute = ApiVoiceVisionRouteImport.update({
+  id: '/api/voice/vision',
+  path: '/api/voice/vision',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVoiceTranscribeRoute = ApiVoiceTranscribeRouteImport.update({
+  id: '/api/voice/transcribe',
+  path: '/api/voice/transcribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVoiceSpeakRoute = ApiVoiceSpeakRouteImport.update({
+  id: '/api/voice/speak',
+  path: '/api/voice/speak',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicUnsubscribeRoute = ApiPublicUnsubscribeRouteImport.update({
+  id: '/api/public/unsubscribe',
+  path: '/api/public/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedStudioIdRoute = AuthenticatedStudioIdRouteImport.update({
+  id: '/studio/$id',
+  path: '/studio/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingOrgRoute =
+  AuthenticatedOnboardingOrgRouteImport.update({
+    id: '/onboarding/org',
+    path: '/onboarding/org',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedESlugRouteRoute = AuthenticatedESlugRouteRouteImport.update({
+  id: '/e/$slug',
+  path: '/e/$slug',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedESlugIndexRoute = AuthenticatedESlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedESlugRouteRoute,
+} as any)
+const ApiPublicHooksWeeklyGiftPublishRoute =
+  ApiPublicHooksWeeklyGiftPublishRouteImport.update({
+    id: '/api/public/hooks/weekly-gift-publish',
+    path: '/api/public/hooks/weekly-gift-publish',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksWeeklyFeedbackRoute =
+  ApiPublicHooksWeeklyFeedbackRouteImport.update({
+    id: '/api/public/hooks/weekly-feedback',
+    path: '/api/public/hooks/weekly-feedback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksTechNewsRoute = ApiPublicHooksTechNewsRouteImport.update({
+  id: '/api/public/hooks/tech-news',
+  path: '/api/public/hooks/tech-news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksNightSalesRoute =
+  ApiPublicHooksNightSalesRouteImport.update({
+    id: '/api/public/hooks/night-sales',
+    path: '/api/public/hooks/night-sales',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksInactivityRemindersRoute =
+  ApiPublicHooksInactivityRemindersRouteImport.update({
+    id: '/api/public/hooks/inactivity-reminders',
+    path: '/api/public/hooks/inactivity-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksDueRemindersRoute =
+  ApiPublicHooksDueRemindersRouteImport.update({
+    id: '/api/public/hooks/due-reminders',
+    path: '/api/public/hooks/due-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedESlugJoinRoute = AuthenticatedESlugJoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => AuthenticatedESlugRouteRoute,
+} as any)
+const AuthenticatedESlugAdminRoute = AuthenticatedESlugAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedESlugRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/empresas': typeof EmpresasRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/isaspace': typeof AuthenticatedIsaspaceRoute
+  '/market': typeof AuthenticatedMarketRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/api/agent': typeof ApiAgentRoute
+  '/api/chat': typeof ApiChatRoute
+  '/i/$code': typeof ICodeRoute
+  '/u/$username': typeof UUsernameRoute
+  '/e/$slug': typeof AuthenticatedESlugRouteRouteWithChildren
+  '/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
+  '/studio/$id': typeof AuthenticatedStudioIdRoute
+  '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/voice/speak': typeof ApiVoiceSpeakRoute
+  '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
+  '/api/voice/vision': typeof ApiVoiceVisionRoute
+  '/studio/': typeof AuthenticatedStudioIndexRoute
+  '/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
+  '/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
+  '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
+  '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
+  '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
+  '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
+  '/e/$slug/': typeof AuthenticatedESlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/empresas': typeof EmpresasRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/isaspace': typeof AuthenticatedIsaspaceRoute
+  '/market': typeof AuthenticatedMarketRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/api/agent': typeof ApiAgentRoute
+  '/api/chat': typeof ApiChatRoute
+  '/i/$code': typeof ICodeRoute
+  '/u/$username': typeof UUsernameRoute
+  '/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
+  '/studio/$id': typeof AuthenticatedStudioIdRoute
+  '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/voice/speak': typeof ApiVoiceSpeakRoute
+  '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
+  '/api/voice/vision': typeof ApiVoiceVisionRoute
+  '/studio': typeof AuthenticatedStudioIndexRoute
+  '/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
+  '/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
+  '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
+  '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
+  '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
+  '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
+  '/e/$slug': typeof AuthenticatedESlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/empresas': typeof EmpresasRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
+  '/_authenticated/market': typeof AuthenticatedMarketRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/api/agent': typeof ApiAgentRoute
+  '/api/chat': typeof ApiChatRoute
+  '/i/$code': typeof ICodeRoute
+  '/u/$username': typeof UUsernameRoute
+  '/_authenticated/e/$slug': typeof AuthenticatedESlugRouteRouteWithChildren
+  '/_authenticated/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
+  '/_authenticated/studio/$id': typeof AuthenticatedStudioIdRoute
+  '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/voice/speak': typeof ApiVoiceSpeakRoute
+  '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
+  '/api/voice/vision': typeof ApiVoiceVisionRoute
+  '/_authenticated/studio/': typeof AuthenticatedStudioIndexRoute
+  '/_authenticated/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
+  '/_authenticated/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
+  '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
+  '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
+  '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
+  '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
+  '/_authenticated/e/$slug/': typeof AuthenticatedESlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/empresas'
+    | '/admin'
+    | '/isaspace'
+    | '/market'
+    | '/profile'
+    | '/api/agent'
+    | '/api/chat'
+    | '/i/$code'
+    | '/u/$username'
+    | '/e/$slug'
+    | '/onboarding/org'
+    | '/studio/$id'
+    | '/api/public/unsubscribe'
+    | '/api/voice/speak'
+    | '/api/voice/transcribe'
+    | '/api/voice/vision'
+    | '/studio/'
+    | '/e/$slug/admin'
+    | '/e/$slug/join'
+    | '/api/public/hooks/due-reminders'
+    | '/api/public/hooks/inactivity-reminders'
+    | '/api/public/hooks/night-sales'
+    | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-feedback'
+    | '/api/public/hooks/weekly-gift-publish'
+    | '/e/$slug/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/empresas'
+    | '/admin'
+    | '/isaspace'
+    | '/market'
+    | '/profile'
+    | '/api/agent'
+    | '/api/chat'
+    | '/i/$code'
+    | '/u/$username'
+    | '/onboarding/org'
+    | '/studio/$id'
+    | '/api/public/unsubscribe'
+    | '/api/voice/speak'
+    | '/api/voice/transcribe'
+    | '/api/voice/vision'
+    | '/studio'
+    | '/e/$slug/admin'
+    | '/e/$slug/join'
+    | '/api/public/hooks/due-reminders'
+    | '/api/public/hooks/inactivity-reminders'
+    | '/api/public/hooks/night-sales'
+    | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-feedback'
+    | '/api/public/hooks/weekly-gift-publish'
+    | '/e/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/empresas'
+    | '/_authenticated/admin'
+    | '/_authenticated/isaspace'
+    | '/_authenticated/market'
+    | '/_authenticated/profile'
+    | '/api/agent'
+    | '/api/chat'
+    | '/i/$code'
+    | '/u/$username'
+    | '/_authenticated/e/$slug'
+    | '/_authenticated/onboarding/org'
+    | '/_authenticated/studio/$id'
+    | '/api/public/unsubscribe'
+    | '/api/voice/speak'
+    | '/api/voice/transcribe'
+    | '/api/voice/vision'
+    | '/_authenticated/studio/'
+    | '/_authenticated/e/$slug/admin'
+    | '/_authenticated/e/$slug/join'
+    | '/api/public/hooks/due-reminders'
+    | '/api/public/hooks/inactivity-reminders'
+    | '/api/public/hooks/night-sales'
+    | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-feedback'
+    | '/api/public/hooks/weekly-gift-publish'
+    | '/_authenticated/e/$slug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  EmpresasRoute: typeof EmpresasRoute
+  ApiAgentRoute: typeof ApiAgentRoute
+  ApiChatRoute: typeof ApiChatRoute
+  ICodeRoute: typeof ICodeRoute
+  UUsernameRoute: typeof UUsernameRoute
+  ApiPublicUnsubscribeRoute: typeof ApiPublicUnsubscribeRoute
+  ApiVoiceSpeakRoute: typeof ApiVoiceSpeakRoute
+  ApiVoiceTranscribeRoute: typeof ApiVoiceTranscribeRoute
+  ApiVoiceVisionRoute: typeof ApiVoiceVisionRoute
+  ApiPublicHooksDueRemindersRoute: typeof ApiPublicHooksDueRemindersRoute
+  ApiPublicHooksInactivityRemindersRoute: typeof ApiPublicHooksInactivityRemindersRoute
+  ApiPublicHooksNightSalesRoute: typeof ApiPublicHooksNightSalesRoute
+  ApiPublicHooksTechNewsRoute: typeof ApiPublicHooksTechNewsRoute
+  ApiPublicHooksWeeklyFeedbackRoute: typeof ApiPublicHooksWeeklyFeedbackRoute
+  ApiPublicHooksWeeklyGiftPublishRoute: typeof ApiPublicHooksWeeklyGiftPublishRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/empresas': {
+      id: '/empresas'
+      path: '/empresas'
+      fullPath: '/empresas'
+      preLoaderRoute: typeof EmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +426,247 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/u/$username': {
+      id: '/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof UUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/i/$code': {
+      id: '/i/$code'
+      path: '/i/$code'
+      fullPath: '/i/$code'
+      preLoaderRoute: typeof ICodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent': {
+      id: '/api/agent'
+      path: '/api/agent'
+      fullPath: '/api/agent'
+      preLoaderRoute: typeof ApiAgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/market': {
+      id: '/_authenticated/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof AuthenticatedMarketRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/isaspace': {
+      id: '/_authenticated/isaspace'
+      path: '/isaspace'
+      fullPath: '/isaspace'
+      preLoaderRoute: typeof AuthenticatedIsaspaceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/studio/': {
+      id: '/_authenticated/studio/'
+      path: '/studio'
+      fullPath: '/studio/'
+      preLoaderRoute: typeof AuthenticatedStudioIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/voice/vision': {
+      id: '/api/voice/vision'
+      path: '/api/voice/vision'
+      fullPath: '/api/voice/vision'
+      preLoaderRoute: typeof ApiVoiceVisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/voice/transcribe': {
+      id: '/api/voice/transcribe'
+      path: '/api/voice/transcribe'
+      fullPath: '/api/voice/transcribe'
+      preLoaderRoute: typeof ApiVoiceTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/voice/speak': {
+      id: '/api/voice/speak'
+      path: '/api/voice/speak'
+      fullPath: '/api/voice/speak'
+      preLoaderRoute: typeof ApiVoiceSpeakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/unsubscribe': {
+      id: '/api/public/unsubscribe'
+      path: '/api/public/unsubscribe'
+      fullPath: '/api/public/unsubscribe'
+      preLoaderRoute: typeof ApiPublicUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/studio/$id': {
+      id: '/_authenticated/studio/$id'
+      path: '/studio/$id'
+      fullPath: '/studio/$id'
+      preLoaderRoute: typeof AuthenticatedStudioIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/org': {
+      id: '/_authenticated/onboarding/org'
+      path: '/onboarding/org'
+      fullPath: '/onboarding/org'
+      preLoaderRoute: typeof AuthenticatedOnboardingOrgRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/e/$slug': {
+      id: '/_authenticated/e/$slug'
+      path: '/e/$slug'
+      fullPath: '/e/$slug'
+      preLoaderRoute: typeof AuthenticatedESlugRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/e/$slug/': {
+      id: '/_authenticated/e/$slug/'
+      path: '/'
+      fullPath: '/e/$slug/'
+      preLoaderRoute: typeof AuthenticatedESlugIndexRouteImport
+      parentRoute: typeof AuthenticatedESlugRouteRoute
+    }
+    '/api/public/hooks/weekly-gift-publish': {
+      id: '/api/public/hooks/weekly-gift-publish'
+      path: '/api/public/hooks/weekly-gift-publish'
+      fullPath: '/api/public/hooks/weekly-gift-publish'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyGiftPublishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/weekly-feedback': {
+      id: '/api/public/hooks/weekly-feedback'
+      path: '/api/public/hooks/weekly-feedback'
+      fullPath: '/api/public/hooks/weekly-feedback'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/tech-news': {
+      id: '/api/public/hooks/tech-news'
+      path: '/api/public/hooks/tech-news'
+      fullPath: '/api/public/hooks/tech-news'
+      preLoaderRoute: typeof ApiPublicHooksTechNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/night-sales': {
+      id: '/api/public/hooks/night-sales'
+      path: '/api/public/hooks/night-sales'
+      fullPath: '/api/public/hooks/night-sales'
+      preLoaderRoute: typeof ApiPublicHooksNightSalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/inactivity-reminders': {
+      id: '/api/public/hooks/inactivity-reminders'
+      path: '/api/public/hooks/inactivity-reminders'
+      fullPath: '/api/public/hooks/inactivity-reminders'
+      preLoaderRoute: typeof ApiPublicHooksInactivityRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/due-reminders': {
+      id: '/api/public/hooks/due-reminders'
+      path: '/api/public/hooks/due-reminders'
+      fullPath: '/api/public/hooks/due-reminders'
+      preLoaderRoute: typeof ApiPublicHooksDueRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/e/$slug/join': {
+      id: '/_authenticated/e/$slug/join'
+      path: '/join'
+      fullPath: '/e/$slug/join'
+      preLoaderRoute: typeof AuthenticatedESlugJoinRouteImport
+      parentRoute: typeof AuthenticatedESlugRouteRoute
+    }
+    '/_authenticated/e/$slug/admin': {
+      id: '/_authenticated/e/$slug/admin'
+      path: '/admin'
+      fullPath: '/e/$slug/admin'
+      preLoaderRoute: typeof AuthenticatedESlugAdminRouteImport
+      parentRoute: typeof AuthenticatedESlugRouteRoute
+    }
   }
 }
 
+interface AuthenticatedESlugRouteRouteChildren {
+  AuthenticatedESlugAdminRoute: typeof AuthenticatedESlugAdminRoute
+  AuthenticatedESlugJoinRoute: typeof AuthenticatedESlugJoinRoute
+  AuthenticatedESlugIndexRoute: typeof AuthenticatedESlugIndexRoute
+}
+
+const AuthenticatedESlugRouteRouteChildren: AuthenticatedESlugRouteRouteChildren =
+  {
+    AuthenticatedESlugAdminRoute: AuthenticatedESlugAdminRoute,
+    AuthenticatedESlugJoinRoute: AuthenticatedESlugJoinRoute,
+    AuthenticatedESlugIndexRoute: AuthenticatedESlugIndexRoute,
+  }
+
+const AuthenticatedESlugRouteRouteWithChildren =
+  AuthenticatedESlugRouteRoute._addFileChildren(
+    AuthenticatedESlugRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedIsaspaceRoute: typeof AuthenticatedIsaspaceRoute
+  AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedESlugRouteRoute: typeof AuthenticatedESlugRouteRouteWithChildren
+  AuthenticatedOnboardingOrgRoute: typeof AuthenticatedOnboardingOrgRoute
+  AuthenticatedStudioIdRoute: typeof AuthenticatedStudioIdRoute
+  AuthenticatedStudioIndexRoute: typeof AuthenticatedStudioIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedIsaspaceRoute: AuthenticatedIsaspaceRoute,
+  AuthenticatedMarketRoute: AuthenticatedMarketRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedESlugRouteRoute: AuthenticatedESlugRouteRouteWithChildren,
+  AuthenticatedOnboardingOrgRoute: AuthenticatedOnboardingOrgRoute,
+  AuthenticatedStudioIdRoute: AuthenticatedStudioIdRoute,
+  AuthenticatedStudioIndexRoute: AuthenticatedStudioIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  EmpresasRoute: EmpresasRoute,
+  ApiAgentRoute: ApiAgentRoute,
+  ApiChatRoute: ApiChatRoute,
+  ICodeRoute: ICodeRoute,
+  UUsernameRoute: UUsernameRoute,
+  ApiPublicUnsubscribeRoute: ApiPublicUnsubscribeRoute,
+  ApiVoiceSpeakRoute: ApiVoiceSpeakRoute,
+  ApiVoiceTranscribeRoute: ApiVoiceTranscribeRoute,
+  ApiVoiceVisionRoute: ApiVoiceVisionRoute,
+  ApiPublicHooksDueRemindersRoute: ApiPublicHooksDueRemindersRoute,
+  ApiPublicHooksInactivityRemindersRoute:
+    ApiPublicHooksInactivityRemindersRoute,
+  ApiPublicHooksNightSalesRoute: ApiPublicHooksNightSalesRoute,
+  ApiPublicHooksTechNewsRoute: ApiPublicHooksTechNewsRoute,
+  ApiPublicHooksWeeklyFeedbackRoute: ApiPublicHooksWeeklyFeedbackRoute,
+  ApiPublicHooksWeeklyGiftPublishRoute: ApiPublicHooksWeeklyGiftPublishRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

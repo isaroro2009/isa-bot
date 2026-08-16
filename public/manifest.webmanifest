@@ -1,0 +1,25 @@
+{
+  "name": "IsaBot — tu co-piloto de IA creativa",
+  "short_name": "IsaBot",
+  "description": "IsaBot de IsaRoRo Studio: chat de IA, imágenes, IsaAcademy y modo sin conexión.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6ecff",
+  "theme_color": "#c9a7ff",
+  "icons": [
+    {
+      "src": "/icons/isabot-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/isabot-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

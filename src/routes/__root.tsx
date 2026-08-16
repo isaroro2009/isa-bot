@@ -8,9 +8,12 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { registerIsabotSw } from "../lib/pwa-register";
+
 
 function NotFoundComponent() {
   return (
@@ -77,22 +80,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { name: "theme-color", content: "#c9a7ff" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "IsaBot" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+
+      { title: "IsaBot 💕" },
+      { name: "description", content: "IsaBot — tu asistente kawaii en línea." },
+      { name: "author", content: "Isabella Rodríguez Roque" },
+      { property: "og:title", content: "IsaBot 💕" },
+      { property: "og:description", content: "IsaBot — tu asistente kawaii en línea." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "IsaBot 💕" },
+      { name: "twitter:description", content: "IsaBot — tu asistente kawaii en línea." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/o4Wm35ZJYUgQGUPBeJ7N4IvQh962/social-images/social-1784520592093-Gemini_Generated_Image_.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/o4Wm35ZJYUgQGUPBeJ7N4IvQh962/social-images/social-1784520592093-Gemini_Generated_Image_.webp" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/isabot-icon-512.png" },
     ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -116,6 +131,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  // 📱 App instalable / offline (nunca se registra en preview ni en desarrollo)
+  useEffect(() => {
+    registerIsabotSw();
+  }, []);
+
+  useEffect(() => {
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

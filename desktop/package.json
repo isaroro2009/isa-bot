@@ -1,0 +1,23 @@
+{
+  "name": "isabot-desktop",
+  "version": "1.0.0",
+  "description": "IsaBot Desktop — co-piloto de IA con control real del PC (Windows/macOS/Linux).",
+  "main": "main.cjs",
+  "author": "Isabella Rodríguez Roque — IsaRoRo Studio",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack:linux": "electron-packager . IsaBot --platform=linux --arch=x64 --out=electron-release --overwrite --icon=icon.png",
+    "pack:mac": "electron-packager . IsaBot --platform=darwin --arch=x64 --out=electron-release --overwrite --icon=icon.png",
+    "pack:win": "electron-packager . IsaBot --platform=win32 --arch=x64 --out=electron-release --overwrite --icon=icon.png"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "@electron/packager": "^18.3.6"
+  },
+  "dependencies": {
+    "screenshot-desktop": "^1.15.0",
+    "@nut-tree-fork/nut-js": "^4.2.1"
+  }
+}
