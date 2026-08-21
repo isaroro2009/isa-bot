@@ -207,7 +207,7 @@ export async function aiDigest(titles: string[]): Promise<string> {
   if (titles.length === 0) return "";
   return groqChat(
     {
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       temperature: 0.5,
       max_tokens: 260,
       messages: [
@@ -231,7 +231,7 @@ export async function aiTranslateItems(
   if (items.length === 0) return fallback;
   const raw = await groqChat(
     {
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       temperature: 0.4,
       max_tokens: 900,
       response_format: { type: "json_object" },
