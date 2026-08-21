@@ -27,7 +27,7 @@ async function lovableChat(engine: string, messages: unknown[]): Promise<Respons
   if (engine.startsWith("openai/gpt-5.6")) body.reasoning_effort = "none";
   return fetch(LOVABLE_AI_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Lovable-API-Key": key },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}`, "Lovable-API-Key": key },
     body: JSON.stringify(body),
   });
 }
