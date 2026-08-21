@@ -714,13 +714,15 @@ export const Route = createFileRoute("/api/chat")({
           const system = baseSystem + dateBlock + nameHint + aboutBlock + memoryBlock + isaspaceBlock + planBlock + growthBlock + taskContext + weatherContext + voiceInstruction + visionInstruction + GUARDRAILS;
           const historial = Array.isArray(body.historial) ? body.historial.slice(-20) : [];
 
-          const key = process.env.GROQ_API_KEY;
-          if (!key) {
+          // Sin GROQ_API_KEY, groqChat usa automáticamente el motor de Lovable AI.
+          const key = process.env.GROQ_API_KEY ?? "";
+          if (!key && !process.env.LOVABLE_API_KEY) {
             return Response.json(
-              { respuesta: "Falta configurar GROQ_API_KEY en el servidor 💔" },
+              { respuesta: "El motor de IA no está configurado en el servidor 💔" },
               { status: 500 },
             );
           }
+
 
           const wantsImage = !voiceMode && isImageRequest(mensaje);
           // Último mensaje del usuario: multimodal si viene imagen adjunta
