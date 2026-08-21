@@ -7,8 +7,8 @@ type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 // ── Motor de IA: Groq Cloud (24/7, gratuito, sin depender de créditos Lovable)
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_TEXT_MODEL = "llama-3.3-70b-versatile";
-const GROQ_FAST_MODEL = "llama-3.1-8b-instant";
+const GROQ_TEXT_MODEL = "openai/gpt-oss-120b";
+const GROQ_FAST_MODEL = "openai/gpt-oss-20b";
 const GROQ_VISION_MODEL = "qwen/qwen3.6-27b";
 
 // 🧠 Catálogo de cerebros de IsaBot (ver src/lib/brains.ts)
@@ -74,8 +74,8 @@ const REASONING_MODELS = new Set(["qwen/qwen3.6-27b"]);
 // Si no hay GROQ_API_KEY configurada, IsaBot sigue funcionando con el motor
 // de Lovable AI (equivalencias por capacidad).
 const GROQ_TO_LOVABLE: Record<string, string> = {
-  "llama-3.3-70b-versatile": "google/gemini-2.5-flash",
-  "llama-3.1-8b-instant": "google/gemini-2.5-flash-lite",
+  "openai/gpt-oss-120b": "google/gemini-2.5-flash",
+  "openai/gpt-oss-20b": "google/gemini-2.5-flash-lite",
   "qwen/qwen3.6-27b": "google/gemini-2.5-flash",
 };
 

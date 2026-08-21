@@ -13,7 +13,7 @@ type AgentStep =
   | { kind: "tool_result"; tool: string; summary: string }
   | { kind: "final"; text: string; sources: Array<{ title: string; url: string }> };
 
-const AGENT_MODEL = "llama-3.3-70b-versatile";
+const AGENT_MODEL = "openai/gpt-oss-120b";
 const MAX_TURNS = 6;
 const MAX_EMAILS_PER_RUN = 3;
 

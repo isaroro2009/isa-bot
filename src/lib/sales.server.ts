@@ -110,7 +110,7 @@ async function askAI(system: string, user: string): Promise<string | null> {
       method: "POST",
       headers: { Authorization: `Bearer ${groq}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         temperature: 0.2,
         messages: [
           { role: "system", content: system },
