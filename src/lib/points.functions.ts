@@ -24,7 +24,8 @@ export const getMyPoints = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<PointsSnapshot> => {
     const { supabase, userId } = context;
-    await supabase.rpc("ensure_user_points_row", { _user_id: userId });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.rpc("ensure_user_points_row", { _user_id: userId });
     const { data: row } = await supabase
       .from("user_points")
       .select("points, lifetime_points")
