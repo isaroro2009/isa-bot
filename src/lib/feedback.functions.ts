@@ -54,7 +54,8 @@ export const submitFeedback = createServerFn({ method: "POST" })
       .gte("created_at", startOfDay.toISOString());
 
     if (!count) {
-      await supabase.rpc("ensure_user_points_row", { _user_id: userId });
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.rpc("ensure_user_points_row", { _user_id: userId });
       const { data: row } = await supabase
         .from("user_points")
         .select("points, lifetime_points")
