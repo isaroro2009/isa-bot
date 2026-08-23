@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createReminder } from "@/lib/reminders.functions";
 import { sendEmailNotification } from "@/lib/notify.functions";
+import { sendGmailMessage } from "@/lib/gmail.functions";
+import { captureGmailToken, connectGmail, getGmailToken } from "@/lib/gmail";
+import { buildIsaBotPdf, type IsaPdfResult } from "@/lib/pdf-template";
 import { useIbc } from "@/components/ibc/useIbc";
 
 export type ReminderAction = {
@@ -37,6 +40,34 @@ function isNotConfigured(reason?: string) {
   return Boolean(reason && /email_not_configured|no_provider|not_configured|BREVO/i.test(reason));
 }
 
+/** Hook de conexión con Gmail (Google OAuth). */
+function useGmail() {
+  const [token, setToken] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    captureGmailToken().then((t) => {
+      if (alive) setToken(t);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return {
+    token,
+    connected: Boolean(token),
+    refresh: () => setToken(getGmailToken()),
+    connect: () => connectGmail("/"),
+  };
+}
+
+export function GmailConnectButton({ label = "Conectar con Google / Gmail" }: { label?: string }) {
+  return (
+    <button className="action-card-btn gmail" onClick={() => connectGmail("/")}>
+      <span aria-hidden>🔗</span> {label}
+    </button>
+  );
+}
+
 export function DemoEmailModal({
   text,
   onClose,
@@ -50,8 +81,8 @@ export function DemoEmailModal({
       <div className="ibc-confirm" onClick={(e) => e.stopPropagation()}>
         <h3>🧪 Modo Demo Activo</h3>
         <p>
-          El mensaje fue generado correctamente pero requiere configurar
-          <b> BREVO_API_KEY</b> en Secrets para el envío real.
+          El mensaje fue generado correctamente, pero para enviarlo necesito que conectes tu
+          cuenta de <b>Google / Gmail</b>.
         </p>
         <textarea
           readOnly
@@ -136,43 +167,62 @@ export function ReminderActionCard({ action }: { action: ReminderAction }) {
 }
 
 export function EmailActionCard({ action }: { action: EmailAction }) {
+  const gmail = useGmail();
+  const sendGmail = useServerFn(sendGmailMessage);
   const send = useServerFn(sendEmailNotification);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
   const [demo, setDemo] = useState(false);
 
+  async function dispatch() {
+    setState("busy");
+    try {
+      const token = gmail.token ?? getGmailToken();
+      if (token) {
+        const res = await sendGmail({
+          data: { accessToken: token, to: action.to, subject: action.subject, body: action.body },
+        });
+        if (res.sent) return setState("done");
+        if (res.reason === "gmail_unauthorized") {
+          setMsg("Tu permiso de Gmail expiró — vuelve a conectar tu cuenta de Google.");
+          return setState("error");
+        }
+        setMsg(`No se pudo enviar (${res.reason})`);
+        return setState("error");
+      }
+      // Respaldo: envío del servidor si existe proveedor configurado.
+      const res = await send({ data: { to: action.to, subject: action.subject, body: action.body } });
+      if (res.sent) return setState("done");
+      if (isNotConfigured(res.reason)) {
+        setDemo(true);
+        setMsg("Conecta tu Gmail para enviarlo de verdad.");
+        return setState("error");
+      }
+      setMsg(`No se pudo enviar (${res.reason})`);
+      setState("error");
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "No se pudo enviar");
+      setState("error");
+    }
+  }
+
   return (
     <div className="action-card">
-      <div className="action-card-head">💌 Agente de correo</div>
+      <div className="action-card-head">💌 Agente de correo (Gmail)</div>
       <div className="action-card-rows">
         <div><span>Para</span><b>{action.to}</b></div>
         <div><span>Asunto</span><b>{action.subject}</b></div>
         <div><span>Cuerpo</span><b className="action-card-body">{action.body}</b></div>
+        <div><span>Cuenta</span><b>{gmail.connected ? "Gmail conectado ✅" : "Sin conectar"}</b></div>
       </div>
       {state === "done" ? (
-        <div className="action-card-ok">✅ Correo enviado 💕</div>
-      ) : (
-        <button
-          className="action-card-btn"
-          disabled={state === "busy"}
-          onClick={async () => {
-            setState("busy");
-            try {
-              const res = await send({ data: { to: action.to, subject: action.subject, body: action.body } });
-              if (res.sent) setState("done");
-              else if (isNotConfigured(res.reason)) {
-                setDemo(true);
-                setMsg("Modo demo: el correo no está configurado todavía.");
-                setState("error");
-              } else { setMsg(`No se pudo enviar (${res.reason})`); setState("error"); }
-            } catch (e) {
-              setMsg(e instanceof Error ? e.message : "No se pudo enviar");
-              setState("error");
-            }
-          }}
-        >
+        <div className="action-card-ok">✅ Correo enviado desde tu Gmail 💕</div>
+      ) : gmail.connected ? (
+        <button className="action-card-btn" disabled={state === "busy"} onClick={dispatch}>
           {state === "busy" ? "Enviando…" : "✅ Aprobar y enviar"}
         </button>
+      ) : (
+        <GmailConnectButton />
       )}
       {state === "error" && <div className="action-card-err">{msg}</div>}
       {demo && (
@@ -185,13 +235,16 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
   );
 }
 
-/** 🤖 Agente nativo en el chat: redacta, arma el PDF y lo envía por correo. */
+/** 🤖 Agente nativo en el chat: redacta, arma el PDF profesional y lo envía por Gmail. */
 export function DocActionCard({ action }: { action: DocAction }) {
   const ibc = useIbc();
-  const send = useServerFn(sendEmailNotification);
+  const gmail = useGmail();
+  const sendGmail = useServerFn(sendGmailMessage);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
   const [steps, setSteps] = useState<Record<string, "active" | "done" | "err">>({});
+  const [pdf, setPdf] = useState<IsaPdfResult | null>(null);
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const [demoText, setDemoText] = useState<string | null>(null);
   const cost = ibc.costOf("agent");
 
@@ -205,8 +258,10 @@ export function DocActionCard({ action }: { action: DocAction }) {
     if (!paid) return;
     setState("busy");
     setSteps({});
+    setPdf(null);
+    setSentTo(null);
     try {
-      mark("doc", "active");
+      mark("brain", "active");
       const { supabase } = await import("@/integrations/supabase/client");
       const { data: sess } = await supabase.auth.getSession();
       const token = sess.session?.access_token;
@@ -214,7 +269,7 @@ export function DocActionCard({ action }: { action: DocAction }) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
-          task: `${action.prompt}\n\nDevuelve un documento completo y bien estructurado, listo para exportar a PDF.`,
+          task: `${action.prompt}\n\nDevuelve un documento profesional, completo y bien estructurado, con títulos con "##" y viñetas con "-", listo para exportar a PDF.`,
         }),
       });
       if (!r.ok) {
@@ -224,32 +279,12 @@ export function DocActionCard({ action }: { action: DocAction }) {
       const data = (await r.json()) as { answer?: string };
       const body = (data.answer ?? "").trim();
       if (!body) throw new Error("El agente no devolvió contenido");
+      mark("brain", "done");
 
+      mark("doc", "active");
       const title = action.prompt.slice(0, 70);
-      const { jsPDF } = await import("jspdf");
-      const doc = new jsPDF({ unit: "pt", format: "a4" });
-      const margin = 56;
-      const width = doc.internal.pageSize.getWidth() - margin * 2;
-      let y = margin;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      for (const line of doc.splitTextToSize(title, width) as string[]) {
-        doc.text(line, margin, y);
-        y += 24;
-      }
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      y += 10;
-      for (const line of doc.splitTextToSize(body.replace(/[*#`]/g, ""), width) as string[]) {
-        if (y > doc.internal.pageSize.getHeight() - margin) {
-          doc.addPage();
-          y = margin;
-        }
-        doc.text(line, margin, y);
-        y += 16;
-      }
-      doc.text("Generado por IsaBot ✨", margin, doc.internal.pageSize.getHeight() - 30);
-      doc.save(`isabot-${Date.now()}.pdf`);
+      const built = await buildIsaBotPdf(title, body);
+      setPdf(built);
       mark("doc", "done");
 
       if (action.email) {
@@ -257,16 +292,33 @@ export function DocActionCard({ action }: { action: DocAction }) {
         const { data: userRes } = await supabase.auth.getUser();
         const to = action.to ?? userRes.user?.email ?? "";
         if (!to) throw new Error("No encontré tu correo registrado");
-        const res = await send({ data: { to, subject: title || "Tu documento de IsaBot", body } });
+        const gtoken = gmail.token ?? getGmailToken();
+        if (!gtoken) {
+          mark("mail", "err");
+          setMsg("Conecta tu cuenta de Google para enviarlo por Gmail.");
+          setState("done");
+          return;
+        }
+        const res = await sendGmail({
+          data: {
+            accessToken: gtoken,
+            to,
+            subject: title || "Tu documento de IsaBot",
+            body: `${body}\n\n— Enviado con IsaBot ✨`,
+            attachmentBase64: built.base64,
+            attachmentName: built.filename,
+          },
+        });
         if (!res.sent) {
-          if (isNotConfigured(res.reason)) {
+          if (res.reason === "gmail_unauthorized") {
             mark("mail", "err");
-            setDemoText(`${title}\n\n${body}`);
+            setMsg("Tu permiso de Gmail expiró — vuelve a conectarlo.");
             setState("done");
             return;
           }
           throw new Error(`No se pudo enviar (${res.reason})`);
         }
+        setSentTo(to);
         mark("mail", "done");
       }
       setState("done");
@@ -282,8 +334,8 @@ export function DocActionCard({ action }: { action: DocAction }) {
     const st = steps[k];
     if (!st) return null;
     return (
-      <div key={k} className={`doc-badge ${st === "done" ? "done" : st === "err" ? "err" : ""}`}>
-        {st === "done" ? "[✓]" : st === "err" ? "[✕]" : "[…]"} {label}
+      <div key={k} className={`doc-badge ${st === "done" ? "done" : st === "err" ? "err" : "active"}`}>
+        {st === "done" ? "✅" : st === "err" ? "✕" : "⏳"} {label}
       </div>
     );
   };
@@ -293,19 +345,54 @@ export function DocActionCard({ action }: { action: DocAction }) {
       <div className="action-card-head">🤖 Agente de documentos</div>
       <div className="action-card-rows">
         <div><span>Tarea</span><b className="action-card-body">{action.prompt}</b></div>
-        <div><span>Envío</span><b>{action.email ? (action.to ?? "tu correo registrado") : "solo descarga"}</b></div>
+        <div><span>Envío</span><b>{action.email ? (action.to ?? "tu correo registrado") : "solo PDF"}</b></div>
+        <div><span>Gmail</span><b>{gmail.connected ? "conectado ✅" : "sin conectar"}</b></div>
         <div><span>Costo</span><b>{cost === 0 ? "Gratis PRO" : `${cost} IBC`}</b></div>
       </div>
+
       {state !== "done" && (
         <button className="action-card-btn" disabled={state === "busy"} onClick={run}>
-          {state === "busy" ? "Trabajando…" : `✅ Crear PDF${action.email ? " y enviar" : ""}`}
+          {state === "busy" ? "Trabajando…" : `✅ Crear PDF${action.email ? " y enviar por Gmail" : ""}`}
         </button>
       )}
+      {action.email && !gmail.connected && state !== "busy" && <GmailConnectButton />}
+
       <div className="doc-badges">
-        {badge("doc", "Documento PDF creado")}
-        {action.email && badge("mail", "Correo enviado exitosamente")}
+        {badge("brain", "Gemini Agent: analizando tu petición")}
+        {badge("doc", "PDF Generator: documento profesional listo")}
+        {action.email && badge("mail", "Gmail API: enviando desde tu cuenta")}
       </div>
+
+      {pdf && (
+        <div className="doc-preview">
+          <iframe title="Vista previa del PDF" src={pdf.dataUrl} />
+          <div className="doc-preview-actions">
+            <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
+            <a
+              className="action-card-btn ghost"
+              href={pdf.dataUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🔍 Abrir en grande
+            </a>
+            {sentTo && (
+              <a
+                className="action-card-btn ghost"
+                href="https://mail.google.com/mail/u/0/#sent"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📧 Ver correo enviado
+              </a>
+            )}
+          </div>
+          {sentTo && <div className="action-card-ok">✅ Enviado a {sentTo} desde tu Gmail 💕</div>}
+        </div>
+      )}
+
       {state === "error" && <div className="action-card-err">{msg}</div>}
+      {state === "done" && msg && <div className="action-card-err">{msg}</div>}
       {demoText && <DemoEmailModal text={demoText} onClose={() => setDemoText(null)} />}
     </div>
   );
