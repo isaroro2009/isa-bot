@@ -5704,8 +5704,11 @@ pre, code { white-space: pre-wrap; word-break: break-word; }
     right: 0;
     top: calc(6px + var(--safe-top));
     max-width: 100%;
-    padding: 0 8px 0 calc(52px + var(--safe-left, 0px));
+    padding: 0 8px 0 calc(54px + var(--safe-left, 0px)) !important;
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    grid-template-columns: none;
     gap: 6px;
   }
   .header .logo {
