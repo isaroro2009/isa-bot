@@ -928,6 +928,8 @@ function IsaBot() {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
+  const turnsRef = useRef(0);
+  const [adIndex, setAdIndex] = useState<number | null>(null);
   const [personality, setPersonality] = useState<Personality>("kawaii");
   const [customPersonality, setCustomPersonality] = useState<string>("");
   // 🧠 Cerebro de IsaBot elegido por la persona
@@ -2617,6 +2619,20 @@ ${rows}
 
 
 
+      {adIndex !== null && (
+        <InterstitialAd
+          index={adIndex}
+          onClose={() => setAdIndex(null)}
+          onAction={(a) => {
+            if (a.kind === "store") ibc.openStore();
+            else if (a.kind === "panel") setPanel(a.panel);
+            else if (a.kind === "href") {
+              if (a.href.startsWith("http")) window.open(a.href, "_blank", "noopener");
+              else window.location.href = a.href;
+            }
+          }}
+        />
+      )}
       <div className="main">
         {!currentMessages.some((m) => m.sender === "user") && (
           <div className="intro-hero">
