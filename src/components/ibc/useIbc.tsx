@@ -8,6 +8,7 @@ type IbcCtx = {
   enabled: boolean;
   balance: number;
   isPro: boolean;
+  unlimited: boolean;
   streakDays: number;
   checkedInToday: boolean;
   transactions: Array<{ id: string; amount: number; type: string; description: string; created_at: string }>;
@@ -168,6 +169,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       enabled,
       balance,
       isPro,
+      unlimited,
       streakDays: wallet.data?.streakDays ?? 0,
       checkedInToday: wallet.data?.checkedInToday ?? false,
       transactions: tx.data ?? [],
@@ -188,9 +190,9 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       charge,
       confirmCharge,
       giveBack,
-      costOf: (action: IbcActionKey) => effectiveCost(action, isPro),
+      costOf: (action: IbcActionKey) => (unlimited ? 0 : effectiveCost(action, isPro)),
     }),
-    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, confirmCharge, giveBack, streakToast],
+    [enabled, balance, isPro, unlimited, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, confirmCharge, giveBack, streakToast],
   );
 
   return (
