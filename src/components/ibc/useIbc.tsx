@@ -68,6 +68,8 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
 
   const balance = wallet.data?.balance ?? 0;
   const isPro = wallet.data?.planStatus === "pro";
+  const unlimited = wallet.data?.unlimited ?? false;
+
 
   const [streakToast, setStreakToast] = useState<string | null>(null);
   // Último cobro realizado: única transacción reembolsable desde el cliente.
