@@ -259,7 +259,9 @@ export function InsufficientFundsModal() {
   return (
     <div className="ibc-root ibc-overlay" onClick={ibc.closeEmpty}>
       <div className="ibc-panel ibc-empty-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="ibc-empty-emoji">🪙</div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <IsaCoin3D skin={loadSkin()} size={150} state="deny" isPro={ibc.isPro} />
+        </div>
         <h3 style={{ margin: "8px 0" }}>Te quedaste sin coins</h3>
         <p className="ibc-empty-lbl" style={{ opacity: 0.8, fontSize: ".9rem" }}>
           Vuelve mañana por tu check-in gratis, o consigue más para seguir creando ahora mismo.
