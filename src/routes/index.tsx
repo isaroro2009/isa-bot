@@ -2597,83 +2597,44 @@ ${rows}
 
 
       <div className="main">
-        <div className={`intro-hero ${currentMessages.some((m) => m.sender === "user") ? "chatting" : ""}`}>
-          <h2>
-            ¡Hola! Soy IsaBot, tu co-piloto de IA creativa ✨
-            <span className="intro-by">Creada por Isabella Rodríguez Roque — IsaRoRo Studio 💜</span>
-          </h2>
-          <p className="intro-desc">
-            Isabella tiene 17 años, es de Cali y construye IsaBot para que estudiantes y emprendedores
-            estudien mejor, emprendan con foco y creen sin bloqueo. Yo te acompaño en todo el proceso:
-          </p>
-          <div className="intro-feats">
-            <span>💬 Chat inteligente</span>
-            <span>🎨 Genero imágenes</span>
-            <span>📞 Llamadas de voz</span>
-            <span>📸 Analizo fotos</span>
-            <span>🚀 Mi Día y Modo Foco</span>
-            <span>🧠 Modo Crack</span>
-            <span>🎨 Estilos personalizados</span>
-            <span>✅ Tareas y Pomodoro</span>
-            <span>🗓️ Planner mensual</span>
-            <span>🪐 IsaSpace</span>
-            <span>🎁 IsaBot Coins</span>
-            <span>🎓 IsaAcademy</span>
-            <span>🧺 IsaMarket</span>
-            
-
+        {!currentMessages.some((m) => m.sender === "user") && (
+          <div className="intro-hero">
+            <PromoCarousel
+              onAction={(a) => {
+                if (a.kind === "store") ibc.openStore();
+                else if (a.kind === "panel") setPanel(a.panel);
+                else if (a.kind === "href") {
+                  if (a.href.startsWith("http")) window.open(a.href, "_blank", "noopener");
+                  else window.location.href = a.href;
+                }
+              }}
+            />
+            <div className="intro-actions">
+              <button
+                className="intro-cta"
+                onClick={() => {
+                  const url = `${window.location.origin}/isaspace?popup=1`;
+                  const win = window.open(url, "IsaSpace", "width=1280,height=860");
+                  if (!win) window.location.href = url;
+                }}
+              >
+                🪐 IsaSpace
+              </button>
+              <button className="intro-cta" onClick={() => { window.location.href = "/studio"; }}>
+                🎨 IsaStudio
+              </button>
+              <button className="intro-cta" onClick={() => { window.location.href = "/market"; }}>
+                🧺 IsaMarket
+              </button>
+              <button className="intro-cta" onClick={() => setPanel("academy")}>
+                🎓 IsaAcademy
+              </button>
+              <button className="intro-cta primary" onClick={() => setPanel("myday")}>
+                🚀 Planear mi día
+              </button>
+            </div>
           </div>
-          <div className="intro-actions">
-            <button
-              className="intro-cta"
-              onClick={() => {
-                const url = `${window.location.origin}/isaspace?popup=1`;
-                // Sin "noopener": la ventana es del mismo origen y necesita
-                // window.opener para poder cerrarse al volver a IsaBot.
-                const win = window.open(url, "IsaSpace", "width=1280,height=860");
-                if (!win) window.location.href = url;
-              }}
-            >
-              🪐 Abrir IsaSpace
-            </button>
-            <button
-              className="intro-cta"
-              onClick={() => {
-                window.location.href = "/studio";
-              }}
-            >
-              🎨 IsaStudio
-            </button>
-            <button
-              className="intro-cta"
-              onClick={() => {
-                window.location.href = "/market";
-              }}
-            >
-              🧺 IsaMarket
-            </button>
-            <button className="intro-cta" onClick={() => setPanel("academy")}>
-
-
-              🎓 IsaAcademy
-            </button>
-
-            <button className="intro-cta primary" onClick={() => setPanel("myday")}>
-              🚀 Planear mi día
-            </button>
-            <button className="intro-cta" onClick={() => setPanel("invite")}>
-              💌 Invita y gana
-            </button>
-            <button className="intro-cta" onClick={() => setPanel("technews")}>
-              📰 Noticias Tech
-            </button>
-            <button className="intro-cta" onClick={() => setPanel("feedback")}>
-              💡 Danos tu feedback
-            </button>
-
-          </div>
-
-        </div>
+        )}
 
         <div className="messages" ref={messagesRef}>
           {currentMessages.map((m, i) => {
