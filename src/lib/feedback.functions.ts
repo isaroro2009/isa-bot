@@ -46,26 +46,31 @@ export const submitFeedback = createServerFn({ method: "POST" })
     let awarded = 0;
     const startOfDay = new Date();
     startOfDay.setUTCHours(0, 0, 0, 0);
-    const { count } = await supabase
-      .from("point_events")
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { count } = await supabaseAdmin
+      .from("ibc_transactions")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
-      .eq("kind", "feedback")
+      .eq("description", "Gracias por tu feedback")
       .gte("created_at", startOfDay.toISOString());
 
     if (!count) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await supabaseAdmin.rpc("ensure_user_points_row", { _user_id: userId });
-      const { data: row } = await supabase
-        .from("user_points")
-        .select("points, lifetime_points")
+      const { data: wallet } = await supabaseAdmin
+        .from("ibc_wallets")
+        .select("balance")
         .eq("user_id", userId)
         .maybeSingle();
-      if (row) {
-        await supabase
-          .from("user_points")
-          .update({ points: row.points + 5, lifetime_points: row.lifetime_points + 5 })
+      if (wallet) {
+        await supabaseAdmin
+          .from("ibc_wallets")
+          .update({ balance: wallet.balance + 5 })
           .eq("user_id", userId);
+        await supabaseAdmin.from("ibc_transactions").insert({
+          user_id: userId,
+          amount: 5,
+          type: "earn",
+          description: "Gracias por tu feedback",
+        });
         awarded = 5;
       }
     }

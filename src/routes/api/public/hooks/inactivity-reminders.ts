@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 const APP_URL = "https://isa-bot.lovable.app";
-const INACTIVE_DAYS = 8;
-const COOLDOWN_DAYS = 7;
+const INACTIVE_DAYS = 3;
+const COOLDOWN_DAYS = 3;
 
 function authorized(request: Request): boolean {
   // Secreto exclusivo del servidor. NUNCA usar la publishable/anon key: es pública.
