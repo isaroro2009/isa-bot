@@ -351,6 +351,90 @@ export type Database = {
         }
         Relationships: []
       }
+      ibc_subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ibc_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string
+          id?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ibc_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          last_checkin_at: string | null
+          plan_status: string
+          streak_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          last_checkin_at?: string | null
+          plan_status?: string
+          streak_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          last_checkin_at?: string | null
+          plan_status?: string
+          streak_days?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       isaspace_comments: {
         Row: {
           content: string
@@ -1672,6 +1756,45 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      ibc_checkin: {
+        Args: never
+        Returns: {
+          balance: number
+          delta: number
+          streak_days: number
+        }[]
+      }
+      ibc_ensure_wallet: {
+        Args: never
+        Returns: {
+          balance: number
+          created_at: string
+          last_checkin_at: string | null
+          plan_status: string
+          streak_days: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ibc_wallets"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      ibc_grant: {
+        Args: { _amount: number; _reason: string }
+        Returns: {
+          balance: number
+        }[]
+      }
+      ibc_spend: {
+        Args: { _amount: number; _reason: string }
+        Returns: {
+          balance: number
+          spent: number
+        }[]
       }
       is_org_member: { Args: { _org: string; _user: string }; Returns: boolean }
       redeem_reward: {
