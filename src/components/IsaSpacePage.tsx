@@ -162,8 +162,8 @@ export function IsaSpacePage() {
   }, [posts]);
 
   const feed = useMemo(
-    () => (tab === "about" ? [] : tab === "explore" ? posts.filter((p) => p.image_url) : posts),
-    [posts, tab],
+    () => (tab === "about" ? [] : tab === "mine" ? posts.filter((p) => p.user_id === me?.id) : posts),
+    [posts, tab, me?.id],
   );
 
   function returnToIsaBot() {
