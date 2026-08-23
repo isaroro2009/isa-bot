@@ -199,7 +199,31 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
   );
 }
 
+/** 🛟 Plantilla local estructurada: garantiza que el PDF siempre se genere. */
+function localDocTemplate(prompt: string): string {
+  return [
+    `## ${prompt.slice(0, 80)}`,
+    "",
+    "> Borrador creado localmente por IsaBot. Edítalo o vuelve a pedirlo para la versión completa ✨",
+    "",
+    "## Objetivo",
+    `- ${prompt}`,
+    "",
+    "## Puntos clave",
+    "- Contexto y punto de partida",
+    "- Acciones concretas a realizar",
+    "- Recursos necesarios",
+    "- Resultado esperado",
+    "",
+    "## Próximos pasos",
+    "1. Revisar y completar los puntos anteriores",
+    "2. Definir fechas y responsables",
+    "3. Pedirme de nuevo el documento para la versión final",
+  ].join("\n");
+}
+
 /** 🤖 Agente nativo en el chat: redacta, arma el PDF profesional y lo manda al webhook. */
+
 export function DocActionCard({ action }: { action: DocAction }) {
   const ibc = useIbc();
   const hook = useServerFn(sendEmailWebhook);
