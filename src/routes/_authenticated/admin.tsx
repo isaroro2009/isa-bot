@@ -10,8 +10,12 @@ import {
   setUserPremium,
   deleteUser,
   getMyRoles,
+  createUserManually,
+  setUserCoins,
+  setUnlimitedCoins,
   type AdminUserRow,
 } from "@/lib/admin.functions";
+
 
 import { getAiConfig } from "@/lib/memory.functions";
 import { AdminMetrics } from "@/components/AdminMetrics";
