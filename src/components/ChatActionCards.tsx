@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createReminder } from "@/lib/reminders.functions";
-import { sendEmailNotification } from "@/lib/notify.functions";
-import { sendGmailMessage } from "@/lib/gmail.functions";
-import { captureGmailToken, connectGmail, getGmailToken } from "@/lib/gmail";
+import { sendEmailWebhook } from "@/lib/emailWebhook.functions";
 import { buildIsaBotPdf, type IsaPdfResult } from "@/lib/pdf-template";
-import { calendarCreateEvent, docsCreateDocument, driveUploadFile } from "@/lib/google.functions";
 import { useIbc } from "@/components/ibc/useIbc";
 
 export type ReminderAction = {
@@ -36,55 +33,57 @@ function hhmm(h: number, m: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-/** Modal de "modo demo" cuando el envío de correo no está configurado. */
-function isNotConfigured(reason?: string) {
-  return Boolean(reason && /email_not_configured|no_provider|not_configured|BREVO/i.test(reason));
+function mailtoHref(to: string, subject: string, body: string) {
+  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-/** Hook de conexión con Gmail (Google OAuth). */
-function useGmail() {
-  const [token, setToken] = useState<string | null>(null);
-  useEffect(() => {
-    let alive = true;
-    captureGmailToken().then((t) => {
-      if (alive) setToken(t);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-  return {
-    token,
-    connected: Boolean(token),
-    refresh: () => setToken(getGmailToken()),
-    connect: () => connectGmail("/"),
-  };
-}
-
-export function GmailConnectButton({ label = "Conectar con Google / Gmail" }: { label?: string }) {
+/** 📋 Botón de copiar texto con confirmación. */
+export function CopyTextButton({ text, label = "📋 Copiar texto" }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
   return (
-    <button className="action-card-btn gmail" onClick={() => connectGmail("/")}>
-      <span aria-hidden>🔗</span> {label}
+    <button
+      className="action-card-btn ghost"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          /* algunos navegadores lo bloquean */
+        }
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2000);
+      }}
+    >
+      {copied ? "¡Copiado! 💕" : label}
     </button>
   );
 }
 
-export function DemoEmailModal({
-  text,
-  onClose,
+/** ✉️ Respaldo manual: copiar el texto o abrir el cliente de correo. */
+export function ManualSendActions({
+  to,
+  subject,
+  body,
 }: {
-  text: string;
-  onClose: () => void;
+  to: string;
+  subject: string;
+  body: string;
 }) {
-  const [copied, setCopied] = useState(false);
+  return (
+    <div className="doc-preview-actions">
+      <CopyTextButton text={`${subject}\n\n${body}`} />
+      <a className="action-card-btn ghost" href={mailtoHref(to, subject, body)}>
+        📧 Abrir cliente de correo
+      </a>
+    </div>
+  );
+}
+
+export function DemoEmailModal({ text, onClose }: { text: string; onClose: () => void }) {
   return (
     <div className="ibc-confirm-back" onClick={onClose}>
       <div className="ibc-confirm" onClick={(e) => e.stopPropagation()}>
-        <h3>🧪 Modo Demo Activo</h3>
-        <p>
-          El mensaje fue generado correctamente, pero para enviarlo necesito que conectes tu
-          cuenta de <b>Google / Gmail</b>.
-        </p>
+        <h3>🧪 Modo manual</h3>
+        <p>El mensaje está listo. Cópialo o ábrelo en tu app de correo para enviarlo tú misma.</p>
         <textarea
           readOnly
           value={text}
@@ -100,19 +99,7 @@ export function DemoEmailModal({
         />
         <div className="ibc-confirm-row">
           <button className="cancel" onClick={onClose}>Cerrar</button>
-          <button
-            className="ok"
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(text);
-              } catch {
-                /* algunos navegadores lo bloquean */
-              }
-              setCopied(true);
-            }}
-          >
-            {copied ? "¡Copiado! 💕" : "📋 Copiar texto"}
-          </button>
+          <CopyTextButton text={text} />
         </div>
       </div>
     </div>
@@ -168,38 +155,22 @@ export function ReminderActionCard({ action }: { action: ReminderAction }) {
 }
 
 export function EmailActionCard({ action }: { action: EmailAction }) {
-  const gmail = useGmail();
-  const sendGmail = useServerFn(sendGmailMessage);
-  const send = useServerFn(sendEmailNotification);
+  const hook = useServerFn(sendEmailWebhook);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
-  const [demo, setDemo] = useState(false);
 
   async function dispatch() {
     setState("busy");
     try {
-      const token = gmail.token ?? getGmailToken();
-      if (token) {
-        const res = await sendGmail({
-          data: { accessToken: token, to: action.to, subject: action.subject, body: action.body },
-        });
-        if (res.sent) return setState("done");
-        if (res.reason === "gmail_unauthorized") {
-          setMsg("Tu permiso de Gmail expiró — vuelve a conectar tu cuenta de Google.");
-          return setState("error");
-        }
-        setMsg(`No se pudo enviar (${res.reason})`);
-        return setState("error");
-      }
-      // Respaldo: envío del servidor si existe proveedor configurado.
-      const res = await send({ data: { to: action.to, subject: action.subject, body: action.body } });
-      if (res.sent) return setState("done");
-      if (isNotConfigured(res.reason)) {
-        setDemo(true);
-        setMsg("Conecta tu Gmail para enviarlo de verdad.");
-        return setState("error");
-      }
-      setMsg(`No se pudo enviar (${res.reason})`);
+      const res = await hook({
+        data: { recipient: action.to, subject: action.subject, body_text: action.body },
+      });
+      if (res.ok) return setState("done");
+      setMsg(
+        res.reason === "webhook_not_configured"
+          ? "Aún no hay webhook de correo configurado — envíalo tú desde aquí 💌"
+          : `El webhook no respondió (${res.reason}) — puedes enviarlo manualmente 💌`,
+      );
       setState("error");
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "No se pudo enviar");
@@ -209,118 +180,35 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
 
   return (
     <div className="action-card">
-      <div className="action-card-head">💌 Agente de correo (Gmail)</div>
+      <div className="action-card-head">💌 Agente de correo</div>
       <div className="action-card-rows">
         <div><span>Para</span><b>{action.to}</b></div>
         <div><span>Asunto</span><b>{action.subject}</b></div>
         <div><span>Cuerpo</span><b className="action-card-body">{action.body}</b></div>
-        <div><span>Cuenta</span><b>{gmail.connected ? "Gmail conectado ✅" : "Sin conectar"}</b></div>
       </div>
       {state === "done" ? (
-        <div className="action-card-ok">✅ Correo enviado desde tu Gmail 💕</div>
-      ) : gmail.connected ? (
+        <div className="action-card-ok">✅ Enviado al webhook de correo 💕</div>
+      ) : (
         <button className="action-card-btn" disabled={state === "busy"} onClick={dispatch}>
           {state === "busy" ? "Enviando…" : "✅ Aprobar y enviar"}
         </button>
-      ) : (
-        <GmailConnectButton />
       )}
       {state === "error" && <div className="action-card-err">{msg}</div>}
-      {demo && (
-        <DemoEmailModal
-          text={`${action.subject}\n\n${action.body}`}
-          onClose={() => setDemo(false)}
-        />
-      )}
+      <ManualSendActions to={action.to} subject={action.subject} body={action.body} />
     </div>
   );
 }
 
-/** 🟦 Acciones del agente dentro de la cuenta de Google (Drive, Calendar, Docs). */
-function GoogleWorkspaceActions({ pdf, title }: { pdf: IsaPdfResult; title: string }) {
-  const gmail = useGmail();
-  const upload = useServerFn(driveUploadFile);
-  const makeDoc = useServerFn(docsCreateDocument);
-  const makeEvent = useServerFn(calendarCreateEvent);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [links, setLinks] = useState<Array<{ label: string; url: string }>>([]);
-  const [err, setErr] = useState<string | null>(null);
-
-  const token = gmail.token ?? getGmailToken();
-
-  async function act(kind: "drive" | "docs" | "calendar") {
-    if (busy) return;
-    setErr(null);
-    if (!token) {
-      setErr("Conecta tu cuenta de Google para usar Drive, Docs y Calendar.");
-      return;
-    }
-    setBusy(kind);
-    try {
-      const safeTitle = title || "Documento de IsaBot";
-      const res =
-        kind === "drive"
-          ? await upload({ data: { accessToken: token, name: pdf.filename, base64: pdf.base64 } })
-          : kind === "docs"
-            ? await makeDoc({ data: { accessToken: token, title: safeTitle, content: pdf.text ?? safeTitle } })
-            : await makeEvent({
-                data: {
-                  accessToken: token,
-                  summary: `Revisar: ${safeTitle}`,
-                  description: "Creado por IsaBot ✨",
-                  startISO: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-                },
-              });
-      if (!res.ok || !res.url) {
-        setErr(
-          res.reason === "google_unauthorized"
-            ? "Tu permiso de Google expiró — vuelve a conectarlo."
-            : `No se pudo completar (${res.reason ?? "error"})`,
-        );
-        return;
-      }
-      const label = kind === "drive" ? "📁 Ver en Drive" : kind === "docs" ? "📝 Abrir Google Doc" : "📅 Ver evento";
-      setLinks((prev) => [...prev.filter((l) => l.label !== label), { label, url: res.url! }]);
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Algo salió mal con Google");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  return (
-    <div className="doc-preview-actions">
-      <button className="action-card-btn ghost" disabled={busy !== null} onClick={() => act("drive")}>
-        {busy === "drive" ? "Subiendo…" : "📁 Guardar en Drive"}
-      </button>
-      <button className="action-card-btn ghost" disabled={busy !== null} onClick={() => act("docs")}>
-        {busy === "docs" ? "Creando…" : "📝 Crear Google Doc"}
-      </button>
-      <button className="action-card-btn ghost" disabled={busy !== null} onClick={() => act("calendar")}>
-        {busy === "calendar" ? "Agendando…" : "📅 Agendar seguimiento"}
-      </button>
-      {links.map((l) => (
-        <a key={l.label} className="action-card-btn ghost" href={l.url} target="_blank" rel="noopener noreferrer">
-          {l.label}
-        </a>
-      ))}
-      {!token && <GmailConnectButton />}
-      {err && <div className="action-card-err">{err}</div>}
-    </div>
-  );
-}
-
-/** 🤖 Agente nativo en el chat: redacta, arma el PDF profesional y lo envía por Gmail. */
+/** 🤖 Agente nativo en el chat: redacta, arma el PDF profesional y lo manda al webhook. */
 export function DocActionCard({ action }: { action: DocAction }) {
   const ibc = useIbc();
-  const gmail = useGmail();
-  const sendGmail = useServerFn(sendGmailMessage);
+  const hook = useServerFn(sendEmailWebhook);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
   const [steps, setSteps] = useState<Record<string, "active" | "done" | "err">>({});
   const [pdf, setPdf] = useState<IsaPdfResult | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const [demoText, setDemoText] = useState<string | null>(null);
+  const [recipient, setRecipient] = useState<string>(action.to ?? "");
   const cost = ibc.costOf("agent");
 
   function mark(k: string, v: "active" | "done" | "err") {
@@ -335,6 +223,7 @@ export function DocActionCard({ action }: { action: DocAction }) {
     setSteps({});
     setPdf(null);
     setSentTo(null);
+    setMsg("");
     try {
       mark("brain", "active");
       const { supabase } = await import("@/integrations/supabase/client");
@@ -366,35 +255,27 @@ export function DocActionCard({ action }: { action: DocAction }) {
         mark("mail", "active");
         const { data: userRes } = await supabase.auth.getUser();
         const to = action.to ?? userRes.user?.email ?? "";
-        if (!to) throw new Error("No encontré tu correo registrado");
-        const gtoken = gmail.token ?? getGmailToken();
-        if (!gtoken) {
-          mark("mail", "err");
-          setMsg("Conecta tu cuenta de Google para enviarlo por Gmail.");
-          setState("done");
-          return;
-        }
-        const res = await sendGmail({
+        setRecipient(to);
+        const res = await hook({
           data: {
-            accessToken: gtoken,
-            to,
+            recipient: to,
             subject: title || "Tu documento de IsaBot",
-            body: `${body}\n\n— Enviado con IsaBot ✨`,
-            attachmentBase64: built.base64,
-            attachmentName: built.filename,
+            body_text: `${body}\n\n— Enviado con IsaBot ✨`,
+            pdf_data: built.base64,
+            pdf_name: built.filename,
           },
         });
-        if (!res.sent) {
-          if (res.reason === "gmail_unauthorized") {
-            mark("mail", "err");
-            setMsg("Tu permiso de Gmail expiró — vuelve a conectarlo.");
-            setState("done");
-            return;
-          }
-          throw new Error(`No se pudo enviar (${res.reason})`);
+        if (res.ok) {
+          setSentTo(to);
+          mark("mail", "done");
+        } else {
+          mark("mail", "err");
+          setMsg(
+            res.reason === "webhook_not_configured"
+              ? "Sin webhook configurado — descarga el PDF y envíalo desde tu correo 💌"
+              : `El webhook no respondió (${res.reason}) — puedes enviarlo manualmente 💌`,
+          );
         }
-        setSentTo(to);
-        mark("mail", "done");
       }
       setState("done");
     } catch (e) {
@@ -415,61 +296,49 @@ export function DocActionCard({ action }: { action: DocAction }) {
     );
   };
 
+  const title = action.prompt.slice(0, 70);
+
   return (
     <div className="action-card">
       <div className="action-card-head">🤖 Agente de documentos</div>
       <div className="action-card-rows">
         <div><span>Tarea</span><b className="action-card-body">{action.prompt}</b></div>
         <div><span>Envío</span><b>{action.email ? (action.to ?? "tu correo registrado") : "solo PDF"}</b></div>
-        <div><span>Gmail</span><b>{gmail.connected ? "conectado ✅" : "sin conectar"}</b></div>
         <div><span>Costo</span><b>{cost === 0 ? "Gratis PRO" : `${cost} IBC`}</b></div>
       </div>
 
       {state !== "done" && (
         <button className="action-card-btn" disabled={state === "busy"} onClick={run}>
-          {state === "busy" ? "Trabajando…" : `✅ Crear PDF${action.email ? " y enviar por Gmail" : ""}`}
+          {state === "busy" ? "Trabajando…" : `✅ Crear PDF${action.email ? " y enviar" : ""}`}
         </button>
       )}
-      {action.email && !gmail.connected && state !== "busy" && <GmailConnectButton />}
 
       <div className="doc-badges">
-        {badge("brain", "Gemini Agent: analizando tu petición")}
-        {badge("doc", "PDF Generator: documento profesional listo")}
-        {action.email && badge("mail", "Gmail API: enviando desde tu cuenta")}
+        {badge("brain", "Agente IA: analizando tu petición")}
+        {badge("doc", "PDF listo para ver y descargar")}
+        {action.email && badge("mail", "Webhook de correo: enviando")}
       </div>
 
       {pdf && (
         <div className="doc-preview">
           <iframe title="Vista previa del PDF" src={pdf.dataUrl} />
-          <GoogleWorkspaceActions pdf={pdf} title={action.prompt.slice(0, 70)} />
           <div className="doc-preview-actions">
             <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
-            <a
-              className="action-card-btn ghost"
-              href={pdf.dataUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a className="action-card-btn ghost" href={pdf.dataUrl} target="_blank" rel="noopener noreferrer">
               🔍 Abrir en grande
             </a>
-            {sentTo && (
-              <a
-                className="action-card-btn ghost"
-                href="https://mail.google.com/mail/u/0/#sent"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                📧 Ver correo enviado
-              </a>
-            )}
           </div>
-          {sentTo && <div className="action-card-ok">✅ Enviado a {sentTo} desde tu Gmail 💕</div>}
+          <ManualSendActions
+            to={recipient}
+            subject={title || "Tu documento de IsaBot"}
+            body={`${pdf.text}\n\n— Creado con IsaBot ✨ (adjunta el PDF descargado)`}
+          />
+          {sentTo && <div className="action-card-ok">✅ Enviado a {sentTo} vía webhook 💕</div>}
         </div>
       )}
 
       {state === "error" && <div className="action-card-err">{msg}</div>}
       {state === "done" && msg && <div className="action-card-err">{msg}</div>}
-      {demoText && <DemoEmailModal text={demoText} onClose={() => setDemoText(null)} />}
     </div>
   );
 }
