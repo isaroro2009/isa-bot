@@ -229,21 +229,30 @@ export function DocActionCard({ action }: { action: DocAction }) {
       const { supabase } = await import("@/integrations/supabase/client");
       const { data: sess } = await supabase.auth.getSession();
       const token = sess.session?.access_token;
-      const r = await fetch("/api/agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          task: `${action.prompt}\n\nDevuelve un documento profesional, completo y bien estructurado, con títulos con "##" y viñetas con "-", listo para exportar a PDF.`,
-        }),
-      });
-      if (!r.ok) {
-        const err = (await r.json().catch(() => ({}))) as { error?: string };
-        throw new Error(err.error ?? `Error ${r.status}`);
+      let body = "";
+      try {
+        const r = await fetch("/api/agent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({
+            task: `${action.prompt}\n\nDevuelve un documento profesional, completo y bien estructurado, con títulos con "##" y viñetas con "-", listo para exportar a PDF.`,
+          }),
+        });
+        if (r.ok) {
+          const data = (await r.json()) as { answer?: string };
+          body = (data.answer ?? "").trim();
+        }
+      } catch {
+        /* seguimos con la plantilla local */
       }
-      const data = (await r.json()) as { answer?: string };
-      const body = (data.answer ?? "").trim();
-      if (!body) throw new Error("El agente no devolvió contenido");
+      let fallbackNote = "";
+      if (!body) {
+        // 🛟 Plantilla local: el PDF siempre se crea, pase lo que pase.
+        body = localDocTemplate(action.prompt);
+        fallbackNote = "Creé el PDF con una plantilla local porque la IA no respondió — puedes editarlo y reintentar 💕";
+      }
       mark("brain", "done");
+
 
       mark("doc", "active");
       const title = action.prompt.slice(0, 70);
