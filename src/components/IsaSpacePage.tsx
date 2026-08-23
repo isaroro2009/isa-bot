@@ -199,9 +199,11 @@ export function IsaSpacePage() {
         if (upErr) throw upErr;
         imageUrl = path;
       }
-      await doCreate({ data: { content: text.trim(), imageUrl } });
+      const tagLine = tags.length ? `\n\n${tags.map((t) => `#${t}`).join(" ")}` : "";
+      await doCreate({ data: { content: `${text.trim()}${tagLine}`.trim(), imageUrl } });
       setText("");
       setFile(null);
+      setTags([]);
       setComposerOpen(false);
       await load();
     } catch (e) {
