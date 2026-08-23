@@ -98,6 +98,8 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const charge = useCallback(
     async (action: IbcActionKey, note?: string) => {
       if (!enabled) return true; // invitados: sin economía hasta iniciar sesión
+      if (unlimited) return true; // ♾️ cuentas con coins infinitas nunca gastan
+
       const cost = effectiveCost(action, isPro);
       if (cost > 0 && balance < cost) {
         setEmptyOpen(true);
