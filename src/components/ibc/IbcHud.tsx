@@ -86,6 +86,8 @@ export function VaultDrawer() {
   const ibc = useIbc();
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const { skin, choose } = useSkin(ibc.isPro, ibc.streakDays);
+  const [preview, setPreview] = useState<CoinSkinId | null>(null);
   if (!ibc.vaultOpen) return null;
 
   const pct = Math.min(100, (ibc.streakDays / STREAK_GOAL) * 100);
