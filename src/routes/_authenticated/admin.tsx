@@ -164,6 +164,40 @@ function AdminPage() {
     }
   };
 
+  // 🪙 Gestor de IsaBot Coins
+  const doEditCoins = async (u: AdminUserRow) => {
+    const choice = prompt(
+      `Nuevo saldo de IsaBot Coins para ${u.display_name ?? u.email}\n(actual: ${u.ibc_balance} IBC)`,
+      String(u.ibc_balance),
+    );
+    if (choice === null) return;
+    const n = parseInt(choice.trim(), 10);
+    if (isNaN(n) || n < 0) {
+      alert("Valor inválido");
+      return;
+    }
+    setBusyId(u.id);
+    try {
+      await saveCoins({ data: { userId: u.id, balance: n } });
+      await reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const doToggleUnlimited = async (u: AdminUserRow) => {
+    setBusyId(u.id);
+    try {
+      await saveUnlimited({ data: { userId: u.id, unlimited: !u.unlimited_coins } });
+      await reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusyId(null);
+    }
+  };
 
 
   const doDelete = async (u: AdminUserRow) => {
