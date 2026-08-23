@@ -112,6 +112,15 @@
     </div>
 
     <div class="card">
+      <h3>🔑 Tu API Key de Groq</h3>
+      <p>Se guarda solo en este navegador. Consíguela gratis en console.groq.com.</p>
+      <input id="groq-key" type="password" placeholder="gsk_..." autocomplete="off"
+             style="width:100%;box-sizing:border-box;margin-top:8px;padding:9px;border-radius:10px;border:1px solid rgba(155,126,201,0.3);font-size:12px;" />
+      <button class="ghost" id="save-key">Guardar clave</button>
+      <p id="key-status" style="margin-top:6px;font-size:11px;"></p>
+    </div>
+
+    <div class="card">
       <h3>🔎 Buscar en la web</h3>
       <p>Modo Agente: busca en vivo y responde con fuentes.</p>
       <button class="ghost" id="open-agent">Abrir Modo Agente</button>

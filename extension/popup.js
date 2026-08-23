@@ -1,8 +1,29 @@
 // popup.js — IsaBot Chrome Extension
 const APP_URL = "https://isa-bot.lovable.app";
 
-// ⚠️ Pon aquí tu API Key gratuita de Groq Cloud (https://console.groq.com)
-const GROQ_API_KEY = "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";
+// 🔐 La API Key de Groq NUNCA se guarda en el código: cada persona pone la suya
+// y se almacena solo en su navegador (chrome.storage.local).
+async function getGroqKey() {
+  const { groqKey } = await chrome.storage.local.get("groqKey");
+  return (groqKey || "").trim();
+}
+
+const keyInput = document.getElementById("groq-key");
+const keyStatus = document.getElementById("key-status");
+getGroqKey().then((k) => {
+  if (k) keyStatus.textContent = "Clave guardada en este navegador ✅";
+});
+document.getElementById("save-key").addEventListener("click", async () => {
+  const value = (keyInput.value || "").trim();
+  if (!value) {
+    await chrome.storage.local.remove("groqKey");
+    keyStatus.textContent = "Clave borrada.";
+    return;
+  }
+  await chrome.storage.local.set({ groqKey: value });
+  keyInput.value = "";
+  keyStatus.textContent = "Clave guardada en este navegador ✅";
+});
 
 document.getElementById("open-app").addEventListener("click", () => {
   chrome.tabs.create({ url: APP_URL });
@@ -37,6 +58,9 @@ document.getElementById("summarize").addEventListener("click", async () => {
     const pageText = String(result || "").trim();
     if (!pageText) throw new Error("No pude leer contenido de esta pestaña.");
 
+    const GROQ_API_KEY = await getGroqKey();
+    if (!GROQ_API_KEY) throw new Error("Agrega tu API Key de Groq arriba para usar el resumen.");
+
     btn.textContent = "🧠 Pensando con IsaBot…";
     out.textContent = "Generando resumen súper rápido…";
 
@@ -48,7 +72,7 @@ document.getElementById("summarize").addEventListener("click", async () => {
         Authorization: `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant", // Modelo gratis, rápido e inteligente
+        model: "openai/gpt-oss-20b",
         messages: [
           {
             role: "system",
