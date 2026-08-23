@@ -235,6 +235,80 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
   );
 }
 
+/** 🟦 Acciones del agente dentro de la cuenta de Google (Drive, Calendar, Docs). */
+function GoogleWorkspaceActions({ pdf, title }: { pdf: IsaPdfResult; title: string }) {
+  const gmail = useGmail();
+  const upload = useServerFn(driveUploadFile);
+  const makeDoc = useServerFn(docsCreateDocument);
+  const makeEvent = useServerFn(calendarCreateEvent);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [links, setLinks] = useState<Array<{ label: string; url: string }>>([]);
+  const [err, setErr] = useState<string | null>(null);
+
+  const token = gmail.token ?? getGmailToken();
+
+  async function act(kind: "drive" | "docs" | "calendar") {
+    if (busy) return;
+    setErr(null);
+    if (!token) {
+      setErr("Conecta tu cuenta de Google para usar Drive, Docs y Calendar.");
+      return;
+    }
+    setBusy(kind);
+    try {
+      const safeTitle = title || "Documento de IsaBot";
+      const res =
+        kind === "drive"
+          ? await upload({ data: { accessToken: token, name: pdf.filename, base64: pdf.base64 } })
+          : kind === "docs"
+            ? await makeDoc({ data: { accessToken: token, title: safeTitle, content: pdf.text ?? safeTitle } })
+            : await makeEvent({
+                data: {
+                  accessToken: token,
+                  summary: `Revisar: ${safeTitle}`,
+                  description: "Creado por IsaBot ✨",
+                  startISO: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                },
+              });
+      if (!res.ok || !res.url) {
+        setErr(
+          res.reason === "google_unauthorized"
+            ? "Tu permiso de Google expiró — vuelve a conectarlo."
+            : `No se pudo completar (${res.reason ?? "error"})`,
+        );
+        return;
+      }
+      const label = kind === "drive" ? "📁 Ver en Drive" : kind === "docs" ? "📝 Abrir Google Doc" : "📅 Ver evento";
+      setLinks((prev) => [...prev.filter((l) => l.label !== label), { label, url: res.url! }]);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Algo salió mal con Google");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="doc-preview-actions">
+      <button className="action-card-btn ghost" disabled={busy !== null} onClick={() => act("drive")}>
+        {busy === "drive" ? "Subiendo…" : "📁 Guardar en Drive"}
+      </button>
+      <button className="action-card-btn ghost" disabled={busy !== null} onClick={() => act("docs")}>
+        {busy === "docs" ? "Creando…" : "📝 Crear Google Doc"}
+      </button>
+      <button className="action-card-btn ghost" disabled={busy !== null} onClick={() => act("calendar")}>
+        {busy === "calendar" ? "Agendando…" : "📅 Agendar seguimiento"}
+      </button>
+      {links.map((l) => (
+        <a key={l.label} className="action-card-btn ghost" href={l.url} target="_blank" rel="noopener noreferrer">
+          {l.label}
+        </a>
+      ))}
+      {!token && <GmailConnectButton />}
+      {err && <div className="action-card-err">{err}</div>}
+    </div>
+  );
+}
+
 /** 🤖 Agente nativo en el chat: redacta, arma el PDF profesional y lo envía por Gmail. */
 export function DocActionCard({ action }: { action: DocAction }) {
   const ibc = useIbc();
