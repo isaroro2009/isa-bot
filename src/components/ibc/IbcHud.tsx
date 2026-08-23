@@ -119,9 +119,37 @@ export function VaultDrawer() {
         </div>
 
         <div className="ibc-balance-card">
+          <IsaCoin3D
+            skin={preview ?? skin}
+            size={200}
+            isPro={ibc.isPro}
+            title="Pasa el cursor para inclinar tu moneda"
+          />
           <div className="ibc-balance-num">{ibc.balance}</div>
           <div className="ibc-balance-lbl">IsaBot Coins disponibles</div>
         </div>
+
+        <h4 style={{ margin: "18px 0 0", fontSize: ".95rem" }}>🎨 Skins de tu moneda</h4>
+        <div className="coin-skins">
+          {COIN_SKINS.map((s) => {
+            const unlocked = isSkinUnlocked(s.id, { isPro: ibc.isPro, streakDays: ibc.streakDays, owned: false });
+            return (
+              <button
+                key={s.id}
+                className={`coin-skin${skin === s.id ? " active" : ""}${unlocked ? "" : " locked"}`}
+                onMouseEnter={() => setPreview(s.id)}
+                onMouseLeave={() => setPreview(null)}
+                onClick={() => (unlocked ? choose(s.id) : ibc.openStore())}
+                title={unlocked ? s.tagline : `Bloqueada · ${s.requirement}`}
+              >
+                <IsaCoin3D skin={s.id} size={62} />
+                <div className="coin-skin-name">{unlocked ? s.name : `🔒 ${s.name}`}</div>
+                <div className="coin-skin-req">{unlocked ? s.tagline : s.requirement}</div>
+              </button>
+            );
+          })}
+        </div>
+
 
         <div className="ibc-streak">
           <div className="ibc-row">
