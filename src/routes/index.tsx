@@ -11,7 +11,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { VoiceCall } from "@/components/VoiceCall";
 import { RemindersPanel } from "@/components/RemindersPanel";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
-import { parseEmailIntent } from "@/lib/chat-intents";
+import { parseEmailIntent, parseDocIntent } from "@/lib/chat-intents";
 import { ChatActionCardView, type ChatAction } from "@/components/ChatActionCards";
 
 import { createReminder } from "@/lib/reminders.functions";
@@ -1545,7 +1545,7 @@ ${rows}
     // 🪙 Cobro en IsaBot Coins (los mensajes locales/offline son gratis).
     if (!useLocal && !offlineNow) {
       const action = image ? "image" : useAgent ? "agent" : text.length > 400 ? "long_form" : "text_basic";
-      const paid = await ibc.charge(action, "Mensaje a IsaBot");
+      const paid = await ibc.confirmCharge(action, "Mensaje a IsaBot");
       if (!paid) return;
     }
 
@@ -1651,6 +1651,22 @@ ${rows}
         updateCurrentChat((msgs) => [...msgs.filter((m) => !m.thinking), { sender: "bot", text: `El modo agente no pudo completar la tarea 💔 — ${detail}`, error: true }]);
       }
       return;
+    }
+
+    // ── Detección de intención de documento PDF (+ correo) → agente nativo
+    if (text) {
+      const docIntent = parseDocIntent(text);
+      if (docIntent) {
+        updateCurrentChat((msgs) => [
+          ...msgs.filter((m) => !m.thinking),
+          {
+            sender: "bot",
+            text: "Puedo armarte ese documento 📄 Confirma y lo genero" + (docIntent.email ? " y lo envío por correo 💌" : "") + ":",
+            action: { kind: "doc", prompt: docIntent.prompt, email: docIntent.email, ...(docIntent.to ? { to: docIntent.to } : {}) },
+          },
+        ]);
+        return;
+      }
     }
 
     // ── Detección de intención de correo → tarjeta de aprobación
