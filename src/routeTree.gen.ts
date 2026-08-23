@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as EmpresasRouteImport } from './routes/empresas'
+import { Route as CoinPreviewRouteImport } from './routes/coin-preview'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -42,6 +43,11 @@ import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authentic
 const EmpresasRoute = EmpresasRouteImport.update({
   id: '/empresas',
   path: '/empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoinPreviewRoute = CoinPreviewRouteImport.update({
+  id: '/coin-preview',
+  path: '/coin-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -194,6 +200,7 @@ const AuthenticatedESlugAdminRoute = AuthenticatedESlugAdminRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/coin-preview': typeof CoinPreviewRoute
   '/empresas': typeof EmpresasRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/coin-preview': typeof CoinPreviewRoute
   '/empresas': typeof EmpresasRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/coin-preview': typeof CoinPreviewRoute
   '/empresas': typeof EmpresasRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/coin-preview'
     | '/empresas'
     | '/admin'
     | '/isaspace'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/coin-preview'
     | '/empresas'
     | '/admin'
     | '/isaspace'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/coin-preview'
     | '/empresas'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
@@ -379,6 +391,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CoinPreviewRoute: typeof CoinPreviewRoute
   EmpresasRoute: typeof EmpresasRoute
   ApiAgentRoute: typeof ApiAgentRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -403,6 +416,13 @@ declare module '@tanstack/react-router' {
       path: '/empresas'
       fullPath: '/empresas'
       preLoaderRoute: typeof EmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coin-preview': {
+      id: '/coin-preview'
+      path: '/coin-preview'
+      fullPath: '/coin-preview'
+      preLoaderRoute: typeof CoinPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -651,6 +671,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CoinPreviewRoute: CoinPreviewRoute,
   EmpresasRoute: EmpresasRoute,
   ApiAgentRoute: ApiAgentRoute,
   ApiChatRoute: ApiChatRoute,
