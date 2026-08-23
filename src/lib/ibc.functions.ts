@@ -8,7 +8,9 @@ export type IbcWallet = {
   streakDays: number;
   lastCheckinAt: string | null;
   checkedInToday: boolean;
+  unlimited: boolean;
 };
+
 
 export type IbcTransaction = {
   id: string;
