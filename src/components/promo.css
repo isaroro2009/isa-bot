@@ -1,0 +1,101 @@
+/* 🎠 Promo carousel — banners rotativos dentro de IsaBot */
+.promo-wrap {
+  position: relative;
+  margin: 10px auto 6px;
+  width: min(980px, 100%);
+  padding: 0 4px;
+}
+
+.promo-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.promo-track::-webkit-scrollbar { display: none; }
+
+.promo-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  border-radius: 20px;
+  padding: 16px 18px;
+  min-height: 118px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(120, 40, 110, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.promo-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, 0.22), transparent 60%);
+  pointer-events: none;
+}
+
+.promo-emoji { font-size: 1.9rem; line-height: 1; }
+.promo-text { min-width: 0; }
+.promo-text h3 {
+  margin: 0 0 3px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.promo-text p {
+  margin: 0;
+  font-size: 0.82rem;
+  opacity: 0.95;
+  line-height: 1.35;
+}
+.promo-cta {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.95);
+  color: #7a2b6b;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+.promo-cta:active { transform: scale(0.97); }
+
+.promo-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.promo-dots button {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(160, 110, 160, 0.35);
+  cursor: pointer;
+}
+.promo-dots button.active {
+  width: 18px;
+  background: var(--rosa, #e26fb0);
+}
+
+@media (max-width: 480px) {
+  .promo-slide { padding: 13px 14px; min-height: 104px; border-radius: 16px; }
+  .promo-text h3 { font-size: 0.9rem; }
+  .promo-text p { font-size: 0.74rem; }
+  .promo-cta { padding: 9px 12px; font-size: 0.74rem; }
+  .promo-emoji { font-size: 1.5rem; }
+}
