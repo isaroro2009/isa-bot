@@ -236,14 +236,19 @@
 .doc-badge.done { color: #1c7a53; font-weight: 700; }
 .doc-badge.err { color: #b3305a; font-weight: 700; }
 
-/* 🖥️ Visibilidad garantizada en escritorio (debajo del header) */
+/* 🖥️ Visibilidad garantizada en escritorio (debajo del header fijo) */
 @media (min-width: 768px) {
   .promo-wrap {
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     position: relative;
-    z-index: 5;
+    z-index: 1250;
+    margin-top: 66px;
+    margin-bottom: 10px;
     min-height: 140px;
     overflow: visible;
+    pointer-events: auto;
   }
   .promo-track { min-height: 130px; }
   .promo-slide { min-height: 128px; }
