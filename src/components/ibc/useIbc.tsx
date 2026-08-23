@@ -24,6 +24,8 @@ type IbcCtx = {
   clearStreakToast: () => void;
   /** Cobra la acción. Devuelve false (y abre el modal de saldo) si no alcanza. */
   charge: (action: IbcActionKey, note?: string) => Promise<boolean>;
+  /** Pide confirmación explícita antes de descontar coins. */
+  confirmCharge: (action: IbcActionKey, note?: string) => Promise<boolean>;
   /** Devuelve el último cobro (o el indicado). No acepta importes libres. */
   giveBack: (txId?: string | null) => Promise<void>;
   costOf: (action: IbcActionKey) => number;
