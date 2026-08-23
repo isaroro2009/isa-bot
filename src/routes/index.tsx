@@ -11,7 +11,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { VoiceCall } from "@/components/VoiceCall";
 import { RemindersPanel } from "@/components/RemindersPanel";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
-import { parseEmailIntent } from "@/lib/chat-intents";
+import { parseEmailIntent, parseDocIntent } from "@/lib/chat-intents";
 import { ChatActionCardView, type ChatAction } from "@/components/ChatActionCards";
 
 import { createReminder } from "@/lib/reminders.functions";
@@ -36,6 +36,7 @@ import { useLocalBrain, LOCAL_MODEL_SIZE_MB } from "@/lib/useLocalBrain";
 import { loadQueue, saveQueue, clearQueue, offlineAnswer, type QueuedMessage } from "@/lib/offline-mode";
 import { IbcProvider, useIbc } from "@/components/ibc/useIbc";
 import { IbcHud, IbcOverlays } from "@/components/ibc/IbcHud";
+import { InterstitialAd } from "@/components/InterstitialAd";
 import { AgentPdfPanel } from "@/components/ibc/AgentPdfPanel";
 import "../isabot.css";
 
@@ -927,6 +928,8 @@ function IsaBot() {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
+  const turnsRef = useRef(0);
+  const [adIndex, setAdIndex] = useState<number | null>(null);
   const [personality, setPersonality] = useState<Personality>("kawaii");
   const [customPersonality, setCustomPersonality] = useState<string>("");
   // 🧠 Cerebro de IsaBot elegido por la persona
@@ -1516,6 +1519,9 @@ ${rows}
     setSending(true);
     try {
       await sendMessageInner(overrideText, overrideImage);
+      // 🎬 Anuncio a pantalla completa cada 3 turnos de chat (estilo Duolingo).
+      turnsRef.current += 1;
+      if (turnsRef.current % 3 === 0) setAdIndex((n) => (n === null ? Math.floor(turnsRef.current / 3) - 1 : n));
     } finally {
       sendingRef.current = false;
       setSending(false);
@@ -1545,7 +1551,7 @@ ${rows}
     // 🪙 Cobro en IsaBot Coins (los mensajes locales/offline son gratis).
     if (!useLocal && !offlineNow) {
       const action = image ? "image" : useAgent ? "agent" : text.length > 400 ? "long_form" : "text_basic";
-      const paid = await ibc.charge(action, "Mensaje a IsaBot");
+      const paid = await ibc.confirmCharge(action, "Mensaje a IsaBot");
       if (!paid) return;
     }
 
@@ -1651,6 +1657,22 @@ ${rows}
         updateCurrentChat((msgs) => [...msgs.filter((m) => !m.thinking), { sender: "bot", text: `El modo agente no pudo completar la tarea 💔 — ${detail}`, error: true }]);
       }
       return;
+    }
+
+    // ── Detección de intención de documento PDF (+ correo) → agente nativo
+    if (text) {
+      const docIntent = parseDocIntent(text);
+      if (docIntent) {
+        updateCurrentChat((msgs) => [
+          ...msgs.filter((m) => !m.thinking),
+          {
+            sender: "bot",
+            text: "Puedo armarte ese documento 📄 Confirma y lo genero" + (docIntent.email ? " y lo envío por correo 💌" : "") + ":",
+            action: { kind: "doc", prompt: docIntent.prompt, email: docIntent.email, ...(docIntent.to ? { to: docIntent.to } : {}) },
+          },
+        ]);
+        return;
+      }
     }
 
     // ── Detección de intención de correo → tarjeta de aprobación
@@ -2597,6 +2619,20 @@ ${rows}
 
 
 
+      {adIndex !== null && (
+        <InterstitialAd
+          index={adIndex}
+          onClose={() => setAdIndex(null)}
+          onAction={(a) => {
+            if (a.kind === "store") ibc.openStore();
+            else if (a.kind === "panel") setPanel(a.panel);
+            else if (a.kind === "href") {
+              if (a.href.startsWith("http")) window.open(a.href, "_blank", "noopener");
+              else window.location.href = a.href;
+            }
+          }}
+        />
+      )}
       <div className="main">
         {!currentMessages.some((m) => m.sender === "user") && (
           <div className="intro-hero">

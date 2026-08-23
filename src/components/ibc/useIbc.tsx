@@ -24,6 +24,8 @@ type IbcCtx = {
   clearStreakToast: () => void;
   /** Cobra la acción. Devuelve false (y abre el modal de saldo) si no alcanza. */
   charge: (action: IbcActionKey, note?: string) => Promise<boolean>;
+  /** Pide confirmación explícita antes de descontar coins. */
+  confirmCharge: (action: IbcActionKey, note?: string) => Promise<boolean>;
   /** Devuelve el último cobro (o el indicado). No acepta importes libres. */
   giveBack: (txId?: string | null) => Promise<void>;
   costOf: (action: IbcActionKey) => number;
@@ -116,6 +118,30 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
     [enabled, isPro, balance, spendFn, invalidate],
   );
 
+  // 🪙 Confirmación manual: nunca se descuentan coins sin un "sí" explícito.
+  const [pending, setPending] = useState<{
+    action: IbcActionKey;
+    note?: string;
+    cost: number;
+    resolve: (ok: boolean) => void;
+  } | null>(null);
+
+  const confirmCharge = useCallback(
+    async (action: IbcActionKey, note?: string) => {
+      if (!enabled) return true;
+      const cost = effectiveCost(action, isPro);
+      if (cost <= 0) return charge(action, note);
+      if (balance < cost) {
+        setEmptyOpen(true);
+        return false;
+      }
+      const ok = await new Promise<boolean>((resolve) => setPending({ action, note, cost, resolve }));
+      if (!ok) return false;
+      return charge(action, note);
+    },
+    [enabled, isPro, balance, charge],
+  );
+
   const giveBack = useCallback(
     async (txId?: string | null) => {
       const id = txId ?? lastTxRef.current;
@@ -154,13 +180,56 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       streakToast,
       clearStreakToast: () => setStreakToast(null),
       charge,
+      confirmCharge,
       giveBack,
       costOf: (action: IbcActionKey) => effectiveCost(action, isPro),
     }),
-    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, giveBack, streakToast],
+    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, confirmCharge, giveBack, streakToast],
   );
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={value}>
+      {children}
+      {pending && (
+        <div
+          className="ibc-confirm-back"
+          onClick={() => {
+            pending.resolve(false);
+            setPending(null);
+          }}
+        >
+          <div className="ibc-confirm" onClick={(e) => e.stopPropagation()}>
+            <h3>🪙 Confirmar uso de coins</h3>
+            <p>
+              Esta acción utilizará <b>{pending.cost} IsaBot Coins (IBC)</b>
+              {pending.note ? ` · ${pending.note}` : ""}.
+            </p>
+            <p className="ibc-confirm-bal">Tu saldo actual es {balance} IBC.</p>
+            <div className="ibc-confirm-row">
+              <button
+                className="cancel"
+                onClick={() => {
+                  pending.resolve(false);
+                  setPending(null);
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="ok"
+                onClick={() => {
+                  pending.resolve(true);
+                  setPending(null);
+                }}
+              >
+                Confirmar y usar {pending.cost} IBC
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </Ctx.Provider>
+  );
 }
 
 export function useIbc(): IbcCtx {
