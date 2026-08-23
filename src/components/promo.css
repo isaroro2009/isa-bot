@@ -235,3 +235,16 @@
 .doc-badge { font-size: 0.82rem; opacity: 0.9; }
 .doc-badge.done { color: #1c7a53; font-weight: 700; }
 .doc-badge.err { color: #b3305a; font-weight: 700; }
+
+/* 🖥️ Visibilidad garantizada en escritorio (debajo del header) */
+@media (min-width: 768px) {
+  .promo-wrap {
+    display: block !important;
+    position: relative;
+    z-index: 5;
+    min-height: 140px;
+    overflow: visible;
+  }
+  .promo-track { min-height: 130px; }
+  .promo-slide { min-height: 128px; }
+}
