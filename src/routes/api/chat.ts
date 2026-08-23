@@ -79,7 +79,36 @@ const GROQ_TO_LOVABLE: Record<string, string> = {
   "qwen/qwen3.6-27b": "google/gemini-2.5-flash",
 };
 
+// 🟦 Motor directo de Google (Gemini) con la clave propia de IsaRoRo Studio.
+// Usa el endpoint compatible con OpenAI, así el resto del código no cambia.
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const GROQ_TO_GEMINI: Record<string, string> = {
+  "openai/gpt-oss-120b": "gemini-2.5-flash",
+  "openai/gpt-oss-20b": "gemini-2.5-flash-lite",
+  "qwen/qwen3.6-27b": "gemini-2.5-flash",
+};
+
+export function geminiModelFor(model: string): string {
+  if (model.startsWith("gemini-")) return model;
+  if (model.startsWith("google/")) return model.slice("google/".length);
+  return GROQ_TO_GEMINI[model] ?? "gemini-2.5-flash";
+}
+
+async function geminiChat(apiKey: string, model: string, messages: unknown[]): Promise<Response> {
+  return fetch(GEMINI_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({ model: geminiModelFor(model), messages, temperature: AI_TEMPERATURE }),
+  });
+}
+
 async function groqChat(apiKey: string, body: Record<string, unknown>): Promise<Response> {
+  const googleKey = process.env.GOOGLE_AI_API_KEY ?? "";
+  if (googleKey) {
+    const res = await geminiChat(googleKey, String(body.model), (body.messages ?? []) as unknown[]);
+    if (res.ok || res.status === 429) return res;
+    console.error("Gemini directo falló:", res.status, (await res.text()).slice(0, 300));
+  }
   if (!apiKey) {
     const engine = GROQ_TO_LOVABLE[String(body.model)] ?? "google/gemini-2.5-flash";
     return lovableChat(engine, (body.messages ?? []) as unknown[]);
