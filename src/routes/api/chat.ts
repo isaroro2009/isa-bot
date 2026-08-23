@@ -745,7 +745,7 @@ export const Route = createFileRoute("/api/chat")({
 
           // Sin GROQ_API_KEY, groqChat usa automáticamente el motor de Lovable AI.
           const key = process.env.GROQ_API_KEY ?? "";
-          if (!key && !process.env.LOVABLE_API_KEY) {
+          if (!key && !process.env.GOOGLE_AI_API_KEY && !process.env.LOVABLE_API_KEY) {
             return Response.json(
               { respuesta: "El motor de IA no está configurado en el servidor 💔" },
               { status: 500 },
