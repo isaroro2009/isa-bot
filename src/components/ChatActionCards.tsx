@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createReminder } from "@/lib/reminders.functions";
 import { sendEmailNotification } from "@/lib/notify.functions";
+import { useIbc } from "@/components/ibc/useIbc";
 
 export type ReminderAction = {
   kind: "reminder";
@@ -18,7 +19,14 @@ export type EmailAction = {
   body: string;
 };
 
-export type ChatAction = ReminderAction | EmailAction;
+export type DocAction = {
+  kind: "doc";
+  prompt: string;
+  email: boolean;
+  to?: string;
+};
+
+export type ChatAction = ReminderAction | EmailAction | DocAction;
 
 function hhmm(h: number, m: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
@@ -111,8 +119,124 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
   );
 }
 
+/** 🤖 Agente nativo en el chat: redacta, arma el PDF y lo envía por correo. */
+export function DocActionCard({ action }: { action: DocAction }) {
+  const ibc = useIbc();
+  const send = useServerFn(sendEmailNotification);
+  const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
+  const [msg, setMsg] = useState("");
+  const [steps, setSteps] = useState<Record<string, "active" | "done" | "err">>({});
+  const cost = ibc.costOf("agent");
+
+  function mark(k: string, v: "active" | "done" | "err") {
+    setSteps((prev) => ({ ...prev, [k]: v }));
+  }
+
+  async function run() {
+    if (state === "busy") return;
+    const paid = await ibc.confirmCharge("agent", "Documento PDF con el agente");
+    if (!paid) return;
+    setState("busy");
+    setSteps({});
+    try {
+      mark("doc", "active");
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      const r = await fetch("/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          task: `${action.prompt}\n\nDevuelve un documento completo y bien estructurado, listo para exportar a PDF.`,
+        }),
+      });
+      if (!r.ok) {
+        const err = (await r.json().catch(() => ({}))) as { error?: string };
+        throw new Error(err.error ?? `Error ${r.status}`);
+      }
+      const data = (await r.json()) as { answer?: string };
+      const body = (data.answer ?? "").trim();
+      if (!body) throw new Error("El agente no devolvió contenido");
+
+      const title = action.prompt.slice(0, 70);
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+      const margin = 56;
+      const width = doc.internal.pageSize.getWidth() - margin * 2;
+      let y = margin;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      for (const line of doc.splitTextToSize(title, width) as string[]) {
+        doc.text(line, margin, y);
+        y += 24;
+      }
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      y += 10;
+      for (const line of doc.splitTextToSize(body.replace(/[*#`]/g, ""), width) as string[]) {
+        if (y > doc.internal.pageSize.getHeight() - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += 16;
+      }
+      doc.text("Generado por IsaBot ✨", margin, doc.internal.pageSize.getHeight() - 30);
+      doc.save(`isabot-${Date.now()}.pdf`);
+      mark("doc", "done");
+
+      if (action.email) {
+        mark("mail", "active");
+        const { data: userRes } = await supabase.auth.getUser();
+        const to = action.to ?? userRes.user?.email ?? "";
+        if (!to) throw new Error("No encontré tu correo registrado");
+        const res = await send({ data: { to, subject: title || "Tu documento de IsaBot", body } });
+        if (!res.sent) throw new Error(`No se pudo enviar (${res.reason})`);
+        mark("mail", "done");
+      }
+      setState("done");
+    } catch (e) {
+      mark(steps["doc"] === "done" ? "mail" : "doc", "err");
+      setMsg(e instanceof Error ? e.message : "Algo salió mal");
+      setState("error");
+      await ibc.giveBack();
+    }
+  }
+
+  const badge = (k: string, label: string) => {
+    const st = steps[k];
+    if (!st) return null;
+    return (
+      <div key={k} className={`doc-badge ${st === "done" ? "done" : st === "err" ? "err" : ""}`}>
+        {st === "done" ? "[✓]" : st === "err" ? "[✕]" : "[…]"} {label}
+      </div>
+    );
+  };
+
+  return (
+    <div className="action-card">
+      <div className="action-card-head">🤖 Agente de documentos</div>
+      <div className="action-card-rows">
+        <div><span>Tarea</span><b className="action-card-body">{action.prompt}</b></div>
+        <div><span>Envío</span><b>{action.email ? (action.to ?? "tu correo registrado") : "solo descarga"}</b></div>
+        <div><span>Costo</span><b>{cost === 0 ? "Gratis PRO" : `${cost} IBC`}</b></div>
+      </div>
+      {state !== "done" && (
+        <button className="action-card-btn" disabled={state === "busy"} onClick={run}>
+          {state === "busy" ? "Trabajando…" : `✅ Crear PDF${action.email ? " y enviar" : ""}`}
+        </button>
+      )}
+      <div className="doc-badges">
+        {badge("doc", "Documento PDF creado")}
+        {action.email && badge("mail", "Correo enviado exitosamente")}
+      </div>
+      {state === "error" && <div className="action-card-err">{msg}</div>}
+    </div>
+  );
+}
+
 export function ChatActionCardView({ action }: { action: ChatAction }) {
-  return action.kind === "reminder"
-    ? <ReminderActionCard action={action} />
-    : <EmailActionCard action={action} />;
+  if (action.kind === "reminder") return <ReminderActionCard action={action} />;
+  if (action.kind === "doc") return <DocActionCard action={action} />;
+  return <EmailActionCard action={action} />;
 }
