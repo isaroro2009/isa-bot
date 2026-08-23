@@ -217,11 +217,16 @@ export const Route = createFileRoute("/api/agent")({
           : useLovable
             ? "https://ai.gateway.lovable.dev/v1/chat/completions"
             : "https://api.groq.com/openai/v1/chat/completions";
+        // IDs estables: los numerados (gemini-2.5-flash…) devuelven 404.
         const modelId = useGoogle
-          ? "gemini-2.5-flash"
+          ? "gemini-flash-latest"
           : useLovable
             ? brain!.engine
             : AGENT_MODEL;
+        const modelFallbacks = useGoogle
+          ? ["gemini-flash-lite-latest", "gemini-pro-latest"]
+          : [];
+
         const key = useGoogle ? googleKey : useLovable ? process.env.LOVABLE_API_KEY : process.env.GROQ_API_KEY;
         if (!key) return json({ error: "Falta la clave del motor de IA" }, 500);
 
@@ -361,25 +366,74 @@ export const Route = createFileRoute("/api/agent")({
 
         steps.push({ kind: "thought", text: "Analizando la tarea y eligiendo herramientas…" });
 
+        // Llama al modelo probando IDs alternativos si alguno ya no existe (404/400).
+        async function callModel(): Promise<Response> {
+          let last: Response | null = null;
+          for (const m of [modelId, ...modelFallbacks]) {
+            const res = await fetch(endpoint, {
+              method: "POST",
+              headers: useLovable
+                ? { "Content-Type": "application/json", "Lovable-API-Key": key! }
+                : { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+              body: JSON.stringify({ model: m, messages, tools: TOOLS, tool_choice: "auto", temperature: 0.2 }),
+            });
+            if (res.ok || res.status === 429) return res;
+            last = res;
+            if (res.status !== 404 && res.status !== 400) break;
+          }
+          // Último recurso: motor de Lovable AI si hay clave.
+          const lovKey = process.env.LOVABLE_API_KEY;
+          if (!useLovable && lovKey) {
+            const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Lovable-API-Key": lovKey },
+              body: JSON.stringify({
+                model: "google/gemini-3.7-flash",
+                messages,
+                tools: TOOLS,
+                tool_choice: "auto",
+              }),
+            });
+            if (res.ok) return res;
+            last = res;
+          }
+          return last ?? new Response("sin respuesta", { status: 502 });
+        }
+
+        /** Plantilla local: garantiza contenido para el PDF aunque la IA falle. */
+        function localDraft(): string {
+          return [
+            `## ${task.slice(0, 80)}`,
+            "",
+            "> Borrador generado localmente por IsaBot porque el motor de IA no estuvo disponible en este momento. Puedes editarlo y volver a intentarlo más tarde.",
+            "",
+            "## Objetivo",
+            `- ${task}`,
+            "",
+            "## Puntos clave",
+            "- Contexto y punto de partida",
+            "- Acciones concretas a realizar",
+            "- Recursos necesarios",
+            "- Resultado esperado",
+            "",
+            "## Próximos pasos",
+            "1. Revisar y completar los puntos anteriores",
+            "2. Definir fechas y responsables",
+            "3. Volver a pedirme el documento para la versión final ✨",
+          ].join("\n");
+        }
+
         let finalText = "";
+        let degraded = false;
         for (let turn = 0; turn < MAX_TURNS; turn++) {
-          const r = await fetch(endpoint, {
-            method: "POST",
-            headers: useLovable
-              ? { "Content-Type": "application/json", "Lovable-API-Key": key }
-              : { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-            body: JSON.stringify({
-              model: modelId,
-              messages,
-              tools: TOOLS,
-              tool_choice: "auto",
-              temperature: 0.2,
-            }),
-          });
+          const r = await callModel();
           if (!r.ok) {
             if (r.status === 429) return json({ error: "Rate limit — probá en un minuto." }, 429);
-            return json({ error: `Modelo IsaBot-model-AI devolvió ${r.status}` }, 502);
+            finalText = localDraft();
+            degraded = true;
+            break;
           }
+
           const data = (await r.json()) as {
             choices?: Array<{
               message?: {
@@ -414,7 +468,8 @@ export const Route = createFileRoute("/api/agent")({
         }
 
         steps.push({ kind: "final", text: finalText, sources });
-        return json({ steps, answer: finalText, sources, actions });
+        return json({ steps, answer: finalText, sources, actions, degraded });
+
       },
     },
   },

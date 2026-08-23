@@ -82,25 +82,42 @@ const GROQ_TO_LOVABLE: Record<string, string> = {
 // 🟦 Motor directo de Google (Gemini) con la clave propia de IsaRoRo Studio.
 // Usa el endpoint compatible con OpenAI, así el resto del código no cambia.
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+// Solo IDs estables ("-latest"): las versiones numeradas se retiran y devuelven 404.
 const GROQ_TO_GEMINI: Record<string, string> = {
-  "openai/gpt-oss-120b": "gemini-2.5-flash",
-  "openai/gpt-oss-20b": "gemini-2.5-flash-lite",
-  "qwen/qwen3.6-27b": "gemini-2.5-flash",
+  "openai/gpt-oss-120b": "gemini-flash-latest",
+  "openai/gpt-oss-20b": "gemini-flash-lite-latest",
+  "qwen/qwen3.6-27b": "gemini-flash-latest",
 };
 
+/** Modelos alternativos si el primero ya no existe (404). */
+const GEMINI_FALLBACKS = ["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-pro-latest"];
+
 export function geminiModelFor(model: string): string {
-  if (model.startsWith("gemini-")) return model;
-  if (model.startsWith("google/")) return model.slice("google/".length);
-  return GROQ_TO_GEMINI[model] ?? "gemini-2.5-flash";
+  const raw = model.startsWith("google/") ? model.slice("google/".length) : model;
+  if (GROQ_TO_GEMINI[model]) return GROQ_TO_GEMINI[model];
+  // Los IDs numerados (gemini-2.5-flash, gemini-1.5-pro…) ya no se sirven.
+  if (/^gemini-\d/.test(raw)) return raw.includes("lite") ? "gemini-flash-lite-latest" : "gemini-flash-latest";
+  if (raw.startsWith("gemini-")) return raw;
+  return "gemini-flash-latest";
 }
 
 async function geminiChat(apiKey: string, model: string, messages: unknown[]): Promise<Response> {
-  return fetch(GEMINI_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ model: geminiModelFor(model), messages, temperature: AI_TEMPERATURE }),
-  });
+  const first = geminiModelFor(model);
+  const candidates = [first, ...GEMINI_FALLBACKS.filter((m) => m !== first)];
+  let last: Response | null = null;
+  for (const m of candidates) {
+    const res = await fetch(GEMINI_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: m, messages, temperature: AI_TEMPERATURE }),
+    });
+    if (res.ok || res.status === 429) return res;
+    last = res;
+    if (res.status !== 404 && res.status !== 400) break;
+  }
+  return last ?? new Response("Gemini sin respuesta", { status: 502 });
 }
+
 
 async function groqChat(apiKey: string, body: Record<string, unknown>): Promise<Response> {
   const googleKey = process.env.GOOGLE_AI_API_KEY ?? "";

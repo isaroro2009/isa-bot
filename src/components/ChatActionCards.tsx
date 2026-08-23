@@ -199,7 +199,31 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
   );
 }
 
+/** 🛟 Plantilla local estructurada: garantiza que el PDF siempre se genere. */
+function localDocTemplate(prompt: string): string {
+  return [
+    `## ${prompt.slice(0, 80)}`,
+    "",
+    "> Borrador creado localmente por IsaBot. Edítalo o vuelve a pedirlo para la versión completa ✨",
+    "",
+    "## Objetivo",
+    `- ${prompt}`,
+    "",
+    "## Puntos clave",
+    "- Contexto y punto de partida",
+    "- Acciones concretas a realizar",
+    "- Recursos necesarios",
+    "- Resultado esperado",
+    "",
+    "## Próximos pasos",
+    "1. Revisar y completar los puntos anteriores",
+    "2. Definir fechas y responsables",
+    "3. Pedirme de nuevo el documento para la versión final",
+  ].join("\n");
+}
+
 /** 🤖 Agente nativo en el chat: redacta, arma el PDF profesional y lo manda al webhook. */
+
 export function DocActionCard({ action }: { action: DocAction }) {
   const ibc = useIbc();
   const hook = useServerFn(sendEmailWebhook);
@@ -209,6 +233,8 @@ export function DocActionCard({ action }: { action: DocAction }) {
   const [pdf, setPdf] = useState<IsaPdfResult | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [recipient, setRecipient] = useState<string>(action.to ?? "");
+  const [showPreview, setShowPreview] = useState(false);
+
   const cost = ibc.costOf("agent");
 
   function mark(k: string, v: "active" | "done" | "err") {
@@ -229,21 +255,30 @@ export function DocActionCard({ action }: { action: DocAction }) {
       const { supabase } = await import("@/integrations/supabase/client");
       const { data: sess } = await supabase.auth.getSession();
       const token = sess.session?.access_token;
-      const r = await fetch("/api/agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          task: `${action.prompt}\n\nDevuelve un documento profesional, completo y bien estructurado, con títulos con "##" y viñetas con "-", listo para exportar a PDF.`,
-        }),
-      });
-      if (!r.ok) {
-        const err = (await r.json().catch(() => ({}))) as { error?: string };
-        throw new Error(err.error ?? `Error ${r.status}`);
+      let body = "";
+      try {
+        const r = await fetch("/api/agent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({
+            task: `${action.prompt}\n\nDevuelve un documento profesional, completo y bien estructurado, con títulos con "##" y viñetas con "-", listo para exportar a PDF.`,
+          }),
+        });
+        if (r.ok) {
+          const data = (await r.json()) as { answer?: string };
+          body = (data.answer ?? "").trim();
+        }
+      } catch {
+        /* seguimos con la plantilla local */
       }
-      const data = (await r.json()) as { answer?: string };
-      const body = (data.answer ?? "").trim();
-      if (!body) throw new Error("El agente no devolvió contenido");
+      let fallbackNote = "";
+      if (!body) {
+        // 🛟 Plantilla local: el PDF siempre se crea, pase lo que pase.
+        body = localDocTemplate(action.prompt);
+        fallbackNote = "Creé el PDF con una plantilla local porque la IA no respondió — puedes editarlo y reintentar 💕";
+      }
       mark("brain", "done");
+
 
       mark("doc", "active");
       const title = action.prompt.slice(0, 70);
@@ -277,7 +312,9 @@ export function DocActionCard({ action }: { action: DocAction }) {
           );
         }
       }
+      if (fallbackNote) setMsg(fallbackNote);
       setState("done");
+
     } catch (e) {
       mark(steps["doc"] === "done" ? "mail" : "doc", "err");
       setMsg(e instanceof Error ? e.message : "Algo salió mal");
@@ -324,9 +361,9 @@ export function DocActionCard({ action }: { action: DocAction }) {
           <iframe title="Vista previa del PDF" src={pdf.dataUrl} />
           <div className="doc-preview-actions">
             <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
-            <a className="action-card-btn ghost" href={pdf.dataUrl} target="_blank" rel="noopener noreferrer">
-              🔍 Abrir en grande
-            </a>
+            <button className="action-card-btn ghost" onClick={() => setShowPreview(true)}>
+              👁️ Previsualizar
+            </button>
           </div>
           <ManualSendActions
             to={recipient}
@@ -336,6 +373,24 @@ export function DocActionCard({ action }: { action: DocAction }) {
           {sentTo && <div className="action-card-ok">✅ Enviado a {sentTo} vía webhook 💕</div>}
         </div>
       )}
+
+      {pdf && showPreview && (
+        <div className="ibc-confirm-back" onClick={() => setShowPreview(false)}>
+          <div className="ibc-confirm" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 780, width: "94vw" }}>
+            <h3>👁️ {title || "Tu documento"}</h3>
+            <iframe
+              title="Previsualización del PDF"
+              src={pdf.dataUrl}
+              style={{ width: "100%", height: "60dvh", border: "1.5px solid #ffd6eb", borderRadius: 12 }}
+            />
+            <div className="ibc-confirm-row">
+              <button className="cancel" onClick={() => setShowPreview(false)}>Cerrar</button>
+              <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {state === "error" && <div className="action-card-err">{msg}</div>}
       {state === "done" && msg && <div className="action-card-err">{msg}</div>}
