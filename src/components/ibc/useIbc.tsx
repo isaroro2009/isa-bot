@@ -118,6 +118,30 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
     [enabled, isPro, balance, spendFn, invalidate],
   );
 
+  // 🪙 Confirmación manual: nunca se descuentan coins sin un "sí" explícito.
+  const [pending, setPending] = useState<{
+    action: IbcActionKey;
+    note?: string;
+    cost: number;
+    resolve: (ok: boolean) => void;
+  } | null>(null);
+
+  const confirmCharge = useCallback(
+    async (action: IbcActionKey, note?: string) => {
+      if (!enabled) return true;
+      const cost = effectiveCost(action, isPro);
+      if (cost <= 0) return charge(action, note);
+      if (balance < cost) {
+        setEmptyOpen(true);
+        return false;
+      }
+      const ok = await new Promise<boolean>((resolve) => setPending({ action, note, cost, resolve }));
+      if (!ok) return false;
+      return charge(action, note);
+    },
+    [enabled, isPro, balance, charge],
+  );
+
   const giveBack = useCallback(
     async (txId?: string | null) => {
       const id = txId ?? lastTxRef.current;
