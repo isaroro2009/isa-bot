@@ -180,13 +180,56 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       streakToast,
       clearStreakToast: () => setStreakToast(null),
       charge,
+      confirmCharge,
       giveBack,
       costOf: (action: IbcActionKey) => effectiveCost(action, isPro),
     }),
-    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, giveBack, streakToast],
+    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, confirmCharge, giveBack, streakToast],
   );
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={value}>
+      {children}
+      {pending && (
+        <div
+          className="ibc-confirm-back"
+          onClick={() => {
+            pending.resolve(false);
+            setPending(null);
+          }}
+        >
+          <div className="ibc-confirm" onClick={(e) => e.stopPropagation()}>
+            <h3>🪙 Confirmar uso de coins</h3>
+            <p>
+              Esta acción utilizará <b>{pending.cost} IsaBot Coins (IBC)</b>
+              {pending.note ? ` · ${pending.note}` : ""}.
+            </p>
+            <p className="ibc-confirm-bal">Tu saldo actual es {balance} IBC.</p>
+            <div className="ibc-confirm-row">
+              <button
+                className="cancel"
+                onClick={() => {
+                  pending.resolve(false);
+                  setPending(null);
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="ok"
+                onClick={() => {
+                  pending.resolve(true);
+                  setPending(null);
+                }}
+              >
+                Confirmar y usar {pending.cost} IBC
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </Ctx.Provider>
+  );
 }
 
 export function useIbc(): IbcCtx {
