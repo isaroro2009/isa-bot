@@ -286,7 +286,9 @@ export function DocActionCard({ action }: { action: DocAction }) {
           );
         }
       }
+      if (fallbackNote) setMsg(fallbackNote);
       setState("done");
+
     } catch (e) {
       mark(steps["doc"] === "done" ? "mail" : "doc", "err");
       setMsg(e instanceof Error ? e.message : "Algo salió mal");
