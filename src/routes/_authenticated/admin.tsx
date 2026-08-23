@@ -55,6 +55,10 @@ function AdminPage() {
   const changePremium = useServerFn(setUserPremium);
   const removeUser = useServerFn(deleteUser);
   const fetchAiConfig = useServerFn(getAiConfig);
+  const createUser = useServerFn(createUserManually);
+  const saveCoins = useServerFn(setUserCoins);
+  const saveUnlimited = useServerFn(setUnlimitedCoins);
+
 
 
   const [users, setUsers] = useState<AdminUserRow[]>([]);
