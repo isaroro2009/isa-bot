@@ -72,7 +72,7 @@ export const checkin = createServerFn({ method: "POST" })
 export const spend = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { action: IbcActionKey; note?: string }) => input)
-  .handler(async ({ data, context }): Promise<{ balance: number; spent: number }> => {
+  .handler(async ({ data, context }): Promise<{ balance: number; spent: number; txId: string | null }> => {
     const { supabase, userId } = context;
     await supabase.rpc("ibc_ensure_wallet");
     const { data: wallet } = await supabase
