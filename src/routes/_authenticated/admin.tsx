@@ -496,10 +496,36 @@ function AdminPage() {
                           </span>
                         </td>
                         <td style={td}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            <b style={{ color: "#a17300" }}>
+                              {u.unlimited_coins ? "♾️" : u.ibc_balance}
+                            </b>
+                            <button
+                              disabled={busy}
+                              onClick={() => doEditCoins(u)}
+                              style={actionBtn("#a17300")}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              disabled={busy}
+                              onClick={() => doToggleUnlimited(u)}
+                              title="Modo Coins Infinitas"
+                              style={{
+                                ...actionBtn(u.unlimited_coins ? "#0a8f5b" : "#8a8a8a"),
+                                background: u.unlimited_coins ? "#e3fff2" : "white",
+                              }}
+                            >
+                              {u.unlimited_coins ? "♾️ ON" : "♾️ OFF"}
+                            </button>
+                          </div>
+                        </td>
+                        <td style={td}>
                           {u.last_sign_in_at
                             ? new Date(u.last_sign_in_at).toLocaleString()
                             : "—"}
                         </td>
+
                         <td style={td}>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                             <button
