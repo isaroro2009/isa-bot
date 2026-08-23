@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useIbc } from "./useIbc";
 import { COIN_PACKS, IBC_COSTS, PRO_PLAN } from "@/lib/ibc";
+import {
+  CoinMini,
+  IsaCoin3D,
+  COIN_SKINS,
+  isSkinUnlocked,
+  loadSkin,
+  saveSkin,
+  type CoinSkinId,
+} from "./IsaCoin3D";
 import "./ibc.css";
 
 const STREAK_GOAL = 7;
@@ -9,35 +18,49 @@ function fmt(iso: string) {
   return new Date(iso).toLocaleDateString("es", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
-/** Badges del header: saldo IBC + estado del plan. */
+function useSkin(isPro: boolean, streakDays: number) {
+  const [skin, setSkin] = useState<CoinSkinId>("rosita");
+  useEffect(() => {
+    const s = loadSkin();
+    if (isSkinUnlocked(s, { isPro, streakDays, owned: false })) setSkin(s);
+  }, [isPro, streakDays]);
+  const choose = (id: CoinSkinId) => {
+    setSkin(id);
+    saveSkin(id);
+  };
+  return { skin, choose };
+}
+
+/** Badges del header: moneda IBC física + racha + estado del plan. */
 export function IbcHud() {
   const ibc = useIbc();
-  const [bump, setBump] = useState(false);
-  const [prev, setPrev] = useState(ibc.balance);
-
-  useEffect(() => {
-    if (ibc.balance !== prev) {
-      setPrev(ibc.balance);
-      setBump(true);
-      const t = setTimeout(() => setBump(false), 450);
-      return () => clearTimeout(t);
-    }
-    return undefined;
-  }, [ibc.balance, prev]);
+  const { skin } = useSkin(ibc.isPro, ibc.streakDays);
+  const [tip, setTip] = useState(false);
 
   if (!ibc.enabled) return null;
 
+  const daysToMilestone = Math.max(0, STREAK_GOAL - (ibc.streakDays % STREAK_GOAL || STREAK_GOAL));
+
   return (
     <div className="ibc-root ibc-hud">
-      <button
-        className={`ibc-badge${bump ? " bump" : ""}`}
-        onClick={ibc.openVault}
+      <span
+        className="coin-tip-wrap"
         data-tour="coins"
-        title="Tu bóveda de IsaBot Coins"
-        aria-label={`${ibc.balance} IsaBot Coins`}
+        onMouseEnter={() => setTip(true)}
+        onMouseLeave={() => setTip(false)}
       >
-        🪙 {ibc.balance}
-      </button>
+        <CoinMini skin={skin} balance={ibc.balance} isPro={ibc.isPro} onClick={ibc.openVault} />
+        {tip && (
+          <span className="coin-tip">
+            <b>Saldo actual: {ibc.balance} IBC</b>
+            <br />
+            {ibc.isPro ? "👑 Bonus PRO activo (texto básico gratis)" : "✨ Plan FREE"}
+            <br />
+            🔥 Racha de {ibc.streakDays} día{ibc.streakDays === 1 ? "" : "s"} ·{" "}
+            {daysToMilestone === 0 ? "¡bonus disponible hoy!" : `bonus de racha en ${daysToMilestone} día${daysToMilestone === 1 ? "" : "s"}`}
+          </span>
+        )}
+      </span>
       <button
         className="ibc-streak-badge"
         data-tour="streak"
@@ -57,11 +80,14 @@ export function IbcHud() {
   );
 }
 
+
 /** Bóveda: saldo, racha, check-in diario e historial. */
 export function VaultDrawer() {
   const ibc = useIbc();
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const { skin, choose } = useSkin(ibc.isPro, ibc.streakDays);
+  const [preview, setPreview] = useState<CoinSkinId | null>(null);
   if (!ibc.vaultOpen) return null;
 
   const pct = Math.min(100, (ibc.streakDays / STREAK_GOAL) * 100);
@@ -93,9 +119,37 @@ export function VaultDrawer() {
         </div>
 
         <div className="ibc-balance-card">
+          <IsaCoin3D
+            skin={preview ?? skin}
+            size={200}
+            isPro={ibc.isPro}
+            title="Pasa el cursor para inclinar tu moneda"
+          />
           <div className="ibc-balance-num">{ibc.balance}</div>
           <div className="ibc-balance-lbl">IsaBot Coins disponibles</div>
         </div>
+
+        <h4 style={{ margin: "18px 0 0", fontSize: ".95rem" }}>🎨 Skins de tu moneda</h4>
+        <div className="coin-skins">
+          {COIN_SKINS.map((s) => {
+            const unlocked = isSkinUnlocked(s.id, { isPro: ibc.isPro, streakDays: ibc.streakDays, owned: false });
+            return (
+              <button
+                key={s.id}
+                className={`coin-skin${skin === s.id ? " active" : ""}${unlocked ? "" : " locked"}`}
+                onMouseEnter={() => setPreview(s.id)}
+                onMouseLeave={() => setPreview(null)}
+                onClick={() => (unlocked ? choose(s.id) : ibc.openStore())}
+                title={unlocked ? s.tagline : `Bloqueada · ${s.requirement}`}
+              >
+                <IsaCoin3D skin={s.id} size={62} />
+                <div className="coin-skin-name">{unlocked ? s.name : `🔒 ${s.name}`}</div>
+                <div className="coin-skin-req">{unlocked ? s.tagline : s.requirement}</div>
+              </button>
+            );
+          })}
+        </div>
+
 
         <div className="ibc-streak">
           <div className="ibc-row">
@@ -205,7 +259,9 @@ export function InsufficientFundsModal() {
   return (
     <div className="ibc-root ibc-overlay" onClick={ibc.closeEmpty}>
       <div className="ibc-panel ibc-empty-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="ibc-empty-emoji">🪙</div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <IsaCoin3D skin={loadSkin()} size={150} state="deny" isPro={ibc.isPro} />
+        </div>
         <h3 style={{ margin: "8px 0" }}>Te quedaste sin coins</h3>
         <p className="ibc-empty-lbl" style={{ opacity: 0.8, fontSize: ".9rem" }}>
           Vuelve mañana por tu check-in gratis, o consigue más para seguir creando ahora mismo.
