@@ -24,7 +24,8 @@ type IbcCtx = {
   clearStreakToast: () => void;
   /** Cobra la acción. Devuelve false (y abre el modal de saldo) si no alcanza. */
   charge: (action: IbcActionKey, note?: string) => Promise<boolean>;
-  giveBack: (amount: number, note?: string) => Promise<void>;
+  /** Devuelve el último cobro (o el indicado). No acepta importes libres. */
+  giveBack: (txId?: string | null) => Promise<void>;
   costOf: (action: IbcActionKey) => number;
 };
 
@@ -67,6 +68,8 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const isPro = wallet.data?.planStatus === "pro";
 
   const [streakToast, setStreakToast] = useState<string | null>(null);
+  // Último cobro realizado: única transacción reembolsable desde el cliente.
+  const lastTxRef = useRef<string | null>(null);
 
   const doCheckin = useCallback(async () => {
     const res = await checkinFn();
@@ -97,7 +100,8 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
         return false;
       }
       try {
-        await spendFn({ data: { action, note: note ?? undefined } });
+        const res = await spendFn({ data: { action, note: note ?? undefined } });
+        lastTxRef.current = res?.txId ?? null;
         invalidate();
         return true;
       } catch (e) {
@@ -113,10 +117,12 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   );
 
   const giveBack = useCallback(
-    async (amount: number, note?: string) => {
-      if (!enabled || amount <= 0) return;
+    async (txId?: string | null) => {
+      const id = txId ?? lastTxRef.current;
+      if (!enabled || !id) return;
       try {
-        await refundFn({ data: { amount, note: note ?? "Reembolso" } });
+        await refundFn({ data: { txId: id } });
+        lastTxRef.current = null;
         invalidate();
       } catch {
         /* silencioso */
