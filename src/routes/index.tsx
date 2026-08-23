@@ -2633,20 +2633,22 @@ ${rows}
           }}
         />
       )}
+      <PromoCarousel
+        onAction={(a) => {
+          if (a.kind === "store") ibc.openStore();
+          else if (a.kind === "panel") setPanel(a.panel);
+          else if (a.kind === "href") {
+            if (a.href.startsWith("http")) window.open(a.href, "_blank", "noopener");
+            else window.location.href = a.href;
+          }
+        }}
+      />
+
       <div className="main">
         {!currentMessages.some((m) => m.sender === "user") && (
           <div className="intro-hero">
-            <PromoCarousel
-              onAction={(a) => {
-                if (a.kind === "store") ibc.openStore();
-                else if (a.kind === "panel") setPanel(a.panel);
-                else if (a.kind === "href") {
-                  if (a.href.startsWith("http")) window.open(a.href, "_blank", "noopener");
-                  else window.location.href = a.href;
-                }
-              }}
-            />
             <div className="intro-actions">
+
               <button
                 className="intro-cta"
                 onClick={() => {
