@@ -117,8 +117,8 @@ export function IsaCoin3D({
             <filter id={`${uid}-blur`}>
               <feGaussianBlur stdDeviation="6" />
             </filter>
-            <path id={`${uid}-top`} d="M60,200 A140,140 0 0 1 340,200" fill="none" />
-            <path id={`${uid}-bot`} d="M52,200 A148,148 0 0 0 348,200" fill="none" />
+            <path id={`${uid}-top`} d="M48,200 A152,152 0 0 1 352,200" fill="none" />
+            <path id={`${uid}-bot`} d="M22,200 A178,178 0 0 0 378,200" fill="none" />
           </defs>
 
           {/* rim de metal */}
@@ -165,7 +165,6 @@ export function IsaCoin3D({
           <text className="rim-text bottom">
             <textPath href={`#${uid}-bot`} startOffset="50%" textAnchor="middle">C O I N</textPath>
           </text>
-          <text className="rim-badge" x="200" y="366" textAnchor="middle">🪙 IBC 🪙</text>
         </svg>
 
         {isPro && <div className="coin3d-pro">👑 PRO</div>}

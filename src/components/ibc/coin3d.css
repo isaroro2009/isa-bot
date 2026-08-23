@@ -114,9 +114,9 @@
 }
 .coin3d .rim-text {
   fill: #fff8e6;
-  font-size: 40px;
+  font-size: 30px;
   font-weight: 900;
-  letter-spacing: 6px;
+  letter-spacing: 7px;
 }
 .coin3d .rim-text.bottom { fill: #ffdf8a; }
 .coin3d.skin-diamond .rim-text { fill: #f2ecff; }
