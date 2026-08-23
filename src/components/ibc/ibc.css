@@ -1,0 +1,205 @@
+/* 🪙 IsaBot Coins — capa neón sobre el tema existente */
+.ibc-root {
+  --ibc-gold: #ffcf4a;
+  --ibc-gold-deep: #b8860b;
+  --ibc-purple: #a855f7;
+  --ibc-cyan: #22e0ff;
+  --ibc-ink: #f2ecff;
+  --ibc-panel: #16101f;
+  --ibc-panel-2: #1f1630;
+}
+
+.ibc-hud {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ibc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 0.9rem;
+  padding: 7px 13px;
+  border-radius: 999px;
+  color: #3b2600;
+  background: linear-gradient(135deg, #ffe89a, #ffcf4a 45%, #f5a623);
+  box-shadow: 0 0 0 1px rgba(255, 207, 74, 0.6), 0 0 16px rgba(255, 190, 60, 0.45);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.ibc-badge:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255,207,74,.8), 0 0 24px rgba(255,190,60,.65); }
+.ibc-badge.bump { animation: ibc-bump 0.45s ease; }
+@keyframes ibc-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18) rotate(-3deg); }
+  100% { transform: scale(1); }
+}
+
+.ibc-plan {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  padding: 6px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #efe6ff;
+  background: linear-gradient(135deg, #3b1d63, #1c1030);
+}
+.ibc-plan.pro {
+  color: #2a1600;
+  border-color: rgba(255, 207, 74, 0.8);
+  background: linear-gradient(135deg, #ffe89a, #ffbe3c);
+  box-shadow: 0 0 14px rgba(255, 190, 60, 0.5);
+}
+
+/* Overlays */
+.ibc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(8, 4, 16, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.ibc-overlay.right { justify-content: flex-end; align-items: stretch; padding: 0; }
+
+.ibc-panel {
+  width: min(560px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 22px;
+  color: var(--ibc-ink);
+  background: linear-gradient(160deg, var(--ibc-panel-2), var(--ibc-panel));
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6), 0 0 40px rgba(168, 85, 247, 0.18);
+}
+.ibc-drawer {
+  width: min(420px, 100%);
+  height: 100%;
+  max-height: none;
+  border-radius: 22px 0 0 22px;
+  animation: ibc-slide 0.25s ease;
+}
+@keyframes ibc-slide { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.ibc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.ibc-head h3 { margin: 0; font-size: 1.15rem; font-weight: 900; }
+.ibc-x {
+  border: none; cursor: pointer; border-radius: 50%; width: 32px; height: 32px;
+  color: var(--ibc-ink); background: rgba(255,255,255,.08); font-size: 1rem;
+}
+.ibc-x:hover { background: rgba(255,255,255,.16); }
+
+.ibc-balance-card {
+  border-radius: 18px; padding: 18px; text-align: center;
+  background: radial-gradient(circle at 50% 0%, rgba(255,207,74,.22), rgba(168,85,247,.12));
+  border: 1px solid rgba(255,207,74,.3);
+}
+.ibc-balance-num { font-size: 2.4rem; font-weight: 900; color: var(--ibc-gold); text-shadow: 0 0 22px rgba(255,190,60,.5); }
+.ibc-balance-lbl { opacity: .8; font-size: .85rem; }
+
+.ibc-streak { margin-top: 14px; }
+.ibc-streak-bar { height: 10px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; }
+.ibc-streak-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--ibc-cyan), var(--ibc-purple)); }
+.ibc-row { display: flex; justify-content: space-between; font-size: .8rem; opacity: .85; margin-bottom: 6px; }
+
+.ibc-btn {
+  width: 100%; margin-top: 14px; padding: 13px; border: none; border-radius: 14px;
+  font-weight: 900; cursor: pointer; color: #2a1600;
+  background: linear-gradient(135deg, #ffe89a, #ffbe3c);
+  box-shadow: 0 8px 20px rgba(255,190,60,.28);
+}
+.ibc-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.ibc-btn.ghost {
+  color: var(--ibc-ink); background: rgba(255,255,255,.08);
+  border: 1px solid rgba(168,85,247,.45); box-shadow: none;
+}
+.ibc-btn.neon {
+  color: #0b0413;
+  background: linear-gradient(135deg, var(--ibc-cyan), var(--ibc-purple));
+  box-shadow: 0 8px 26px rgba(168,85,247,.35);
+}
+
+.ibc-tx-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.ibc-tx {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.05); font-size: .85rem;
+}
+.ibc-tx-amt { font-weight: 900; }
+.ibc-tx-amt.plus { color: #5ef2a8; }
+.ibc-tx-amt.minus { color: #ff8fb0; }
+.ibc-tx-date { display: block; font-size: .7rem; opacity: .6; }
+.ibc-empty-note { opacity: .7; font-size: .85rem; text-align: center; padding: 18px 0; }
+
+/* Tienda */
+.ibc-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.ibc-tab {
+  flex: 1; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: .85rem;
+  border: 1px solid rgba(168,85,247,.35); color: var(--ibc-ink); background: rgba(255,255,255,.05);
+}
+.ibc-tab.active { background: linear-gradient(135deg, var(--ibc-purple), #6d28d9); border-color: transparent; }
+
+.ibc-pro-card {
+  border-radius: 18px; padding: 18px;
+  background: linear-gradient(150deg, rgba(255,207,74,.16), rgba(168,85,247,.16));
+  border: 1px solid rgba(255,207,74,.35);
+}
+.ibc-price { font-size: 1.8rem; font-weight: 900; color: var(--ibc-gold); }
+.ibc-price small { display: block; font-size: .8rem; color: var(--ibc-ink); opacity: .75; font-weight: 600; }
+.ibc-perks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; font-size: .88rem; }
+.ibc-perks li::before { content: "✦ "; color: var(--ibc-cyan); }
+
+.ibc-packs { display: grid; gap: 12px; }
+.ibc-pack {
+  display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(168,85,247,.28);
+}
+.ibc-pack.high { border-color: rgba(255,207,74,.6); box-shadow: 0 0 22px rgba(255,190,60,.18); }
+.ibc-pack-emoji { font-size: 1.6rem; }
+.ibc-pack-info { flex: 1; }
+.ibc-pack-name { font-weight: 900; }
+.ibc-pack-coins { font-size: .8rem; opacity: .8; }
+.ibc-pack-bonus { color: #5ef2a8; font-weight: 800; }
+.ibc-pack-buy {
+  border: none; cursor: pointer; padding: 10px 14px; border-radius: 12px; font-weight: 900; color: #2a1600;
+  background: linear-gradient(135deg, #ffe89a, #ffbe3c);
+}
+.ibc-soon { margin-top: 14px; text-align: center; font-size: .8rem; opacity: .7; }
+
+/* Sin saldo */
+.ibc-empty-modal { width: min(400px, 100%); text-align: center; }
+.ibc-empty-emoji { font-size: 3rem; animation: ibc-bump 1.2s ease infinite; }
+
+/* Agente */
+.ibc-agent-steps { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+.ibc-agent-step {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,.05); font-size: .88rem;
+}
+.ibc-agent-step.done { border-left: 3px solid #5ef2a8; }
+.ibc-agent-step.active { border-left: 3px solid var(--ibc-cyan); }
+.ibc-agent-step.pending { opacity: .5; }
+.ibc-textarea {
+  width: 100%; border-radius: 14px; padding: 12px; font: inherit; resize: vertical;
+  color: var(--ibc-ink); background: rgba(255,255,255,.06); border: 1px solid rgba(168,85,247,.35);
+}
+.ibc-cost-tag {
+  display: inline-block; margin-left: 8px; font-size: .72rem; font-weight: 900; padding: 3px 9px;
+  border-radius: 999px; color: #3b2600; background: linear-gradient(135deg, #ffe89a, #ffcf4a);
+}
+
+@media (max-width: 640px) {
+  .ibc-drawer { border-radius: 22px 22px 0 0; align-self: flex-end; height: auto; max-height: 88vh; }
+  .ibc-overlay.right { align-items: flex-end; }
+}
