@@ -366,6 +366,7 @@ export function DocActionCard({ action }: { action: DocAction }) {
       {pdf && (
         <div className="doc-preview">
           <iframe title="Vista previa del PDF" src={pdf.dataUrl} />
+          <GoogleWorkspaceActions pdf={pdf} title={action.prompt.slice(0, 70)} />
           <div className="doc-preview-actions">
             <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
             <a
