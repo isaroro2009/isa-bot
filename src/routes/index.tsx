@@ -168,6 +168,7 @@ import accGlasses from "@/assets/acc-glasses.png.asset.json";
 import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
 import WelcomeModal from "@/components/WelcomeModal";
+import { PromoCarousel } from "@/components/PromoCarousel";
 
 
 
