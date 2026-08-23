@@ -468,7 +468,8 @@ export const Route = createFileRoute("/api/agent")({
         }
 
         steps.push({ kind: "final", text: finalText, sources });
-        return json({ steps, answer: finalText, sources, actions });
+        return json({ steps, answer: finalText, sources, actions, degraded });
+
       },
     },
   },
