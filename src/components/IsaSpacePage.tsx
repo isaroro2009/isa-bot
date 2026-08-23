@@ -68,7 +68,8 @@ export function IsaSpacePage() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [tab, setTab] = useState<"home" | "explore" | "about">("home");
+  const [tab, setTab] = useState<"home" | "mine" | "about">("home");
+  const [tags, setTags] = useState<string[]>([]);
   const [commentText, setCommentText] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
