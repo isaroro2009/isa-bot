@@ -352,6 +352,16 @@ function AdminPage() {
 
         {!error && <WeeklyGiftSection />}
 
+        {!error && (
+          <CreateUserSection
+            onCreate={async (payload) => {
+              await createUser({ data: payload });
+              await reload();
+            }}
+          />
+        )}
+
+
 
         {(
         <div
