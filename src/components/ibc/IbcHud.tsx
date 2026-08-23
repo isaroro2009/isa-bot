@@ -39,7 +39,7 @@ export function IbcHud() {
         🪙 {ibc.balance}
       </button>
       <button
-        className="ibc-streak"
+        className="ibc-streak-badge"
         data-tour="streak"
         onClick={ibc.openVault}
         title="Tu racha diaria — vuelve cada día para ganar coins"
