@@ -218,9 +218,26 @@ export function InsufficientFundsModal() {
 }
 
 /** Todo el HUD de overlays en un solo montaje. */
+/** Aviso flotante de racha / bonus. */
+function StreakToast() {
+  const ibc = useIbc();
+  useEffect(() => {
+    if (!ibc.streakToast) return undefined;
+    const t = setTimeout(ibc.clearStreakToast, 4200);
+    return () => clearTimeout(t);
+  }, [ibc.streakToast, ibc.clearStreakToast]);
+  if (!ibc.streakToast) return null;
+  return (
+    <div className="ibc-root ibc-streak-toast" onClick={ibc.clearStreakToast} role="status">
+      {ibc.streakToast}
+    </div>
+  );
+}
+
 export function IbcOverlays() {
   return (
     <>
+      <StreakToast />
       <VaultDrawer />
       <DuoStore />
       <InsufficientFundsModal />
