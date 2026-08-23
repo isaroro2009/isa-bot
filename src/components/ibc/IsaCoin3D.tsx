@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import "./coin3d.css";
 
 export type CoinSkinId = "rosita" | "gold" | "diamond";
@@ -63,7 +63,7 @@ export function IsaCoin3D({
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const uid = useMemo(() => `c${Math.random().toString(36).slice(2, 8)}`, []);
+  const uid = useId().replace(/:/g, "");
 
   function onMove(e: React.MouseEvent) {
     const el = ref.current;
