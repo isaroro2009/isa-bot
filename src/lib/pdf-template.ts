@@ -8,6 +8,8 @@ export type IsaPdfResult = {
   dataUrl: string;
   base64: string;
   filename: string;
+  /** Texto original (markdown) usado para generar el PDF. */
+  text: string;
 };
 
 type Section = { heading?: string; lines: string[] };
