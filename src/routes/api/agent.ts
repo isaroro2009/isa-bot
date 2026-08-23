@@ -217,11 +217,16 @@ export const Route = createFileRoute("/api/agent")({
           : useLovable
             ? "https://ai.gateway.lovable.dev/v1/chat/completions"
             : "https://api.groq.com/openai/v1/chat/completions";
+        // IDs estables: los numerados (gemini-2.5-flash…) devuelven 404.
         const modelId = useGoogle
-          ? "gemini-2.5-flash"
+          ? "gemini-flash-latest"
           : useLovable
             ? brain!.engine
             : AGENT_MODEL;
+        const modelFallbacks = useGoogle
+          ? ["gemini-flash-lite-latest", "gemini-pro-latest"]
+          : [];
+
         const key = useGoogle ? googleKey : useLovable ? process.env.LOVABLE_API_KEY : process.env.GROQ_API_KEY;
         if (!key) return json({ error: "Falta la clave del motor de IA" }, 500);
 
