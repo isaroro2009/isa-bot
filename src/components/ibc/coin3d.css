@@ -222,3 +222,25 @@
 .coin-skin.locked { opacity: 0.55; }
 .coin-skin-name { font-weight: 900; font-size: 0.76rem; margin-top: 6px; }
 .coin-skin-req { font-size: 0.66rem; opacity: 0.7; }
+
+/* ═══ 📱 Moneda IBC en móvil ═══ */
+@media (max-width: 768px) {
+  .coin-mini-btn { padding: 4px 8px 4px 4px; gap: 4px; min-height: 40px; }
+  .coin-mini-num { font-size: 0.8rem; }
+  .coin-tip {
+    right: 0;
+    left: auto;
+    width: min(74vw, 260px);
+    white-space: normal;
+    font-size: 0.74rem;
+  }
+  .coin-skins { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .coin-skin { padding: 8px 4px; }
+  .coin-skin-name { font-size: 0.7rem; }
+  .coin-skin-req { font-size: 0.6rem; line-height: 1.25; }
+}
+
+/* En pantallas táctiles el "tilt" 3D se desactiva para evitar saltos */
+@media (hover: none) {
+  .coin3d-body { transition: none; }
+}
