@@ -119,7 +119,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
         return true;
       }
     },
-    [enabled, isPro, balance, spendFn, invalidate],
+    [enabled, isPro, balance, unlimited, spendFn, invalidate],
   );
 
   // 🪙 Confirmación manual: nunca se descuentan coins sin un "sí" explícito.
@@ -133,6 +133,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const confirmCharge = useCallback(
     async (action: IbcActionKey, note?: string) => {
       if (!enabled) return true;
+      if (unlimited) return true;
       const cost = effectiveCost(action, isPro);
       if (cost <= 0) return charge(action, note);
       if (balance < cost) {
@@ -143,8 +144,9 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       if (!ok) return false;
       return charge(action, note);
     },
-    [enabled, isPro, balance, charge],
+    [enabled, isPro, balance, unlimited, charge],
   );
+
 
   const giveBack = useCallback(
     async (txId?: string | null) => {
