@@ -233,6 +233,8 @@ export function DocActionCard({ action }: { action: DocAction }) {
   const [pdf, setPdf] = useState<IsaPdfResult | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [recipient, setRecipient] = useState<string>(action.to ?? "");
+  const [showPreview, setShowPreview] = useState(false);
+
   const cost = ibc.costOf("agent");
 
   function mark(k: string, v: "active" | "done" | "err") {
