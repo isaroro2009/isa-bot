@@ -36,6 +36,7 @@ import { useLocalBrain, LOCAL_MODEL_SIZE_MB } from "@/lib/useLocalBrain";
 import { loadQueue, saveQueue, clearQueue, offlineAnswer, type QueuedMessage } from "@/lib/offline-mode";
 import { IbcProvider, useIbc } from "@/components/ibc/useIbc";
 import { IbcHud, IbcOverlays } from "@/components/ibc/IbcHud";
+import { InterstitialAd } from "@/components/InterstitialAd";
 import { AgentPdfPanel } from "@/components/ibc/AgentPdfPanel";
 import "../isabot.css";
 
@@ -1516,6 +1517,9 @@ ${rows}
     setSending(true);
     try {
       await sendMessageInner(overrideText, overrideImage);
+      // 🎬 Anuncio a pantalla completa cada 3 turnos de chat (estilo Duolingo).
+      turnsRef.current += 1;
+      if (turnsRef.current % 3 === 0) setAdIndex((n) => (n === null ? Math.floor(turnsRef.current / 3) - 1 : n));
     } finally {
       sendingRef.current = false;
       setSending(false);
