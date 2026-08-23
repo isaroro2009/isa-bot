@@ -359,9 +359,9 @@ export function DocActionCard({ action }: { action: DocAction }) {
           <iframe title="Vista previa del PDF" src={pdf.dataUrl} />
           <div className="doc-preview-actions">
             <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
-            <a className="action-card-btn ghost" href={pdf.dataUrl} target="_blank" rel="noopener noreferrer">
-              🔍 Abrir en grande
-            </a>
+            <button className="action-card-btn ghost" onClick={() => setShowPreview(true)}>
+              👁️ Previsualizar
+            </button>
           </div>
           <ManualSendActions
             to={recipient}
@@ -371,6 +371,24 @@ export function DocActionCard({ action }: { action: DocAction }) {
           {sentTo && <div className="action-card-ok">✅ Enviado a {sentTo} vía webhook 💕</div>}
         </div>
       )}
+
+      {pdf && showPreview && (
+        <div className="ibc-confirm-back" onClick={() => setShowPreview(false)}>
+          <div className="ibc-confirm" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 780, width: "94vw" }}>
+            <h3>👁️ {title || "Tu documento"}</h3>
+            <iframe
+              title="Previsualización del PDF"
+              src={pdf.dataUrl}
+              style={{ width: "100%", height: "60dvh", border: "1.5px solid #ffd6eb", borderRadius: 12 }}
+            />
+            <div className="ibc-confirm-row">
+              <button className="cancel" onClick={() => setShowPreview(false)}>Cerrar</button>
+              <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {state === "error" && <div className="action-card-err">{msg}</div>}
       {state === "done" && msg && <div className="action-card-err">{msg}</div>}
