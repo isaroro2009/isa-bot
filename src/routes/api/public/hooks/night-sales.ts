@@ -5,21 +5,24 @@ export const Route = createFileRoute("/api/public/hooks/night-sales")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const token =
-          request.headers.get("apikey") ??
-          request.headers.get("authorization")?.replace("Bearer ", "") ??
-          "";
-        const allowed = [
-          process.env.SUPABASE_PUBLISHABLE_KEY,
-          process.env.VITE_SUPABASE_ANON_KEY,
-          process.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        ].filter((v): v is string => Boolean(v) && v!.length > 20);
-        if (!token || !allowed.includes(token)) {
+        // Secreto exclusivo del servidor. NUNCA la publishable/anon key: es pública.
+        const secret = process.env.CRON_SECRET ?? "";
+        const provided = request.headers.get("x-cron-key") ?? "";
+        const a = new TextEncoder().encode(secret);
+        const b = new TextEncoder().encode(provided);
+        let ok = secret.length >= 16 && provided.length > 0 && a.length === b.length;
+        if (ok) {
+          let diff = 0;
+          for (let i = 0; i < a.length; i++) diff |= a[i]! ^ b[i]!;
+          ok = diff === 0;
+        }
+        if (!ok) {
           return new Response(JSON.stringify({ error: "unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },
           });
         }
+
 
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
