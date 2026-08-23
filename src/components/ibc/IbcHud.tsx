@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useIbc } from "./useIbc";
 import { COIN_PACKS, IBC_COSTS, PRO_PLAN } from "@/lib/ibc";
+import {
+  CoinMini,
+  IsaCoin3D,
+  COIN_SKINS,
+  isSkinUnlocked,
+  loadSkin,
+  saveSkin,
+  type CoinSkinId,
+} from "./IsaCoin3D";
 import "./ibc.css";
 
 const STREAK_GOAL = 7;
@@ -9,35 +18,49 @@ function fmt(iso: string) {
   return new Date(iso).toLocaleDateString("es", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
-/** Badges del header: saldo IBC + estado del plan. */
+function useSkin(isPro: boolean, streakDays: number) {
+  const [skin, setSkin] = useState<CoinSkinId>("rosita");
+  useEffect(() => {
+    const s = loadSkin();
+    if (isSkinUnlocked(s, { isPro, streakDays, owned: false })) setSkin(s);
+  }, [isPro, streakDays]);
+  const choose = (id: CoinSkinId) => {
+    setSkin(id);
+    saveSkin(id);
+  };
+  return { skin, choose };
+}
+
+/** Badges del header: moneda IBC física + racha + estado del plan. */
 export function IbcHud() {
   const ibc = useIbc();
-  const [bump, setBump] = useState(false);
-  const [prev, setPrev] = useState(ibc.balance);
-
-  useEffect(() => {
-    if (ibc.balance !== prev) {
-      setPrev(ibc.balance);
-      setBump(true);
-      const t = setTimeout(() => setBump(false), 450);
-      return () => clearTimeout(t);
-    }
-    return undefined;
-  }, [ibc.balance, prev]);
+  const { skin } = useSkin(ibc.isPro, ibc.streakDays);
+  const [tip, setTip] = useState(false);
 
   if (!ibc.enabled) return null;
 
+  const daysToMilestone = Math.max(0, STREAK_GOAL - (ibc.streakDays % STREAK_GOAL || STREAK_GOAL));
+
   return (
     <div className="ibc-root ibc-hud">
-      <button
-        className={`ibc-badge${bump ? " bump" : ""}`}
-        onClick={ibc.openVault}
+      <span
+        className="coin-tip-wrap"
         data-tour="coins"
-        title="Tu bóveda de IsaBot Coins"
-        aria-label={`${ibc.balance} IsaBot Coins`}
+        onMouseEnter={() => setTip(true)}
+        onMouseLeave={() => setTip(false)}
       >
-        🪙 {ibc.balance}
-      </button>
+        <CoinMini skin={skin} balance={ibc.balance} isPro={ibc.isPro} onClick={ibc.openVault} />
+        {tip && (
+          <span className="coin-tip">
+            <b>Saldo actual: {ibc.balance} IBC</b>
+            <br />
+            {ibc.isPro ? "👑 Bonus PRO activo (texto básico gratis)" : "✨ Plan FREE"}
+            <br />
+            🔥 Racha de {ibc.streakDays} día{ibc.streakDays === 1 ? "" : "s"} ·{" "}
+            {daysToMilestone === 0 ? "¡bonus disponible hoy!" : `bonus de racha en ${daysToMilestone} día${daysToMilestone === 1 ? "" : "s"}`}
+          </span>
+        )}
+      </span>
       <button
         className="ibc-streak-badge"
         data-tour="streak"
@@ -56,6 +79,7 @@ export function IbcHud() {
     </div>
   );
 }
+
 
 /** Bóveda: saldo, racha, check-in diario e historial. */
 export function VaultDrawer() {
