@@ -6,11 +6,7 @@ import { BRAINS } from "@/lib/brains";
 
 import { getMyProfile, acknowledgePremiumGift } from "@/lib/profile.functions";
 import { sendWelcomeEmail } from "@/lib/welcome.functions";
-import { getMyPoints, awardDailyChat, awardCrackMode } from "@/lib/points.functions";
 import { VoiceCall } from "@/components/VoiceCall";
-import { PointsChip } from "@/components/PointsChip";
-import { PointsToastHost, emitPointsToast } from "@/components/PointsToast";
-import { RewardsPanel } from "@/components/RewardsPanel";
 import { RemindersPanel } from "@/components/RemindersPanel";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
 import { parseEmailIntent } from "@/lib/chat-intents";
@@ -843,7 +839,7 @@ function IsaBotPage() {
   );
 }
 
-type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "rewards" | "cowork" | "isaspace" | "reminders" | "myday" | "invite" | "feedback" | "technews" | "academy" | "sales" | "ibcagent";
+type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "reminders" | "myday" | "invite" | "feedback" | "technews" | "academy" | "sales" | "ibcagent";
 
 const VIBES: Array<{ id: Vibe; label: string; hint: string }> = [
   { id: "kawaii", label: "🌸 Kawaii", hint: "Tierno, animado y motivador" },
@@ -980,7 +976,7 @@ function IsaBot() {
         if (pending) {
           window.localStorage.removeItem("isabot_referral_code");
           const res = await doClaimReferral({ data: { code: pending } });
-          if (res.ok) emitPointsToast(15, "🎁 ¡Bienvenida con invitación! +15 IsaBot Coins");
+          void res;
         }
       } catch {
         /* noop */
@@ -1104,39 +1100,8 @@ function IsaBot() {
   const [crackLoading, setCrackLoading] = useState(false);
   const fetchProfile = useServerFn(getMyProfile);
   const ackGift = useServerFn(acknowledgePremiumGift);
-  const fetchPoints = useServerFn(getMyPoints);
-  const doAwardDaily = useServerFn(awardDailyChat);
-  const doAwardCrack = useServerFn(awardCrackMode);
   const saveReminder = useServerFn(createReminder);
   const doClaimReferral = useServerFn(claimReferralCode);
-
-  const [pointsBalance, setPointsBalance] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!authUser) { setPointsBalance(null); return; }
-    let cancelled = false;
-    (async () => {
-      try {
-        const s = await fetchPoints();
-        if (!cancelled) setPointsBalance(s.points);
-      } catch { /* ignore */ }
-    })();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authUser?.id]);
-
-  async function tryAward(kind: "daily" | "crack") {
-    if (!authUser) return;
-    try {
-      const res = kind === "daily" ? await doAwardDaily() : await doAwardCrack();
-      if (res.delta && res.delta > 0) {
-        setPointsBalance(res.points);
-        emitPointsToast(res.delta);
-      } else {
-        setPointsBalance(res.points);
-      }
-    } catch { /* silent */ }
-  }
 
   // Tasks (free)
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -1666,7 +1631,6 @@ ${rows}
           .join("\n");
         const finalText = [stepsLines, "", data.answer ?? "No obtuve respuesta 💕"].filter(Boolean).join("\n");
         updateCurrentChat((msgs) => [...msgs.filter((m) => !m.thinking), { sender: "bot", text: finalText }]);
-        void tryAward("daily");
       } catch (e) {
         console.error("Agent error:", e);
         const detail = e instanceof Error ? e.message : "error inesperado";
@@ -1687,7 +1651,6 @@ ${rows}
             action: { kind: "email", to: mail.to, subject: mail.subject, body: mail.body },
           },
         ]);
-        void tryAward("daily");
         return;
       }
     }
@@ -1712,7 +1675,6 @@ ${rows}
               },
             },
           ]);
-          void tryAward("daily");
           return;
         }
         try {
@@ -1729,7 +1691,6 @@ ${rows}
             ...msgs.filter((m) => !m.thinking),
             { sender: "bot", text: `¡Listo! Te lo recuerdo por correo 💌\n\n${reminderSummary(parsed)}\n\nPuedes verlo o pausarlo en **Herramientas → ⏰ Recordatorios por correo**.` },
           ]);
-          void tryAward("daily");
           return;
         } catch (e) {
           console.error("reminder error", e);
@@ -1758,7 +1719,6 @@ ${rows}
         const botText = data.response || data.respuesta || data.text || "No obtuve respuesta 💕";
         return [...cleaned, { sender: "bot", text: botText }];
       });
-      void tryAward(useCrack ? "crack" : "daily");
     } catch (error) {
       console.error("Error de conexión:", error);
       updateCurrentChat((msgs) => [...msgs.filter((m) => !m.thinking), { sender: "bot", text: "Kyaa~ error de conexión 💔", error: true }]);
@@ -2553,7 +2513,7 @@ ${rows}
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("academy"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#d8f0ff,#e0d5ff)", color: "#4a2b8a", fontWeight: 800 }}>🎓 IsaAcademy (clases de IA y Tech)</button>
               
 
-              <button className="kawaii-sidebar-btn" onClick={() => { setPanel("rewards"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffd6ec,#e0d5ff)", color: "#6b3fa0", fontWeight: 800 }}>🌟 IsaBot Coins & Recompensas</button>
+              <button className="kawaii-sidebar-btn" onClick={() => { ibc.openVault(); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffd6ec,#e0d5ff)", color: "#6b3fa0", fontWeight: 800 }}>🪙 Mi bóveda de IsaBot Coins</button>
             <button className="kawaii-sidebar-btn" onClick={() => { setPanel("invite"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffe6c7,#ffd6ec)", color: "#6b3fa0", fontWeight: 800 }}>💌 Invita y gana (puntos + Premium)</button>
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("sales"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#1b1b3a,#3a1b52)", color: "#ffd6ec", fontWeight: 800 }}>🌙 Ventas Nocturnas (clientes mientras duermes)</button>
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("technews"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#e6e0ff,#d8f0ff)", color: "#5a3a9a", fontWeight: 800 }}>📰 Noticias Tech del Día</button>
@@ -2607,9 +2567,6 @@ ${rows}
       <header className="header">
         <h1 className="logo">IsaBot ✨</h1>
         <span className="motor-badge" title="Modelo propio de IsaBot">⚙️ {ISABOT_MODEL_LABEL}</span>
-        {authUser && (
-          <PointsChip points={pointsBalance} onClick={() => setPanel("rewards")} />
-        )}
         <IbcHud />
       </header>
 
@@ -3668,7 +3625,6 @@ ${rows}
                     const data = await response.json();
                     const botText = data.response || data.respuesta || data.text || "No obtuve respuesta 💔";
                     updateCurrentChat((msgs) => [...msgs.filter((m) => !m.thinking), { sender: "bot", text: botText }]);
-                    void tryAward("crack");
                   } catch {
                     updateCurrentChat((msgs) => [...msgs.filter((m) => !m.thinking), { sender: "bot", text: "Error de conexión en Modo Crack 💔", error: true }]);
                   } finally {
@@ -3697,12 +3653,6 @@ ${rows}
       )}
 
 
-      {panel === "rewards" && (
-        <RewardsPanel
-          onClose={() => setPanel(null)}
-          onPointsChanged={(p) => setPointsBalance(p)}
-        />
-      )}
 
       
       {panel === "isaspace" && (
@@ -3725,7 +3675,6 @@ ${rows}
       {panel === "ibcagent" && <AgentPdfPanel onClose={() => setPanel(null)} />}
 
 
-      <PointsToastHost />
     </div>
   );
 }
