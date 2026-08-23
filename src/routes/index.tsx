@@ -36,6 +36,9 @@ import { heartbeat } from "@/lib/presence.functions";
 import { ISABOT_MODEL_LABEL } from "@/lib/branding";
 import { useLocalBrain, LOCAL_MODEL_SIZE_MB } from "@/lib/useLocalBrain";
 import { loadQueue, saveQueue, clearQueue, offlineAnswer, type QueuedMessage } from "@/lib/offline-mode";
+import { IbcProvider, useIbc } from "@/components/ibc/useIbc";
+import { IbcHud, IbcOverlays } from "@/components/ibc/IbcHud";
+import { AgentPdfPanel } from "@/components/ibc/AgentPdfPanel";
 import "../isabot.css";
 
 
