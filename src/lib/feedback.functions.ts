@@ -42,7 +42,7 @@ export const submitFeedback = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
 
-    // +5 IsaPuntos, máximo una vez al día
+    // +5 IsaBot Coins, máximo una vez al día
     let awarded = 0;
     const startOfDay = new Date();
     startOfDay.setUTCHours(0, 0, 0, 0);

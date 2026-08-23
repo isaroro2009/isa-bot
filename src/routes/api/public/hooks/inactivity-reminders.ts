@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/public/hooks/inactivity-reminders")({
             subject: "Te extraño 💕 ¿Retomamos hoy?",
             html: emailLayout({
               title: "Te extraño 💕",
-              body: `<p>Hola ${p.display_name || "creativa"},</p><p>Hace <b>${days} días</b> que no pasas por IsaBot. Volvamos con algo suave: elige una tarea pequeña, activa el Pomodoro y en 25 minutos ya estás de vuelta ✨</p><p>Te espero con tus chats, tus notas y tus IsaPuntos intactos 🌟</p>`,
+              body: `<p>Hola ${p.display_name || "creativa"},</p><p>Hace <b>${days} días</b> que no pasas por IsaBot. Volvamos con algo suave: elige una tarea pequeña, activa el Pomodoro y en 25 minutos ya estás de vuelta ✨</p><p>Te espero con tus chats, tus notas y tus IsaBot Coins intactos 🌟</p>`,
               ctaLabel: "Volver a IsaBot",
               ctaUrl: APP_URL,
               unsubscribeUrl: `${APP_URL}/api/public/unsubscribe?token=${p.unsubscribe_token}`,

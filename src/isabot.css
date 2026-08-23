@@ -2660,7 +2660,7 @@ html, body {
 .crack-submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 .crack-submit-btn:not(:disabled):hover { transform: translateY(-1px); }
 
-/* ═══════════════ IsaPuntos & Recompensas ═══════════════ */
+/* ═══════════════ IsaBot Coins ═══════════════ */
 .pts-chip {
   display: inline-flex;
   align-items: center;

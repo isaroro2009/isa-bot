@@ -48,7 +48,7 @@ export function InvitePanel({ onClose }: { onClose: () => void }) {
       <div className="settings-card" onClick={(e) => e.stopPropagation()}>
         <h3>💌 Invita y gana</h3>
         <p className="habits-sub">
-          Comparte tu link mágico. Cuando alguien se registra y usa IsaBot, tú ganas <b>25 IsaPuntos</b> y
+          Comparte tu link mágico. Cuando alguien se registra y usa IsaBot, tú ganas <b>25 IsaBot Coins</b> y
           ella <b>15</b>. Cada <b>3 invitadas activas</b> te damos <b>7 días Premium</b> 👑
         </p>
 

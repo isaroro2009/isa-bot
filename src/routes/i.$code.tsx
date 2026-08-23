@@ -12,10 +12,10 @@ export const Route = createFileRoute("/i/$code")({
         { title: `${who} a IsaBot — Co-piloto de IA creativa` },
         {
           name: "description",
-          content: "Únete a IsaBot: organiza tu día, estudia mejor y crea sin bloqueo. Entra con esta invitación y gana IsaPuntos de bienvenida.",
+          content: "Únete a IsaBot: organiza tu día, estudia mejor y crea sin bloqueo. Entra con esta invitación y gana IsaBot Coins de bienvenida.",
         },
         { property: "og:title", content: `${who} a IsaBot ✨` },
-        { property: "og:description", content: "Regístrate con esta invitación y las dos ganan IsaPuntos." },
+        { property: "og:description", content: "Regístrate con esta invitación y las dos ganan IsaBot Coins." },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
@@ -38,10 +38,10 @@ function InviteShell({ code, name }: { code: string; name: string | null }) {
         </p>
         <div className="pub-tags">
           <span>🚀 Mi Día</span><span>🎯 Modo Foco</span><span>🎨 Imágenes</span>
-          <span>📞 Llamadas de voz</span><span>🪐 IsaSpace</span><span>🎁 IsaPuntos</span>
+          <span>📞 Llamadas de voz</span><span>🪐 IsaSpace</span><span>🎁 IsaBot Coins</span>
         </div>
         <div className="invite-bonus">
-          🎁 Al registrarte con esta invitación recibes <b>15 IsaPuntos</b> extra
+          🎁 Al registrarte con esta invitación recibes <b>15 IsaBot Coins</b> extra
           {name ? ` y ${name} recibe 25.` : "."}
         </div>
         <Link to="/auth" className="pub-cta">✨ Crear mi cuenta gratis</Link>

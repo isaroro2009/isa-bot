@@ -980,7 +980,7 @@ function IsaBot() {
         if (pending) {
           window.localStorage.removeItem("isabot_referral_code");
           const res = await doClaimReferral({ data: { code: pending } });
-          if (res.ok) emitPointsToast(15, "🎁 ¡Bienvenida con invitación! +15 IsaPuntos");
+          if (res.ok) emitPointsToast(15, "🎁 ¡Bienvenida con invitación! +15 IsaBot Coins");
         }
       } catch {
         /* noop */
@@ -2553,7 +2553,7 @@ ${rows}
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("academy"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#d8f0ff,#e0d5ff)", color: "#4a2b8a", fontWeight: 800 }}>🎓 IsaAcademy (clases de IA y Tech)</button>
               
 
-              <button className="kawaii-sidebar-btn" onClick={() => { setPanel("rewards"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffd6ec,#e0d5ff)", color: "#6b3fa0", fontWeight: 800 }}>🌟 IsaPuntos & Recompensas</button>
+              <button className="kawaii-sidebar-btn" onClick={() => { setPanel("rewards"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffd6ec,#e0d5ff)", color: "#6b3fa0", fontWeight: 800 }}>🌟 IsaBot Coins & Recompensas</button>
             <button className="kawaii-sidebar-btn" onClick={() => { setPanel("invite"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffe6c7,#ffd6ec)", color: "#6b3fa0", fontWeight: 800 }}>💌 Invita y gana (puntos + Premium)</button>
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("sales"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#1b1b3a,#3a1b52)", color: "#ffd6ec", fontWeight: 800 }}>🌙 Ventas Nocturnas (clientes mientras duermes)</button>
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("technews"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#e6e0ff,#d8f0ff)", color: "#5a3a9a", fontWeight: 800 }}>📰 Noticias Tech del Día</button>
@@ -2647,7 +2647,7 @@ ${rows}
             <span>✅ Tareas y Pomodoro</span>
             <span>🗓️ Planner mensual</span>
             <span>🪐 IsaSpace</span>
-            <span>🎁 IsaPuntos</span>
+            <span>🎁 IsaBot Coins</span>
             <span>🎓 IsaAcademy</span>
             <span>🧺 IsaMarket</span>
             

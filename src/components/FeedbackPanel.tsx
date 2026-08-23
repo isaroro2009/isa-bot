@@ -55,7 +55,7 @@ export function FeedbackPanel({ onClose }: { onClose: () => void }) {
       setMessage("");
       setThanks(
         res.awarded > 0
-          ? `¡Gracias! 💕 Tu idea ya está en mi lista y te di +${res.awarded} IsaPuntos 🌟`
+          ? `¡Gracias! 💕 Tu idea ya está en mi lista y te di +${res.awarded} IsaBot Coins 🌟`
           : "¡Gracias! 💕 Tu idea ya está en mi lista.",
       );
       load();
