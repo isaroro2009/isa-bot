@@ -38,3 +38,24 @@ export function parseEmailIntent(text: string): ParsedEmailIntent | null {
 
   return { to, subject: subject.slice(0, 120), body: body.slice(0, 1200) };
 }
+
+/** Intención de "crear un PDF/documento" (y opcionalmente enviarlo por correo). */
+export type ParsedDocIntent = {
+  prompt: string;
+  email: boolean;
+  to?: string;
+};
+
+const DOC_RE =
+  /\b(?:crea|gener[ao]|haz|arma|escribe|prepara)\s+(?:un[ao]?\s+)?(?:pdf|documento|informe|reporte|resumen\s+en\s+pdf|propuesta\s+en\s+pdf)\b/i;
+const MAIL_RE = /\b(?:env[íi]a\w*|m[áa]nda\w*)\b[^.]{0,40}\b(?:correo|email|mail)\b/i;
+
+export function parseDocIntent(text: string): ParsedDocIntent | null {
+  if (!DOC_RE.test(text)) return null;
+  const to = text.match(EMAIL_RE)?.[0];
+  return {
+    prompt: text.trim().slice(0, 1200),
+    email: MAIL_RE.test(text) || Boolean(to),
+    ...(to ? { to } : {}),
+  };
+}
