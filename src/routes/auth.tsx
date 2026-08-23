@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { toast } from "sonner";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
@@ -26,10 +27,41 @@ function AuthPage() {
   const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/" });
-    });
+    // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
+    // almacenamiento: avisamos en vez de dejar el login congelado.
+    try {
+      const k = "__isabot_storage_test__";
+      window.localStorage.setItem(k, "1");
+      window.localStorage.removeItem(k);
+    } catch {
+      toast.error(
+        "Tu navegador está bloqueando el almacenamiento. En iPhone: Ajustes → Safari → desactiva \"Bloquear todas las cookies\" y sal del modo privado.",
+        { duration: 9000 },
+      );
+    }
+
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (data.user) navigate({ to: "/" });
+      })
+      .catch(() => undefined);
   }, [navigate]);
+
+  const failWith = (err: unknown, fallback: string) => {
+    const raw = err instanceof Error ? err.message : String(err ?? fallback);
+    const friendly = /invalid login credentials/i.test(raw)
+      ? "Correo o contraseña incorrectos 💔"
+      : /email not confirmed/i.test(raw)
+        ? "Debes confirmar tu correo antes de entrar 💌"
+        : /storage|localStorage|quota|cookie/i.test(raw)
+          ? "Safari está bloqueando el almacenamiento. Desactiva el modo privado o el bloqueo de cookies e inténtalo de nuevo."
+          : /network|fetch|timeout/i.test(raw)
+            ? "Sin conexión estable. Revisa tu internet e inténtalo otra vez."
+            : raw || fallback;
+    setError(friendly);
+    toast.error(friendly, { duration: 7000 });
+  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +82,7 @@ function AuthPage() {
           },
         });
         if (err) throw err;
+        toast.success("¡Cuenta creada! Revisa tu correo para confirmar 💕");
         setInfo("¡Cuenta creada! Revisa tu correo para confirmar y luego inicia sesión 💕");
         setMode("signin");
       } else {
@@ -58,7 +91,7 @@ function AuthPage() {
         navigate({ to: "/" });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error");
+      failWith(err, "Ocurrió un error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -75,7 +108,8 @@ function AuthPage() {
       if (result.redirected) return;
       navigate({ to: "/" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al iniciar con Google");
+      failWith(err, "Error al iniciar con Google");
+    } finally {
       setLoading(false);
     }
   };
