@@ -10,8 +10,12 @@ import {
   setUserPremium,
   deleteUser,
   getMyRoles,
+  createUserManually,
+  setUserCoins,
+  setUnlimitedCoins,
   type AdminUserRow,
 } from "@/lib/admin.functions";
+
 
 import { getAiConfig } from "@/lib/memory.functions";
 import { AdminMetrics } from "@/components/AdminMetrics";
@@ -51,6 +55,10 @@ function AdminPage() {
   const changePremium = useServerFn(setUserPremium);
   const removeUser = useServerFn(deleteUser);
   const fetchAiConfig = useServerFn(getAiConfig);
+  const createUser = useServerFn(createUserManually);
+  const saveCoins = useServerFn(setUserCoins);
+  const saveUnlimited = useServerFn(setUnlimitedCoins);
+
 
 
   const [users, setUsers] = useState<AdminUserRow[]>([]);
@@ -156,6 +164,40 @@ function AdminPage() {
     }
   };
 
+  // 🪙 Gestor de IsaBot Coins
+  const doEditCoins = async (u: AdminUserRow) => {
+    const choice = prompt(
+      `Nuevo saldo de IsaBot Coins para ${u.display_name ?? u.email}\n(actual: ${u.ibc_balance} IBC)`,
+      String(u.ibc_balance),
+    );
+    if (choice === null) return;
+    const n = parseInt(choice.trim(), 10);
+    if (isNaN(n) || n < 0) {
+      alert("Valor inválido");
+      return;
+    }
+    setBusyId(u.id);
+    try {
+      await saveCoins({ data: { userId: u.id, balance: n } });
+      await reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const doToggleUnlimited = async (u: AdminUserRow) => {
+    setBusyId(u.id);
+    try {
+      await saveUnlimited({ data: { userId: u.id, unlimited: !u.unlimited_coins } });
+      await reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusyId(null);
+    }
+  };
 
 
   const doDelete = async (u: AdminUserRow) => {
@@ -310,6 +352,16 @@ function AdminPage() {
 
         {!error && <WeeklyGiftSection />}
 
+        {!error && (
+          <CreateUserSection
+            onCreate={async (payload) => {
+              await createUser({ data: payload });
+              await reload();
+            }}
+          />
+        )}
+
+
 
         {(
         <div
@@ -371,6 +423,8 @@ function AdminPage() {
                     <th style={th}>Teléfono</th>
                     <th style={th}>Rol</th>
                     <th style={th}>Premium</th>
+                    <th style={th}>🪙 Coins</th>
+
                     <th style={th}>Último acceso</th>
                     <th style={th}>Acciones</th>
                   </tr>
@@ -442,10 +496,36 @@ function AdminPage() {
                           </span>
                         </td>
                         <td style={td}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            <b style={{ color: "#a17300" }}>
+                              {u.unlimited_coins ? "♾️" : u.ibc_balance}
+                            </b>
+                            <button
+                              disabled={busy}
+                              onClick={() => doEditCoins(u)}
+                              style={actionBtn("#a17300")}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              disabled={busy}
+                              onClick={() => doToggleUnlimited(u)}
+                              title="Modo Coins Infinitas"
+                              style={{
+                                ...actionBtn(u.unlimited_coins ? "#0a8f5b" : "#8a8a8a"),
+                                background: u.unlimited_coins ? "#e3fff2" : "white",
+                              }}
+                            >
+                              {u.unlimited_coins ? "♾️ ON" : "♾️ OFF"}
+                            </button>
+                          </div>
+                        </td>
+                        <td style={td}>
                           {u.last_sign_in_at
                             ? new Date(u.last_sign_in_at).toLocaleString()
                             : "—"}
                         </td>
+
                         <td style={td}>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                             <button
@@ -505,7 +585,100 @@ const actionBtn = (color: string): React.CSSProperties => ({
   cursor: "pointer",
 });
 
+function CreateUserSection({
+  onCreate,
+}: {
+  onCreate: (p: { email: string; password: string; displayName: string; initialCoins: number }) => Promise<void>;
+}) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [coins, setCoins] = useState("15");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const field: React.CSSProperties = {
+    padding: "10px 14px",
+    borderRadius: 12,
+    border: "1.5px solid #ffd6eb",
+    outline: "none",
+    fontSize: 16,
+    background: "white",
+    minWidth: 0,
+    width: "100%",
+  };
+
+  return (
+    <div
+      style={{
+        background: "rgba(255,255,255,0.9)",
+        backdropFilter: "blur(12px)",
+        borderRadius: 24,
+        padding: 20,
+        marginBottom: 16,
+        boxShadow: "0 10px 40px rgba(255,133,162,0.2)",
+      }}
+    >
+      <h2 style={{ margin: "0 0 4px", color: "#ff477e", fontSize: 18 }}>➕ Crear usuario manualmente</h2>
+      <p style={{ margin: "0 0 14px", color: "#a06b8a", fontSize: 13 }}>
+        La cuenta queda confirmada al instante y con el saldo de coins que definas.
+      </p>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setErr(null);
+          setMsg(null);
+          setBusy(true);
+          try {
+            await onCreate({
+              email: email.trim(),
+              password,
+              displayName: name.trim(),
+              initialCoins: parseInt(coins, 10) || 0,
+            });
+            setMsg(`Cuenta creada para ${email.trim()} 💕`);
+            setName("");
+            setEmail("");
+            setPassword("");
+            setCoins("15");
+          } catch (e2) {
+            setErr(e2 instanceof Error ? e2.message : String(e2));
+          } finally {
+            setBusy(false);
+          }
+        }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}
+      >
+        <input style={field} placeholder="Nombre completo" value={name} onChange={(e) => setName(e.target.value)} />
+        <input style={field} type="email" required placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input style={field} type="text" required minLength={6} placeholder="Contraseña temporal" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input style={field} type="number" min={0} placeholder="IBC inicial" value={coins} onChange={(e) => setCoins(e.target.value)} />
+        <button
+          type="submit"
+          disabled={busy}
+          style={{
+            padding: "10px 18px",
+            borderRadius: 12,
+            border: "none",
+            background: "linear-gradient(135deg,#ff85a2,#ff477e)",
+            color: "white",
+            fontWeight: 700,
+            cursor: "pointer",
+            minHeight: 44,
+          }}
+        >
+          {busy ? "Creando…" : "Crear cuenta"}
+        </button>
+      </form>
+      {msg && <div style={{ marginTop: 10, background: "#e3fff2", color: "#0a8f5b", padding: 10, borderRadius: 12 }}>{msg}</div>}
+      {err && <div style={{ marginTop: 10, background: "#ffe0ec", color: "#c92a5a", padding: 10, borderRadius: 12 }}>{err}</div>}
+    </div>
+  );
+}
+
 function AiStat({ label, value, accent }: { label: string; value: string; accent: string }) {
+
   return (
     <div
       style={{

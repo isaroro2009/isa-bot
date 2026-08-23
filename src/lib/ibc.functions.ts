@@ -8,7 +8,9 @@ export type IbcWallet = {
   streakDays: number;
   lastCheckinAt: string | null;
   checkedInToday: boolean;
+  unlimited: boolean;
 };
+
 
 export type IbcTransaction = {
   id: string;
@@ -30,16 +32,20 @@ export const getWallet = createServerFn({ method: "GET" })
     await supabase.rpc("ibc_ensure_wallet");
     const { data } = await supabase
       .from("ibc_wallets")
-      .select("balance, plan_status, streak_days, last_checkin_at")
+      .select("balance, plan_status, streak_days, last_checkin_at, unlimited_coins")
       .eq("user_id", userId)
       .maybeSingle();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const row = data as any;
     return {
-      balance: data?.balance ?? 0,
-      planStatus: (data?.plan_status === "pro" ? "pro" : "free"),
-      streakDays: data?.streak_days ?? 0,
-      lastCheckinAt: data?.last_checkin_at ?? null,
-      checkedInToday: isToday(data?.last_checkin_at ?? null),
+      balance: row?.balance ?? 0,
+      planStatus: (row?.plan_status === "pro" ? "pro" : "free"),
+      streakDays: row?.streak_days ?? 0,
+      lastCheckinAt: row?.last_checkin_at ?? null,
+      checkedInToday: isToday(row?.last_checkin_at ?? null),
+      unlimited: Boolean(row?.unlimited_coins),
     };
+
   });
 
 export const getTransactions = createServerFn({ method: "GET" })

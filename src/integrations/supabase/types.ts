@@ -423,6 +423,7 @@ export type Database = {
           last_checkin_at: string | null
           plan_status: string
           streak_days: number
+          unlimited_coins: boolean
           updated_at: string
           user_id: string
         }
@@ -432,6 +433,7 @@ export type Database = {
           last_checkin_at?: string | null
           plan_status?: string
           streak_days?: number
+          unlimited_coins?: boolean
           updated_at?: string
           user_id: string
         }
@@ -441,6 +443,7 @@ export type Database = {
           last_checkin_at?: string | null
           plan_status?: string
           streak_days?: number
+          unlimited_coins?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -1821,6 +1824,7 @@ export type Database = {
           last_checkin_at: string | null
           plan_status: string
           streak_days: number
+          unlimited_coins: boolean
           updated_at: string
           user_id: string
         }

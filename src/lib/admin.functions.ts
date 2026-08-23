@@ -20,7 +20,10 @@ export type AdminUserRow = {
   created_at: string;
   roles: string[];
   last_sign_in_at: string | null;
+  ibc_balance: number;
+  unlimited_coins: boolean;
 };
+
 
 export const listUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -53,10 +56,22 @@ export const listUsers = createServerFn({ method: "GET" })
       authMap.set(u.id, u.last_sign_in_at ?? null);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: wallets } = await (supabaseAdmin as any)
+      .from("ibc_wallets")
+      .select("user_id, balance, unlimited_coins");
+    const walletMap = new Map<string, { balance: number; unlimited: boolean }>();
+    for (const w of (wallets ?? []) as Array<{ user_id: string; balance: number; unlimited_coins: boolean }>) {
+      walletMap.set(w.user_id, { balance: w.balance ?? 0, unlimited: Boolean(w.unlimited_coins) });
+    }
+
     return (profiles ?? []).map((p) => ({
       ...p,
       roles: roleMap.get(p.id) ?? [],
       last_sign_in_at: authMap.get(p.id) ?? null,
+      ibc_balance: walletMap.get(p.id)?.balance ?? 0,
+      unlimited_coins: walletMap.get(p.id)?.unlimited ?? false,
+
     }));
   });
 
@@ -310,3 +325,107 @@ export const sendPendingWelcomes = createServerFn({ method: "POST" })
     return { total: rows.length, sent, failed };
   });
 
+
+/* ============================================================
+   👑 Superpoderes de admin: crear usuarias y gestionar coins
+   ============================================================ */
+
+/** Crea una cuenta manualmente (correo ya confirmado) con saldo inicial de IBC. */
+export const createUserManually = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { email: string; password: string; displayName?: string; initialCoins?: number }) => {
+    const email = (input.email ?? "").trim().toLowerCase();
+    const password = String(input.password ?? "");
+    if (!/^[\w.+-]+@[\w-]+\.[\w.-]{2,}$/.test(email)) throw new Error("Correo inválido");
+    if (password.length < 6) throw new Error("La contraseña debe tener al menos 6 caracteres");
+    const coins = Math.max(0, Math.min(999999, Math.round(Number(input.initialCoins ?? 0) || 0)));
+    return { email, password, displayName: (input.displayName ?? "").trim().slice(0, 80), initialCoins: coins };
+  })
+  .handler(async ({ data, context }): Promise<{ ok: true; userId: string }> => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+      user_metadata: { display_name: data.displayName || data.email.split("@")[0] },
+    });
+    if (error) throw new Error(error.message);
+    const userId = created.user?.id;
+    if (!userId) throw new Error("No se pudo crear la cuenta");
+
+    if (data.initialCoins > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const admin = supabaseAdmin as any;
+      await admin.from("ibc_wallets").upsert(
+        { user_id: userId, balance: data.initialCoins },
+        { onConflict: "user_id" },
+      );
+      await admin.from("ibc_transactions").insert({
+        user_id: userId,
+        amount: data.initialCoins,
+        type: "earn",
+        description: "Saldo inicial asignado por admin",
+      });
+    }
+    return { ok: true, userId };
+  });
+
+/** Ajusta manualmente el saldo de IBC de cualquier usuaria. */
+export const setUserCoins = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { userId: string; balance: number }) => {
+    const userId = String(input.userId ?? "");
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) throw new Error("Usuario inválido");
+    const balance = Math.max(0, Math.min(999999, Math.round(Number(input.balance) || 0)));
+    return { userId, balance };
+  })
+  .handler(async ({ data, context }): Promise<{ ok: true; balance: number }> => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const admin = supabaseAdmin as any;
+
+    const { data: current } = await admin
+      .from("ibc_wallets")
+      .select("balance")
+      .eq("user_id", data.userId)
+      .maybeSingle();
+
+    const { error } = await admin
+      .from("ibc_wallets")
+      .upsert({ user_id: data.userId, balance: data.balance }, { onConflict: "user_id" });
+    if (error) throw error;
+
+    const delta = data.balance - (current?.balance ?? 0);
+    if (delta !== 0) {
+      await admin.from("ibc_transactions").insert({
+        user_id: data.userId,
+        amount: delta,
+        type: delta > 0 ? "earn" : "spend",
+        description: "Ajuste manual del panel admin",
+      });
+    }
+    return { ok: true, balance: data.balance };
+  });
+
+/** Activa o desactiva el "Modo Coins Infinitas ♾️" para una cuenta. */
+export const setUnlimitedCoins = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { userId: string; unlimited: boolean }) => {
+    const userId = String(input.userId ?? "");
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) throw new Error("Usuario inválido");
+    return { userId, unlimited: Boolean(input.unlimited) };
+  })
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const admin = supabaseAdmin as any;
+    const payload: Record<string, unknown> = { user_id: data.userId, unlimited_coins: data.unlimited };
+    if (data.unlimited) payload["balance"] = 999999;
+    const { error } = await admin.from("ibc_wallets").upsert(payload, { onConflict: "user_id" });
+    if (error) throw error;
+    return { ok: true };
+  });

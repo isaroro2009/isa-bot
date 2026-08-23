@@ -32,6 +32,61 @@ function hhmm(h: number, m: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
+/** Modal de "modo demo" cuando el envío de correo no está configurado. */
+function isNotConfigured(reason?: string) {
+  return Boolean(reason && /email_not_configured|no_provider|not_configured|BREVO/i.test(reason));
+}
+
+export function DemoEmailModal({
+  text,
+  onClose,
+}: {
+  text: string;
+  onClose: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="ibc-confirm-back" onClick={onClose}>
+      <div className="ibc-confirm" onClick={(e) => e.stopPropagation()}>
+        <h3>🧪 Modo Demo Activo</h3>
+        <p>
+          El mensaje fue generado correctamente pero requiere configurar
+          <b> BREVO_API_KEY</b> en Secrets para el envío real.
+        </p>
+        <textarea
+          readOnly
+          value={text}
+          style={{
+            width: "100%",
+            minHeight: 140,
+            borderRadius: 12,
+            border: "1.5px solid #ffd6eb",
+            padding: 10,
+            fontSize: 14,
+            fontFamily: "inherit",
+          }}
+        />
+        <div className="ibc-confirm-row">
+          <button className="cancel" onClick={onClose}>Cerrar</button>
+          <button
+            className="ok"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(text);
+              } catch {
+                /* algunos navegadores lo bloquean */
+              }
+              setCopied(true);
+            }}
+          >
+            {copied ? "¡Copiado! 💕" : "📋 Copiar texto"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ReminderActionCard({ action }: { action: ReminderAction }) {
   const save = useServerFn(createReminder);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
@@ -84,6 +139,7 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
   const send = useServerFn(sendEmailNotification);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
+  const [demo, setDemo] = useState(false);
 
   return (
     <div className="action-card">
@@ -104,7 +160,11 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
             try {
               const res = await send({ data: { to: action.to, subject: action.subject, body: action.body } });
               if (res.sent) setState("done");
-              else { setMsg(`No se pudo enviar (${res.reason})`); setState("error"); }
+              else if (isNotConfigured(res.reason)) {
+                setDemo(true);
+                setMsg("Modo demo: el correo no está configurado todavía.");
+                setState("error");
+              } else { setMsg(`No se pudo enviar (${res.reason})`); setState("error"); }
             } catch (e) {
               setMsg(e instanceof Error ? e.message : "No se pudo enviar");
               setState("error");
@@ -115,6 +175,12 @@ export function EmailActionCard({ action }: { action: EmailAction }) {
         </button>
       )}
       {state === "error" && <div className="action-card-err">{msg}</div>}
+      {demo && (
+        <DemoEmailModal
+          text={`${action.subject}\n\n${action.body}`}
+          onClose={() => setDemo(false)}
+        />
+      )}
     </div>
   );
 }
@@ -126,6 +192,7 @@ export function DocActionCard({ action }: { action: DocAction }) {
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
   const [steps, setSteps] = useState<Record<string, "active" | "done" | "err">>({});
+  const [demoText, setDemoText] = useState<string | null>(null);
   const cost = ibc.costOf("agent");
 
   function mark(k: string, v: "active" | "done" | "err") {
@@ -191,7 +258,15 @@ export function DocActionCard({ action }: { action: DocAction }) {
         const to = action.to ?? userRes.user?.email ?? "";
         if (!to) throw new Error("No encontré tu correo registrado");
         const res = await send({ data: { to, subject: title || "Tu documento de IsaBot", body } });
-        if (!res.sent) throw new Error(`No se pudo enviar (${res.reason})`);
+        if (!res.sent) {
+          if (isNotConfigured(res.reason)) {
+            mark("mail", "err");
+            setDemoText(`${title}\n\n${body}`);
+            setState("done");
+            return;
+          }
+          throw new Error(`No se pudo enviar (${res.reason})`);
+        }
         mark("mail", "done");
       }
       setState("done");
@@ -231,6 +306,7 @@ export function DocActionCard({ action }: { action: DocAction }) {
         {action.email && badge("mail", "Correo enviado exitosamente")}
       </div>
       {state === "error" && <div className="action-card-err">{msg}</div>}
+      {demoText && <DemoEmailModal text={demoText} onClose={() => setDemoText(null)} />}
     </div>
   );
 }

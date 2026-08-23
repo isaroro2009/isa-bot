@@ -8,6 +8,7 @@ type IbcCtx = {
   enabled: boolean;
   balance: number;
   isPro: boolean;
+  unlimited: boolean;
   streakDays: number;
   checkedInToday: boolean;
   transactions: Array<{ id: string; amount: number; type: string; description: string; created_at: string }>;
@@ -68,6 +69,8 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
 
   const balance = wallet.data?.balance ?? 0;
   const isPro = wallet.data?.planStatus === "pro";
+  const unlimited = wallet.data?.unlimited ?? false;
+
 
   const [streakToast, setStreakToast] = useState<string | null>(null);
   // Último cobro realizado: única transacción reembolsable desde el cliente.
@@ -96,6 +99,8 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const charge = useCallback(
     async (action: IbcActionKey, note?: string) => {
       if (!enabled) return true; // invitados: sin economía hasta iniciar sesión
+      if (unlimited) return true; // ♾️ cuentas con coins infinitas nunca gastan
+
       const cost = effectiveCost(action, isPro);
       if (cost > 0 && balance < cost) {
         setEmptyOpen(true);
@@ -115,7 +120,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
         return true;
       }
     },
-    [enabled, isPro, balance, spendFn, invalidate],
+    [enabled, isPro, balance, unlimited, spendFn, invalidate],
   );
 
   // 🪙 Confirmación manual: nunca se descuentan coins sin un "sí" explícito.
@@ -129,6 +134,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const confirmCharge = useCallback(
     async (action: IbcActionKey, note?: string) => {
       if (!enabled) return true;
+      if (unlimited) return true;
       const cost = effectiveCost(action, isPro);
       if (cost <= 0) return charge(action, note);
       if (balance < cost) {
@@ -139,8 +145,9 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       if (!ok) return false;
       return charge(action, note);
     },
-    [enabled, isPro, balance, charge],
+    [enabled, isPro, balance, unlimited, charge],
   );
+
 
   const giveBack = useCallback(
     async (txId?: string | null) => {
@@ -162,6 +169,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       enabled,
       balance,
       isPro,
+      unlimited,
       streakDays: wallet.data?.streakDays ?? 0,
       checkedInToday: wallet.data?.checkedInToday ?? false,
       transactions: tx.data ?? [],
@@ -182,9 +190,9 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       charge,
       confirmCharge,
       giveBack,
-      costOf: (action: IbcActionKey) => effectiveCost(action, isPro),
+      costOf: (action: IbcActionKey) => (unlimited ? 0 : effectiveCost(action, isPro)),
     }),
-    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, confirmCharge, giveBack, streakToast],
+    [enabled, balance, isPro, unlimited, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, confirmCharge, giveBack, streakToast],
   );
 
   return (
