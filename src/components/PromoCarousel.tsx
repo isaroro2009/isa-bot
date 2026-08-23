@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import "./promo.css";
 
 export type PromoAction =
-  | { kind: "panel"; panel: string }
+  | { kind: "panel"; panel: "subscribe" | "academy" }
+  | { kind: "store" }
   | { kind: "href"; href: string }
-  | { kind: "popup"; href: string };
+  | { kind: "story" };
 
 type Slide = {
   id: string;
@@ -24,16 +25,16 @@ const SLIDES: Slide[] = [
     desc: "Texto ilimitado, +300 IBC cada mes, modelos avanzados y herramientas PRO sin recargo.",
     cta: "Ver plan PRO",
     bg: "linear-gradient(135deg, #b0489a, #6d3ea8)",
-    action: { kind: "panel", panel: "store" },
+    action: { kind: "panel", panel: "subscribe" },
   },
   {
     id: "ibc",
     emoji: "🪙",
     title: "¿Qué son las IsaBot Coins?",
-    desc: "La moneda de IsaBot: gastas IBC al crear imágenes, guiones o usar el agente. Recarga desde $2.50.",
+    desc: "Son la energía de IsaBot: gastas IBC al crear imágenes, guiones o usar el agente. Recarga desde $2.50.",
     cta: "Recargar coins",
     bg: "linear-gradient(135deg, #e2884c, #c74f7c)",
-    action: { kind: "panel", panel: "store" },
+    action: { kind: "store" },
   },
   {
     id: "isabella",
@@ -41,17 +42,17 @@ const SLIDES: Slide[] = [
     title: "Conoce a Isabella",
     desc: "17 años, de Cali, Colombia. Creó IsaBot para que estudiar y emprender sea más fácil y bonito.",
     cta: "Su historia",
-    bg: "linear-gradient(135deg, #7d5bd6, #d munch)".replace(" munch", "76fb0"),
-    action: { kind: "panel", panel: "about" },
+    bg: "linear-gradient(135deg, #7d5bd6, #d76fb0)",
+    action: { kind: "story" },
   },
   {
     id: "kdp",
     emoji: "📚",
-    title: "Libros publicados en Amazon KDP",
-    desc: "«Un Cuento de Navidad Futurista» y más títulos escritos por Isabella. Disponibles en Amazon.",
+    title: "Libros en Amazon KDP",
+    desc: "«Un Cuento de Navidad Futurista» y más títulos escritos por Isabella, disponibles en Amazon.",
     cta: "Ver libros",
     bg: "linear-gradient(135deg, #2f7f6f, #4aa88a)",
-    action: { kind: "href", href: "https://www.amazon.com/s?k=Isabella+Rodr%C3%ADguez+Roque" },
+    action: { kind: "href", href: "https://www.amazon.com/s?k=Isabella+Rodriguez+Roque" },
   },
   {
     id: "planners",
@@ -66,7 +67,7 @@ const SLIDES: Slide[] = [
     id: "academy",
     emoji: "🎓",
     title: "IsaAcademy",
-    desc: "Aprende IA, diseño y emprendimiento con retos cortos y gana IBC mientras estudias.",
+    desc: "Aprende IA, diseño y emprendimiento con clases cortas e interactivas.",
     cta: "Entrar a la Academy",
     bg: "linear-gradient(135deg, #4a63c9, #8f57c9)",
     action: { kind: "panel", panel: "academy" },
@@ -77,11 +78,11 @@ export function PromoCarousel({ onAction }: { onAction: (a: PromoAction) => void
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [story, setStory] = useState(false);
 
   function goTo(i: number) {
     const el = trackRef.current;
-    if (!el) return;
-    el.scrollTo({ left: el.clientWidth * i, behavior: "smooth" });
+    if (el) el.scrollTo({ left: el.clientWidth * i, behavior: "smooth" });
   }
 
   useEffect(() => {
@@ -120,12 +121,16 @@ export function PromoCarousel({ onAction }: { onAction: (a: PromoAction) => void
               <h3>{s.title}</h3>
               <p>{s.desc}</p>
             </div>
-            <button className="promo-cta" onClick={() => onAction(s.action)}>
+            <button
+              className="promo-cta"
+              onClick={() => (s.action.kind === "story" ? setStory(true) : onAction(s.action))}
+            >
               {s.cta}
             </button>
           </article>
         ))}
       </div>
+
       <div className="promo-dots">
         {SLIDES.map((s, i) => (
           <button
@@ -139,6 +144,25 @@ export function PromoCarousel({ onAction }: { onAction: (a: PromoAction) => void
           />
         ))}
       </div>
+
+      {story && (
+        <div className="promo-story-back" onClick={() => setStory(false)}>
+          <div className="promo-story" onClick={(e) => e.stopPropagation()}>
+            <button className="promo-story-x" onClick={() => setStory(false)} aria-label="Cerrar">✕</button>
+            <h3>💜 Isabella Rodríguez Roque</h3>
+            <p>
+              Tiene 17 años, vive en Cali (Colombia) y es la desarrolladora detrás de IsaBot y de
+              IsaRoRo Studio. Empezó programando de noche, después de clases, con la idea de que
+              estudiar y emprender no tienen por qué ser un caos.
+            </p>
+            <p>
+              Hoy IsaBot combina chat con IA, herramientas creativas, la academia y su propia
+              economía de coins — todo pensado para estudiantes y emprendedores que empiezan
+              desde cero, igual que ella.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
