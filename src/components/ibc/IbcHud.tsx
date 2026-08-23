@@ -32,10 +32,19 @@ export function IbcHud() {
       <button
         className={`ibc-badge${bump ? " bump" : ""}`}
         onClick={ibc.openVault}
+        data-tour="coins"
         title="Tu bóveda de IsaBot Coins"
         aria-label={`${ibc.balance} IsaBot Coins`}
       >
         🪙 {ibc.balance}
+      </button>
+      <button
+        className="ibc-streak"
+        data-tour="streak"
+        onClick={ibc.openVault}
+        title="Tu racha diaria — vuelve cada día para ganar coins"
+      >
+        🔥 {ibc.streakDays}
       </button>
       <button
         className={`ibc-plan${ibc.isPro ? " pro" : ""}`}
@@ -60,8 +69,14 @@ export function VaultDrawer() {
   async function doCheckin() {
     setBusy(true);
     try {
-      const delta = await ibc.doCheckin();
-      setMsg(delta > 0 ? `+${delta} IBC por venir hoy 💛` : "Ya reclamaste tus coins de hoy ✨");
+      const res = await ibc.doCheckin();
+      setMsg(
+        res.milestone > 0
+          ? `🔥 ¡${res.streakDays} días! +${res.delta} IBC (incluye bonus de racha) 💛`
+          : res.delta > 0
+            ? `+${res.delta} IBC por venir hoy 💛`
+            : "Ya reclamaste tus coins de hoy ✨",
+      );
     } catch {
       setMsg("No pude registrar el check-in, intenta de nuevo 💔");
     } finally {
