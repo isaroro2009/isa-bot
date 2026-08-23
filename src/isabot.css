@@ -5838,3 +5838,52 @@ pre, code { white-space: pre-wrap; word-break: break-word; }
   .isp-fab { padding: 0; width: 56px; height: 56px; justify-content: center; font-size: 1.2rem; }
   .isp-modal { width: 100%; border-radius: 20px; }
 }
+
+/* 🤖 Agente de documentos — badges, preview PDF y botón de Gmail */
+.doc-badges { display: grid; gap: 6px; margin-top: 10px; }
+.doc-badge {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: #6b3fa0;
+  background: rgba(236, 226, 250, 0.75);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+.doc-badge.active { animation: docPulse 1.1s ease-in-out infinite; }
+.doc-badge.done { color: #2f7f6a; background: rgba(206, 240, 226, 0.8); }
+.doc-badge.err { color: #c04a6a; background: rgba(255, 219, 230, 0.9); }
+@keyframes docPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+.action-card-btn.gmail {
+  background: linear-gradient(135deg, #ea4335, #4285f4);
+  color: #fff;
+}
+.action-card-btn.ghost {
+  background: rgba(255, 255, 255, 0.85);
+  color: #6b3fa0;
+  border: 1.5px solid rgba(201, 160, 232, 0.5);
+}
+.doc-preview { margin-top: 12px; }
+.doc-preview iframe {
+  width: 100%;
+  height: 340px;
+  border: 1.5px solid rgba(201, 160, 232, 0.45);
+  border-radius: 16px;
+  background: #fff;
+}
+.doc-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.doc-preview-actions .action-card-btn {
+  width: auto;
+  flex: 1 1 140px;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.2;
+}
+@media (max-width: 640px) {
+  .doc-preview iframe { height: 240px; }
+}
