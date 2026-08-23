@@ -219,9 +219,9 @@ export function IsaSpacePage() {
     <div className="isp-app">
       <header className="isp-topbar">
         <nav className="isp-nav">
-          <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>⌂ Home</button>
-          <button className={tab === "explore" ? "active" : ""} onClick={() => setTab("explore")}>◎ Explore</button>
-          <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>✨ Quiénes somos</button>
+          <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>✨ Para ti</button>
+          <button className={tab === "mine" ? "active" : ""} onClick={() => setTab("mine")}>👤 Mis publicaciones</button>
+          <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>💜 Quiénes somos</button>
         </nav>
         <button className="isp-return" onClick={returnToIsaBot}>
           <span className="isp-return-badge">🏠</span>
