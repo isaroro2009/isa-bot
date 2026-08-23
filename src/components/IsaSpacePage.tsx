@@ -29,6 +29,8 @@ function Avatar({ name, url, size = 36 }: { name: string; url?: string | null; s
   );
 }
 
+const TAG_OPTIONS = ["diseño", "IA", "estudio", "emprender", "arte", "música"];
+
 const SIDE_LINKS = [
   { icon: "☺", label: "Current Vibe" },
   { icon: "✎", label: "Inspiration" },
@@ -68,7 +70,8 @@ export function IsaSpacePage() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [tab, setTab] = useState<"home" | "explore" | "about">("home");
+  const [tab, setTab] = useState<"home" | "mine" | "about">("home");
+  const [tags, setTags] = useState<string[]>([]);
   const [commentText, setCommentText] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -161,8 +164,8 @@ export function IsaSpacePage() {
   }, [posts]);
 
   const feed = useMemo(
-    () => (tab === "about" ? [] : tab === "explore" ? posts.filter((p) => p.image_url) : posts),
-    [posts, tab],
+    () => (tab === "about" ? [] : tab === "mine" ? posts.filter((p) => p.user_id === me?.id) : posts),
+    [posts, tab, me?.id],
   );
 
   function returnToIsaBot() {
@@ -198,9 +201,11 @@ export function IsaSpacePage() {
         if (upErr) throw upErr;
         imageUrl = path;
       }
-      await doCreate({ data: { content: text.trim(), imageUrl } });
+      const tagLine = tags.length ? `\n\n${tags.map((t) => `#${t}`).join(" ")}` : "";
+      await doCreate({ data: { content: `${text.trim()}${tagLine}`.trim(), imageUrl } });
       setText("");
       setFile(null);
+      setTags([]);
       setComposerOpen(false);
       await load();
     } catch (e) {
@@ -216,9 +221,9 @@ export function IsaSpacePage() {
     <div className="isp-app">
       <header className="isp-topbar">
         <nav className="isp-nav">
-          <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>⌂ Home</button>
-          <button className={tab === "explore" ? "active" : ""} onClick={() => setTab("explore")}>◎ Explore</button>
-          <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>✨ Quiénes somos</button>
+          <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>✨ Para ti</button>
+          <button className={tab === "mine" ? "active" : ""} onClick={() => setTab("mine")}>👤 Mis publicaciones</button>
+          <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>💜 Quiénes somos</button>
         </nav>
         <button className="isp-return" onClick={returnToIsaBot}>
           <span className="isp-return-badge">🏠</span>
@@ -306,29 +311,56 @@ export function IsaSpacePage() {
         </aside>
 
         <main className="isp-feed">
+          {tab !== "about" && (
+            <button className="isp-open-composer" onClick={() => setComposerOpen(true)}>
+              <Avatar name={myName} url={me?.avatar_url} size={38} />
+              <span>Comparte tu vibe de hoy… 💭</span>
+              <b>Crear publicación</b>
+            </button>
+          )}
+
           {composerOpen && (
-            <section className="isp-card isp-composer">
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value.slice(0, 2000))}
-                placeholder="Comparte tu vibe de hoy… 💭"
-                rows={3}
-              />
-              {filePreview && (
-                <div className="isp-composer-preview">
-                  <img src={filePreview} alt="vista previa" />
-                  <button onClick={() => setFile(null)}>✕</button>
+            <div className="isp-modal-back" onClick={() => setComposerOpen(false)}>
+              <section className="isp-card isp-composer isp-modal" onClick={(e) => e.stopPropagation()}>
+                <header className="isp-composer-head">
+                  <strong>Crear publicación</strong>
+                  <button className="isp-ghost" onClick={() => setComposerOpen(false)}>✕</button>
+                </header>
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value.slice(0, 2000))}
+                  placeholder="¿Qué estás creando hoy? ✨"
+                  rows={4}
+                />
+                {filePreview && (
+                  <div className="isp-composer-preview">
+                    <img src={filePreview} alt="vista previa" />
+                    <button onClick={() => setFile(null)}>✕</button>
+                  </div>
+                )}
+                <div className="isp-tag-picker">
+                  {TAG_OPTIONS.map((t) => (
+                    <button
+                      key={t}
+                      className={tags.includes(t) ? "active" : ""}
+                      onClick={() =>
+                        setTags((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t].slice(0, 3)))
+                      }
+                    >
+                      #{t}
+                    </button>
+                  ))}
                 </div>
-              )}
-              <div className="isp-composer-row">
-                <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-                <button className="isp-ghost" onClick={() => fileRef.current?.click()}>🖼️ Foto</button>
-                <small>{text.length}/2000</small>
-                <button className="isp-share" disabled={sending || (!text.trim() && !file)} onClick={publish}>
-                  {sending ? "Compartiendo…" : "Compartir"}
-                </button>
-              </div>
-            </section>
+                <div className="isp-composer-row">
+                  <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                  <button className="isp-ghost" onClick={() => fileRef.current?.click()}>🖼️ Foto</button>
+                  <small>{text.length}/2000</small>
+                  <button className="isp-share" disabled={sending || (!text.trim() && !file)} onClick={publish}>
+                    {sending ? "Compartiendo…" : "Compartir"}
+                  </button>
+                </div>
+              </section>
+            </div>
           )}
 
           {error && <div className="isp-error">{error}</div>}
@@ -474,6 +506,12 @@ export function IsaSpacePage() {
           </section>
         </aside>
       </div>
+
+      {tab !== "about" && !composerOpen && (
+        <button className="isp-fab" onClick={() => setComposerOpen(true)} aria-label="Crear publicación">
+          ✎ <span>Crear publicación</span>
+        </button>
+      )}
     </div>
   );
 }
