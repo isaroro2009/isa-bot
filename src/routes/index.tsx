@@ -816,10 +816,34 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: IsaBot,
+  component: IsaBotPage,
 });
 
-type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "rewards" | "cowork" | "isaspace" | "reminders" | "myday" | "invite" | "feedback" | "technews" | "academy" | "sales";
+// Envuelve la app con la economía de IsaBot Coins.
+function IsaBotPage() {
+  const [ibcUserId, setIbcUserId] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void supabase.auth.getSession().then(({ data }) => {
+      if (alive) setIbcUserId(data.session?.user.id ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setIbcUserId(session?.user.id ?? null);
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+  return (
+    <IbcProvider userId={ibcUserId}>
+      <IsaBot />
+      <IbcOverlays />
+    </IbcProvider>
+  );
+}
+
+type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "rewards" | "cowork" | "isaspace" | "reminders" | "myday" | "invite" | "feedback" | "technews" | "academy" | "sales" | "ibcagent";
 
 const VIBES: Array<{ id: Vibe; label: string; hint: string }> = [
   { id: "kawaii", label: "🌸 Kawaii", hint: "Tierno, animado y motivador" },
@@ -894,6 +918,7 @@ const WEEKLY_CHALLENGES: Array<{ title: string; emoji: string }> = [
 
 
 function IsaBot() {
+  const ibc = useIbc();
   const [hydrated, setHydrated] = useState(false);
 
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -1538,6 +1563,13 @@ ${rows}
         : "IsaBot está procesando... 🌸✨",
       thinking: true,
     };
+    // 🪙 Cobro en IsaBot Coins (los mensajes locales/offline son gratis).
+    if (!useLocal && !offlineNow) {
+      const action = image ? "image" : useAgent ? "agent" : text.length > 400 ? "long_form" : "text_basic";
+      const paid = await ibc.charge(action, "Mensaje a IsaBot");
+      if (!paid) return;
+    }
+
     updateCurrentChat((msgs) => [...msgs, userMsg, thinkingMsg]);
     setInput("");
     setAttachedImage(null);
@@ -2474,6 +2506,7 @@ ${rows}
             <button className="tool-btn free" onClick={() => { setPalette(generatePalette()); setPanel("palette"); }}>🎨 Paletas de Colores</button>
             <button className="tool-btn free" onClick={() => setPanel("notes")}>📝 Notas Rápidas</button>
             <button className="tool-btn free" onClick={() => setPanel("reminders")}>⏰ Recordatorios por correo</button>
+            <button className="tool-btn free" onClick={() => setPanel("ibcagent")}>🤖 Agente autónomo (PDF)</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>
               {isPremium ? "✏️" : "🔒"} Outlines para Procreate
             </button>
@@ -2577,6 +2610,7 @@ ${rows}
         {authUser && (
           <PointsChip points={pointsBalance} onClick={() => setPanel("rewards")} />
         )}
+        <IbcHud />
       </header>
 
       {!online && (
@@ -3687,6 +3721,8 @@ ${rows}
 
 
       {panel === "cowork" && <DesktopCowork onClose={() => setPanel(null)} />}
+
+      {panel === "ibcagent" && <AgentPdfPanel onClose={() => setPanel(null)} />}
 
 
       <PointsToastHost />
