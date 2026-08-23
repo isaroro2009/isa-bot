@@ -506,6 +506,12 @@ export function IsaSpacePage() {
           </section>
         </aside>
       </div>
+
+      {tab !== "about" && !composerOpen && (
+        <button className="isp-fab" onClick={() => setComposerOpen(true)} aria-label="Crear publicación">
+          ✎ <span>Crear publicación</span>
+        </button>
+      )}
     </div>
   );
 }
