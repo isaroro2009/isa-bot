@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getWallet, getTransactions, checkin, spend, refund } from "@/lib/ibc.functions";
@@ -19,7 +19,9 @@ type IbcCtx = {
   openStore: () => void;
   closeStore: () => void;
   closeEmpty: () => void;
-  doCheckin: () => Promise<number>;
+  doCheckin: () => Promise<{ delta: number; milestone: number; streakDays: number }>;
+  streakToast: string | null;
+  clearStreakToast: () => void;
   /** Cobra la acción. Devuelve false (y abre el modal de saldo) si no alcanza. */
   charge: (action: IbcActionKey, note?: string) => Promise<boolean>;
   giveBack: (amount: number, note?: string) => Promise<void>;
@@ -64,11 +66,27 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const balance = wallet.data?.balance ?? 0;
   const isPro = wallet.data?.planStatus === "pro";
 
+  const [streakToast, setStreakToast] = useState<string | null>(null);
+
   const doCheckin = useCallback(async () => {
     const res = await checkinFn();
     invalidate();
-    return res.delta;
+    if (res.milestone > 0) {
+      setStreakToast(`🔥 ¡${res.streakDays} días de racha! +${res.milestone} coins de bonus 🪙`);
+    } else if (res.delta > 0) {
+      setStreakToast(`🔥 Racha de ${res.streakDays} día(s) · +${res.delta} coin`);
+    }
+    return res;
   }, [checkinFn, invalidate]);
+
+  // Check-in automático una vez al día para que la racha nunca se pierda.
+  const autoDone = useRef(false);
+  useEffect(() => {
+    if (!enabled || autoDone.current) return;
+    if (!wallet.data || wallet.data.checkedInToday) return;
+    autoDone.current = true;
+    void doCheckin().catch(() => undefined);
+  }, [enabled, wallet.data, doCheckin]);
 
   const charge = useCallback(
     async (action: IbcActionKey, note?: string) => {
@@ -127,11 +145,13 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       closeStore: () => setStoreOpen(false),
       closeEmpty: () => setEmptyOpen(false),
       doCheckin,
+      streakToast,
+      clearStreakToast: () => setStreakToast(null),
       charge,
       giveBack,
       costOf: (action: IbcActionKey) => effectiveCost(action, isPro),
     }),
-    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, giveBack],
+    [enabled, balance, isPro, wallet.data, tx.data, vaultOpen, storeOpen, emptyOpen, doCheckin, charge, giveBack, streakToast],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

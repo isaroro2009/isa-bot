@@ -55,7 +55,7 @@ export default function WelcomeModal({ userId, name }: { userId: string; name?: 
           <li>🎓 IsaAcademy: clases de IA y tech con rachas y XP</li>
           <li>🪐 IsaSpace: comparte tus creaciones con la comunidad</li>
           <li>🧺 IsaMarket: ofrece tus servicios freelance o encuentra talento</li>
-          <li>🏆 Gana IsaPuntos cada día y canjéalos por recompensas</li>
+          <li>🏆 Gana IsaBot Coins cada día y canjéalos por recompensas</li>
         </ul>
 
 

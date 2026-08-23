@@ -56,14 +56,16 @@ export const getTransactions = createServerFn({ method: "GET" })
 
 export const checkin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ balance: number; streakDays: number; delta: number }> => {
+  .handler(async ({ context }): Promise<{ balance: number; streakDays: number; delta: number; milestone: number }> => {
     const { data, error } = await context.supabase.rpc("ibc_checkin");
     if (error) throw new Error(error.message);
-    const row = Array.isArray(data) ? data[0] : data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const row: any = Array.isArray(data) ? data[0] : data;
     return {
       balance: row?.balance ?? 0,
       streakDays: row?.streak_days ?? 0,
       delta: row?.delta ?? 0,
+      milestone: row?.milestone ?? 0,
     };
   });
 

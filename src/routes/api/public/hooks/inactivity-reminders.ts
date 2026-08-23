@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 const APP_URL = "https://isa-bot.lovable.app";
-const INACTIVE_DAYS = 8;
-const COOLDOWN_DAYS = 7;
+const INACTIVE_DAYS = 3;
+const COOLDOWN_DAYS = 3;
 
 function authorized(request: Request): boolean {
   // Secreto exclusivo del servidor. NUNCA usar la publishable/anon key: es pública.
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/public/hooks/inactivity-reminders")({
             subject: "Te extraño 💕 ¿Retomamos hoy?",
             html: emailLayout({
               title: "Te extraño 💕",
-              body: `<p>Hola ${p.display_name || "creativa"},</p><p>Hace <b>${days} días</b> que no pasas por IsaBot. Volvamos con algo suave: elige una tarea pequeña, activa el Pomodoro y en 25 minutos ya estás de vuelta ✨</p><p>Te espero con tus chats, tus notas y tus IsaPuntos intactos 🌟</p>`,
+              body: `<p>Hola ${p.display_name || "creativa"},</p><p>Hace <b>${days} días</b> que no pasas por IsaBot. Volvamos con algo suave: elige una tarea pequeña, activa el Pomodoro y en 25 minutos ya estás de vuelta ✨</p><p>Te espero con tus chats, tus notas y tus IsaBot Coins intactos 🌟</p>`,
               ctaLabel: "Volver a IsaBot",
               ctaUrl: APP_URL,
               unsubscribeUrl: `${APP_URL}/api/public/unsubscribe?token=${p.unsubscribe_token}`,

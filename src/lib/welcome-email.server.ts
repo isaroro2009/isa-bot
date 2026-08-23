@@ -29,8 +29,8 @@ export function buildWelcomeEmail(opts: {
 
       <h2 style="font-size:16px;color:#6b3fa0;margin:22px 0 8px;">💌 Invita y gana</h2>
       <ul style="padding-left:18px;margin:0;">
-        <li><strong>+25 IsaPuntos</strong> por cada amiga/o que se une con tu código</li>
-        <li>Tu invitada/o recibe <strong>+15 IsaPuntos</strong> de bienvenida</li>
+        <li><strong>+25 IsaBot Coins</strong> por cada amiga/o que se une con tu código</li>
+        <li>Tu invitada/o recibe <strong>+15 IsaBot Coins</strong> de bienvenida</li>
         <li>Cada <strong>3 invitadas/os activas/os = 7 días Pro gratis</strong> para ti</li>
       </ul>
       ${code ? `<p style="margin-top:14px;">Tu código: <strong style="font-size:18px;letter-spacing:1px;">${code}</strong><br/>

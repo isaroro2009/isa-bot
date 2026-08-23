@@ -520,6 +520,42 @@ export type Database = {
         }
         Relationships: []
       }
+      legacy_members: {
+        Row: {
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          display_name: string
+          email: string | null
+          id: string
+          invited_at: string | null
+          plan_status: string
+          starting_balance: number
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          display_name: string
+          email?: string | null
+          id?: string
+          invited_at?: string | null
+          plan_status?: string
+          starting_balance?: number
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          id?: string
+          invited_at?: string | null
+          plan_status?: string
+          starting_balance?: number
+        }
+        Relationships: []
+      }
       market_applications: {
         Row: {
           contact: string
@@ -1762,6 +1798,7 @@ export type Database = {
         Returns: {
           balance: number
           delta: number
+          milestone: number
           streak_days: number
         }[]
       }
