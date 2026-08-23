@@ -423,6 +423,8 @@ function AdminPage() {
                     <th style={th}>Teléfono</th>
                     <th style={th}>Rol</th>
                     <th style={th}>Premium</th>
+                    <th style={th}>🪙 Coins</th>
+
                     <th style={th}>Último acceso</th>
                     <th style={th}>Acciones</th>
                   </tr>
