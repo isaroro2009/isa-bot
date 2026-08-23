@@ -99,3 +99,37 @@
   .promo-cta { padding: 9px 12px; font-size: 0.74rem; }
   .promo-emoji { font-size: 1.5rem; }
 }
+
+.promo-story-back {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(20, 8, 26, 0.45);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.promo-story {
+  position: relative;
+  width: min(460px, 100%);
+  background: #fff;
+  color: #4a2b5a;
+  border-radius: 22px;
+  padding: 22px 20px;
+  box-shadow: 0 18px 50px rgba(70, 20, 70, 0.3);
+}
+.promo-story h3 { margin: 0 0 10px; font-size: 1.05rem; }
+.promo-story p { margin: 0 0 10px; font-size: 0.88rem; line-height: 1.5; }
+.promo-story-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
