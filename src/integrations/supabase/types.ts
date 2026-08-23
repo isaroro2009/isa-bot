@@ -384,6 +384,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          refund_of: string | null
           type: string
           user_id: string
         }
@@ -392,6 +393,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          refund_of?: string | null
           type: string
           user_id: string
         }
@@ -400,10 +402,19 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          refund_of?: string | null
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ibc_transactions_refund_of_fkey"
+            columns: ["refund_of"]
+            isOneToOne: false
+            referencedRelation: "ibc_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ibc_wallets: {
         Row: {
@@ -1826,11 +1837,19 @@ export type Database = {
           balance: number
         }[]
       }
+      ibc_refund: {
+        Args: { _tx_id: string }
+        Returns: {
+          balance: number
+          refunded: number
+        }[]
+      }
       ibc_spend: {
         Args: { _amount: number; _reason: string }
         Returns: {
           balance: number
           spent: number
+          tx_id: string
         }[]
       }
       is_org_member: { Args: { _org: string; _user: string }; Returns: boolean }

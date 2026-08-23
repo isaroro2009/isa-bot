@@ -72,7 +72,7 @@ export const checkin = createServerFn({ method: "POST" })
 export const spend = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { action: IbcActionKey; note?: string }) => input)
-  .handler(async ({ data, context }): Promise<{ balance: number; spent: number }> => {
+  .handler(async ({ data, context }): Promise<{ balance: number; spent: number; txId: string | null }> => {
     const { supabase, userId } = context;
     await supabase.rpc("ibc_ensure_wallet");
     const { data: wallet } = await supabase
@@ -92,25 +92,30 @@ export const spend = createServerFn({ method: "POST" })
       throw new Error(error.message);
     }
     const row = Array.isArray(res) ? res[0] : res;
-    return { balance: row?.balance ?? 0, spent: row?.spent ?? amount };
+    return {
+      balance: row?.balance ?? 0,
+      spent: row?.spent ?? amount,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      txId: ((row as any)?.tx_id as string | undefined) ?? null,
+    };
   });
 
+/**
+ * Reembolso seguro: solo devuelve el importe de un cobro real y reciente del
+ * propio usuario, y una sola vez (la BD lo valida). No acepta importes libres.
+ */
 export const refund = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { amount: number; note?: string }) => input)
-  .handler(async ({ data, context }): Promise<{ balance: number }> => {
-    const amount = Math.max(0, Math.min(100, Math.round(data.amount)));
-    if (amount === 0) {
-      const { data: w } = await context.supabase
-        .from("ibc_wallets")
-        .select("balance")
-        .eq("user_id", context.userId)
-        .maybeSingle();
-      return { balance: w?.balance ?? 0 };
+  .inputValidator((input: { txId: string }) => {
+    const id = String(input?.txId ?? "");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      throw new Error("invalid_transaction");
     }
-    const { data: res, error } = await context.supabase.rpc("ibc_grant", {
-      _amount: amount,
-      _reason: data.note ?? "Reembolso",
+    return { txId: id };
+  })
+  .handler(async ({ data, context }): Promise<{ balance: number }> => {
+    const { data: res, error } = await context.supabase.rpc("ibc_refund", {
+      _tx_id: data.txId,
     });
     if (error) throw new Error(error.message);
     const row = Array.isArray(res) ? res[0] : res;

@@ -98,7 +98,7 @@ export function AgentPdfPanel({ onClose }: { onClose: () => void }) {
       setResult({ title, body });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Algo salió mal");
-      await ibc.giveBack(cost, "Reembolso agente");
+      await ibc.giveBack();
     } finally {
       setRunning(false);
     }
