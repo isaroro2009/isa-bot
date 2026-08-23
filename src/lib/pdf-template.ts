@@ -8,6 +8,8 @@ export type IsaPdfResult = {
   dataUrl: string;
   base64: string;
   filename: string;
+  /** Texto original (markdown) usado para generar el PDF. */
+  text: string;
 };
 
 type Section = { heading?: string; lines: string[] };
@@ -155,5 +157,5 @@ export async function buildIsaBotPdf(title: string, content: string, meta?: Reco
   const dataUrl = doc.output("datauristring") as string;
   const base64 = dataUrl.split(",")[1] ?? "";
   const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/gi, "-").slice(0, 40) || "isabot"}.pdf`;
-  return { blob, dataUrl, base64, filename };
+  return { blob, dataUrl, base64, filename, text: content };
 }

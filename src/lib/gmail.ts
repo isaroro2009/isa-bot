@@ -5,7 +5,14 @@
  */
 
 const KEY = "isabot.gmail.token";
-const SCOPE = "https://www.googleapis.com/auth/gmail.send";
+/** Permisos del agente dentro de la cuenta de Google: Gmail, Drive, Calendar, Docs y Sheets. */
+const SCOPE = [
+  "https://www.googleapis.com/auth/gmail.send",
+  "https://www.googleapis.com/auth/drive.file",
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/documents",
+  "https://www.googleapis.com/auth/spreadsheets",
+].join(" ");
 
 type Stored = { token: string; savedAt: number };
 

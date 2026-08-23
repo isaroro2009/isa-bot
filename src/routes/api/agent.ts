@@ -209,11 +209,20 @@ export const Route = createFileRoute("/api/agent")({
         // Cerebro elegido: si es de Lovable AI (ej. Gemini Spark) usamos ese motor.
         const brain = body.brain ? BRAIN_BY_ID[body.brain] : undefined;
         const useLovable = brain?.provider === "lovable";
-        const endpoint = useLovable
-          ? "https://ai.gateway.lovable.dev/v1/chat/completions"
-          : "https://api.groq.com/openai/v1/chat/completions";
-        const modelId = useLovable ? brain!.engine : AGENT_MODEL;
-        const key = useLovable ? process.env.LOVABLE_API_KEY : process.env.GROQ_API_KEY;
+        // 🟦 Preferimos el motor directo de Google (Gemini) con la clave propia.
+        const googleKey = process.env.GOOGLE_AI_API_KEY ?? "";
+        const useGoogle = Boolean(googleKey);
+        const endpoint = useGoogle
+          ? "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+          : useLovable
+            ? "https://ai.gateway.lovable.dev/v1/chat/completions"
+            : "https://api.groq.com/openai/v1/chat/completions";
+        const modelId = useGoogle
+          ? "gemini-2.5-flash"
+          : useLovable
+            ? brain!.engine
+            : AGENT_MODEL;
+        const key = useGoogle ? googleKey : useLovable ? process.env.LOVABLE_API_KEY : process.env.GROQ_API_KEY;
         if (!key) return json({ error: "Falta la clave del motor de IA" }, 500);
 
 
