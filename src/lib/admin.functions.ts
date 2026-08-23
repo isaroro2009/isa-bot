@@ -56,10 +56,22 @@ export const listUsers = createServerFn({ method: "GET" })
       authMap.set(u.id, u.last_sign_in_at ?? null);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: wallets } = await (supabaseAdmin as any)
+      .from("ibc_wallets")
+      .select("user_id, balance, unlimited_coins");
+    const walletMap = new Map<string, { balance: number; unlimited: boolean }>();
+    for (const w of (wallets ?? []) as Array<{ user_id: string; balance: number; unlimited_coins: boolean }>) {
+      walletMap.set(w.user_id, { balance: w.balance ?? 0, unlimited: Boolean(w.unlimited_coins) });
+    }
+
     return (profiles ?? []).map((p) => ({
       ...p,
       roles: roleMap.get(p.id) ?? [],
       last_sign_in_at: authMap.get(p.id) ?? null,
+      ibc_balance: walletMap.get(p.id)?.balance ?? 0,
+      unlimited_coins: walletMap.get(p.id)?.unlimited ?? false,
+
     }));
   });
 
