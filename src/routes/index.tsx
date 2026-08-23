@@ -6,6 +6,8 @@ import { BRAINS } from "@/lib/brains";
 
 import { getMyProfile, acknowledgePremiumGift } from "@/lib/profile.functions";
 import { sendWelcomeEmail } from "@/lib/welcome.functions";
+import { sendLoginAlert } from "@/lib/login-alert.functions";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { VoiceCall } from "@/components/VoiceCall";
 import { RemindersPanel } from "@/components/RemindersPanel";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
@@ -835,6 +837,7 @@ function IsaBotPage() {
     <IbcProvider userId={ibcUserId}>
       <IsaBot />
       <IbcOverlays />
+      <OnboardingTour active={Boolean(ibcUserId)} />
     </IbcProvider>
   );
 }
@@ -1213,6 +1216,16 @@ function IsaBot() {
     if (!authUser) return;
     void doSendWelcome().catch(() => {});
   }, [authUser?.id, doSendWelcome]);
+
+  // 🔐 Aviso de seguridad por inicio de sesión (una vez por sesión del navegador)
+  const doLoginAlert = useServerFn(sendLoginAlert);
+  useEffect(() => {
+    if (!authUser) return;
+    const key = `isabot_login_alert_${authUser.id}`;
+    if (window.sessionStorage.getItem(key)) return;
+    window.sessionStorage.setItem(key, "1");
+    void doLoginAlert({ data: { device: navigator.userAgent } }).catch(() => {});
+  }, [authUser?.id, doLoginAlert]);
 
   // 📴 Detecta si hay señal y reenvía lo que quedó en cola
   useEffect(() => {
