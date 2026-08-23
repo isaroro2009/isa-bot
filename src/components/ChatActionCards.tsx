@@ -5,6 +5,7 @@ import { sendEmailNotification } from "@/lib/notify.functions";
 import { sendGmailMessage } from "@/lib/gmail.functions";
 import { captureGmailToken, connectGmail, getGmailToken } from "@/lib/gmail";
 import { buildIsaBotPdf, type IsaPdfResult } from "@/lib/pdf-template";
+import { calendarCreateEvent, docsCreateDocument, driveUploadFile } from "@/lib/google.functions";
 import { useIbc } from "@/components/ibc/useIbc";
 
 export type ReminderAction = {
