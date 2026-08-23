@@ -29,6 +29,8 @@ function Avatar({ name, url, size = 36 }: { name: string; url?: string | null; s
   );
 }
 
+const TAG_OPTIONS = ["diseño", "IA", "estudio", "emprender", "arte", "música"];
+
 const SIDE_LINKS = [
   { icon: "☺", label: "Current Vibe" },
   { icon: "✎", label: "Inspiration" },
