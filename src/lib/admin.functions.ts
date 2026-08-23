@@ -20,7 +20,10 @@ export type AdminUserRow = {
   created_at: string;
   roles: string[];
   last_sign_in_at: string | null;
+  ibc_balance: number;
+  unlimited_coins: boolean;
 };
+
 
 export const listUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
