@@ -124,8 +124,8 @@ export const acceptOrgInvite = createServerFn({ method: "POST" })
       throw new Error(`Esta invitación es para ${invite.email}. Inicia sesión con esa cuenta.`);
     }
 
-    // Add member (allowed by RLS: user_id = auth.uid())
-    const { error: mErr } = await context.supabase
+    // El token ya fue validado arriba: el rol proviene de la invitación, no del cliente.
+    const { error: mErr } = await supabaseAdmin
       .from("organization_members")
       .insert({
         org_id: invite.org_id,
