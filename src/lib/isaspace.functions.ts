@@ -1,14 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type IsaPostType = "project" | "progress" | "collab";
+
 export type IsaPost = {
   id: string;
   user_id: string;
   content: string;
   image_url: string | null;
   created_at: string;
+  post_type: IsaPostType;
   author_name: string;
   author_avatar: string | null;
+  author_skills: string[];
+  author_headline: string | null;
   likes: number;
   liked_by_me: boolean;
   comments: { id: string; user_id: string; content: string; created_at: string; author_name: string }[];
@@ -20,7 +25,7 @@ export const listPosts = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data: posts, error } = await supabase
       .from("isaspace_posts")
-      .select("id, user_id, content, image_url, created_at")
+      .select("id, user_id, content, image_url, created_at, post_type")
       .order("created_at", { ascending: false })
       .limit(60);
     if (error) throw error;
