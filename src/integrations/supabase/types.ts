@@ -1870,6 +1870,7 @@ export type Database = {
         }[]
       }
       is_org_member: { Args: { _org: string; _user: string }; Returns: boolean }
+      is_premium_user: { Args: { _user_id: string }; Returns: boolean }
       redeem_reward: {
         Args: { _code: string }
         Returns: {
