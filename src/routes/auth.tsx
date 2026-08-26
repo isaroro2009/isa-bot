@@ -229,6 +229,14 @@ function AuthPage() {
           </button>
         </form>
 
+        {mode === "signin" && (
+          <p className="auth-switch">
+            <button type="button" onClick={handleForgot} className="auth-switch-btn" disabled={loading}>
+              {t("auth.forgot")}
+            </button>
+          </p>
+        )}
+
         <p className="auth-switch">
           {mode === "signin" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
           <button
