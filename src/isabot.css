@@ -6069,3 +6069,98 @@ pre, code { white-space: pre-wrap; word-break: break-word; }
   12%, 80% { opacity: 1; transform: translate(-50%, 0); }
   100% { opacity: 0; transform: translate(-50%, -8px); }
 }
+
+/* ══════════ Accesos principales (IsaSpace / IsaAcademy / IsaStudio) ══════════ */
+.hub-grid{
+  display:grid;grid-template-columns:1fr;gap:12px;width:100%;
+  max-width:1080px;margin:0 auto 14px;padding:0 4px;
+}
+@media (min-width:720px){ .hub-grid{grid-template-columns:repeat(3,1fr);gap:16px;} }
+.hub-card{
+  border-radius:22px;padding:10px;border:1px solid rgba(155,110,255,.22);
+  background:linear-gradient(160deg,#ffffff,#f7efff);
+  box-shadow:0 10px 28px -18px rgba(107,63,160,.55);
+  transition:transform .22s ease, box-shadow .22s ease;
+  display:flex;flex-direction:column;gap:8px;
+}
+.hub-card:hover,.hub-card:focus-within{transform:translateY(-4px);box-shadow:0 18px 38px -18px rgba(107,63,160,.6);}
+.hub-card:active{transform:scale(.985);}
+.hub-space{background:linear-gradient(160deg,#eef3ff,#f4e9ff);}
+.hub-academy{background:linear-gradient(160deg,#e9f8ff,#eef0ff);}
+.hub-studio{background:linear-gradient(160deg,#fff0f8,#f6eaff);}
+.hub-main{
+  all:unset;cursor:pointer;display:flex;gap:12px;align-items:center;
+  padding:10px;border-radius:18px;min-height:88px;
+}
+.hub-main:focus-visible{outline:2px solid #9b6eff;outline-offset:2px;}
+.hub-preview{
+  position:relative;flex:0 0 84px;height:72px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(201,167,255,.35));
+  border:1px solid rgba(155,110,255,.25);display:grid;place-items:center;
+}
+.hub-preview em{font-style:normal;font-size:30px;filter:drop-shadow(0 3px 6px rgba(107,63,160,.25));z-index:2;}
+.hub-dot{position:absolute;border-radius:999px;background:rgba(155,110,255,.35);}
+.hub-dot.a{width:16px;height:16px;top:8px;left:10px;}
+.hub-dot.b{width:10px;height:10px;bottom:12px;right:14px;background:rgba(255,138,205,.45);}
+.hub-dot.c{width:24px;height:24px;bottom:-8px;left:-6px;background:rgba(120,190,255,.35);}
+.hub-bar{position:absolute;left:10px;height:6px;border-radius:99px;background:rgba(120,190,255,.45);}
+.hub-bar.w1{width:44px;top:12px;}
+.hub-bar.w2{width:30px;top:24px;background:rgba(155,110,255,.4);}
+.hub-bar.w3{width:52px;bottom:12px;background:rgba(255,138,205,.4);}
+.hub-shape{position:absolute;}
+.hub-shape.sq{width:20px;height:20px;border-radius:6px;background:rgba(255,138,205,.45);top:10px;left:10px;}
+.hub-shape.ci{width:22px;height:22px;border-radius:999px;background:rgba(120,190,255,.4);bottom:10px;right:10px;}
+.hub-shape.tx{width:38px;height:6px;border-radius:99px;background:rgba(155,110,255,.45);bottom:16px;left:8px;}
+.hub-card:hover .hub-preview em{transform:scale(1.12) rotate(-4deg);transition:transform .25s ease;}
+.hub-text{display:flex;flex-direction:column;gap:3px;}
+.hub-text strong{font-size:16px;color:#4a2b8a;}
+.hub-text small{font-size:12px;line-height:1.35;color:#6b5b86;}
+.hub-quick{display:flex;gap:8px;flex-wrap:wrap;padding:0 6px 6px;}
+.hub-quick button{
+  border:1px solid rgba(155,110,255,.3);background:rgba(255,255,255,.75);
+  color:#5b3a95;font-weight:700;font-size:12px;border-radius:999px;
+  padding:8px 12px;min-height:36px;cursor:pointer;transition:background .15s ease,transform .15s ease;
+}
+.hub-quick button:hover{background:#fff;transform:translateY(-1px);}
+
+/* ══════════ IsaStudio estilo Canva ══════════ */
+.canva-shell{display:grid;grid-template-columns:1fr;gap:14px;padding:12px;}
+@media (min-width:960px){ .canva-shell{grid-template-columns:260px 1fr;align-items:start;} }
+.canva-side{
+  border-radius:20px;padding:12px;background:linear-gradient(160deg,#ffffff,#f6edff);
+  border:1px solid rgba(155,110,255,.22);position:sticky;top:12px;
+}
+.canva-side h3{margin:2px 0 10px;font-size:14px;color:#4a2b8a;}
+.canva-templates{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media (min-width:960px){ .canva-templates{grid-template-columns:1fr;} }
+.canva-template{
+  display:flex;gap:10px;align-items:center;text-align:left;cursor:pointer;
+  border:1px solid rgba(155,110,255,.22);border-radius:14px;padding:8px;min-height:52px;
+  background:rgba(255,255,255,.8);transition:transform .18s ease,box-shadow .18s ease;
+}
+.canva-template:hover{transform:translateY(-2px);box-shadow:0 10px 22px -14px rgba(107,63,160,.6);}
+.canva-template span.emoji{font-size:20px;}
+.canva-template b{display:block;font-size:13px;color:#4a2b8a;}
+.canva-template small{font-size:11px;color:#6b5b86;}
+.canva-template.active{outline:2px solid #9b6eff;}
+.canva-stage{
+  border-radius:20px;border:1px solid rgba(155,110,255,.22);padding:14px;
+  background:linear-gradient(160deg,#ffffff,#faf5ff);
+}
+.canva-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.canva-toolbar button{
+  border:1px solid rgba(155,110,255,.3);background:#fff;color:#5b3a95;font-weight:700;
+  border-radius:999px;padding:9px 14px;min-height:40px;cursor:pointer;font-size:13px;
+}
+.canva-toolbar button.primary{background:linear-gradient(90deg,#c9a7ff,#ff9ed6);color:#3d2450;border:none;}
+.canva-canvas{
+  border-radius:18px;min-height:220px;display:grid;place-items:center;text-align:center;
+  border:2px dashed rgba(155,110,255,.4);padding:22px;color:#4a2b8a;
+}
+.canva-canvas.drag{border-color:#ff8acd;background:rgba(255,214,236,.35);}
+.canva-canvas .big{font-size:44px;}
+.canva-drops{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:12px;}
+.canva-drop{
+  border:1.5px dashed rgba(155,110,255,.35);border-radius:14px;padding:14px;text-align:center;
+  font-size:12px;color:#6b5b86;background:rgba(255,255,255,.6);
+}
