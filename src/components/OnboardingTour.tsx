@@ -34,7 +34,7 @@ const STEPS: Step[] = [
   },
 ];
 
-const KEY = "isabot_tour_done_v1";
+const KEY = "isabot_tour_done_v2";
 
 export function OnboardingTour({ active }: { active: boolean }) {
   const [open, setOpen] = useState(false);
@@ -44,7 +44,12 @@ export function OnboardingTour({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) return;
     if (window.localStorage.getItem(KEY)) return;
-    const t = setTimeout(() => setOpen(true), 900);
+    const t = setTimeout(() => {
+      // 🔒 El tutorial SIEMPRE arranca en el paso 1.
+      setI(0);
+      setRect(null);
+      setOpen(true);
+    }, 900);
     return () => clearTimeout(t);
   }, [active]);
 
