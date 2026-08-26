@@ -5887,3 +5887,129 @@ pre, code { white-space: pre-wrap; word-break: break-word; }
 @media (max-width: 640px) {
   .doc-preview iframe { height: 240px; }
 }
+
+/* ── Selector de idioma ─────────────────────────────── */
+.lang-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(201, 182, 255, 0.18);
+}
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+  color: #6b4d8f;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 9px;
+  min-height: 30px;
+  border-radius: 999px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.lang-toggle-btn.active {
+  background: #fff;
+  color: #7a3fbf;
+  box-shadow: 0 2px 8px rgba(122, 63, 191, 0.18);
+}
+
+/* ── Landing "¿Qué es IsaBot?" ──────────────────────── */
+.landing-overlay { z-index: 9500; }
+.landing-card {
+  max-width: 560px;
+  width: min(94vw, 560px);
+  max-height: 88vh;
+  overflow-y: auto;
+  text-align: center;
+}
+.landing-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.landing-brand {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #9b7ec9;
+  text-transform: uppercase;
+}
+.landing-emoji { font-size: 40px; line-height: 1; }
+.landing-title { margin: 6px 0 4px; color: #7a3fbf; font-size: 24px; }
+.landing-tagline { margin: 0 0 14px; color: #a06b8a; font-size: 14px; }
+.landing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  text-align: left;
+  margin-bottom: 16px;
+}
+@media (min-width: 560px) {
+  .landing-grid { grid-template-columns: 1fr 1fr; }
+}
+.landing-feature {
+  background: rgba(201, 182, 255, 0.14);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.landing-feature b { color: #6b4d8f; font-size: 14px; }
+.landing-feature span { color: #8c6ba3; font-size: 12.5px; line-height: 1.4; }
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.landing-btn {
+  flex: 1 1 180px;
+  min-height: 46px;
+  border: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.landing-btn.primary {
+  background: linear-gradient(135deg, #c9a7ff, #ff9ec9);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(201, 167, 255, 0.4);
+}
+.landing-btn.ghost {
+  background: #fff;
+  color: #7a3fbf;
+  border: 2px solid rgba(201, 167, 255, 0.6);
+}
+.landing-signup {
+  display: inline-block;
+  margin-top: 12px;
+  color: #a06b8a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Botón invitado en el login */
+.auth-guest-btn {
+  width: 100%;
+  margin-top: 10px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 2px dashed rgba(201, 167, 255, 0.7);
+  background: transparent;
+  color: #7a3fbf;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+}

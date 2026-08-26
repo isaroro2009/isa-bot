@@ -169,6 +169,9 @@ import accGlasses from "@/assets/acc-glasses.png.asset.json";
 import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
 import WelcomeModal from "@/components/WelcomeModal";
+import LandingModal from "@/components/LandingModal";
+import { LanguageToggle } from "@/components/LanguageToggle";
+
 import { PromoCarousel } from "@/components/PromoCarousel";
 import PdfGallery from "@/components/PdfGallery";
 import { openPdfGallery } from "@/lib/pdf-gallery";
@@ -970,6 +973,16 @@ function IsaBot() {
   }, [sidebarOpen]);
 
   const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
+  // Modo invitado: deja explorar la app antes de pedir cuenta.
+  const [guestMode, setGuestMode] = useState(true);
+  useEffect(() => {
+    try {
+      setGuestMode(window.localStorage.getItem("isabot_guest_mode") === "1");
+    } catch {
+      setGuestMode(false);
+    }
+  }, []);
+
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -2606,12 +2619,22 @@ ${rows}
         <WelcomeModal userId={authUser.id} name={authUser.email?.split("@")[0] ?? null} />
       )}
 
+      {!authUser && !guestMode && (
+        <LandingModal
+          onExplore={() => {
+            try { window.localStorage.setItem("isabot_guest_mode", "1"); } catch { /* bloqueado */ }
+            setGuestMode(true);
+          }}
+        />
+      )}
 
       <header className="header">
         <h1 className="logo">IsaBot ✨</h1>
         <span className="motor-badge" title="Modelo propio de IsaBot">⚙️ {ISABOT_MODEL_LABEL}</span>
+        <LanguageToggle compact />
         <IbcHud />
       </header>
+
 
       {!online && (
         <div className="offline-banner">

@@ -1,30 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getTechNews, type TechNewsItem } from "@/lib/techNews.functions";
-
-const TOPICS: Array<{ value: string; label: string }> = [
-  { value: "all", label: "🌐 Todo" },
-  { value: "ia", label: "🤖 IA" },
-  { value: "startups", label: "🚀 Startups" },
-  { value: "dev", label: "🧑‍💻 Desarrollo" },
-  { value: "gadgets", label: "📱 Gadgets" },
-];
-
-const TOPIC_BADGE: Record<string, string> = {
-  ia: "🤖 IA",
-  startups: "🚀 Startups",
-  dev: "🧑‍💻 Dev",
-  gadgets: "📱 Gadgets",
-  general: "🌐 Tech",
-};
-
-function timeAgo(iso: string): string {
-  const mins = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-  if (mins < 60) return `hace ${mins} min`;
-  const hours = Math.round(mins / 60);
-  if (hours < 24) return `hace ${hours} h`;
-  return `hace ${Math.round(hours / 24)} d`;
-}
+import { useI18n, timeAgo } from "@/lib/i18n";
 
 export function TechNewsPanel({
   onClose,
@@ -33,11 +10,31 @@ export function TechNewsPanel({
   onAsk?: (question: string) => void;
 }) {
   const load = useServerFn(getTechNews);
+  const { lang, t } = useI18n();
   const [items, setItems] = useState<TechNewsItem[]>([]);
   const [digest, setDigest] = useState("");
   const [topic, setTopic] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const TOPICS = [
+    { value: "all", label: t("news.all") },
+    { value: "ia", label: t("news.ia") },
+    { value: "startups", label: t("news.startups") },
+    { value: "dev", label: t("news.dev") },
+    { value: "gadgets", label: t("news.gadgets") },
+  ];
+
+  const badge = (topicKey: string) =>
+    topicKey === "ia"
+      ? t("news.ia")
+      : topicKey === "startups"
+        ? t("news.startups")
+        : topicKey === "dev"
+          ? t("news.dev")
+          : topicKey === "gadgets"
+            ? t("news.gadgets")
+            : t("news.general");
 
   useEffect(() => {
     let alive = true;
@@ -48,7 +45,7 @@ export function TechNewsPanel({
         setItems(res.items);
         setDigest(res.digest);
       } catch (e) {
-        if (alive) setError(e instanceof Error ? e.message : "No pude traer las noticias");
+        if (alive) setError(e instanceof Error ? e.message : t("news.error"));
       } finally {
         if (alive) setLoading(false);
       }
@@ -67,48 +64,46 @@ export function TechNewsPanel({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="settings-card news-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="rewards-close" onClick={onClose} aria-label="Cerrar">
+        <button className="rewards-close" onClick={onClose} aria-label={t("news.close")}>
           ✕
         </button>
-        <h3 style={{ margin: "0 0 4px", color: "#7a3fbf" }}>📰 Noticias Tech del Día</h3>
-        <p style={{ margin: "0 0 14px", color: "#a06b8a", fontSize: 14 }}>
-          Lo más importante del mundo tech, resumido por IsaBot ✨
-        </p>
+        <h3 style={{ margin: "0 0 4px", color: "#7a3fbf" }}>{t("news.title")}</h3>
+        <p style={{ margin: "0 0 14px", color: "#a06b8a", fontSize: 14 }}>{t("news.sub")}</p>
 
-        {digest && <div className="news-digest">{digest}</div>}
+        {digest && lang === "es" && <div className="news-digest">{digest}</div>}
 
         <div className="news-topics">
-          {TOPICS.map((t) => (
+          {TOPICS.map((tp) => (
             <button
-              key={t.value}
+              key={tp.value}
               type="button"
-              className={`news-topic ${topic === t.value ? "active" : ""}`}
-              onClick={() => setTopic(t.value)}
+              className={`news-topic ${topic === tp.value ? "active" : ""}`}
+              onClick={() => setTopic(tp.value)}
             >
-              {t.label}
+              {tp.label}
             </button>
           ))}
         </div>
 
-        {loading && <div className="news-loading">Buscando lo último del día… 🛰️</div>}
+        {loading && <div className="news-loading">{t("news.loading")}</div>}
         {error && <div className="fb-error">💔 {error}</div>}
         {!loading && !error && filtered.length === 0 && (
-          <div className="news-loading">Todavía no hay noticias de este tema 🌸</div>
+          <div className="news-loading">{t("news.empty")}</div>
         )}
 
         <div className="news-list">
           {filtered.slice(0, 30).map((n) => (
             <article key={n.id} className="news-item">
               <div className="news-item-top">
-                <span className="news-badge">{TOPIC_BADGE[n.topic] ?? "🌐 Tech"}</span>
+                <span className="news-badge">{badge(n.topic)}</span>
                 <span className="news-meta">
-                  {n.source} · {timeAgo(n.published_at)}
+                  {n.source} · {timeAgo(n.published_at, lang)}
                 </span>
               </div>
               <a className="news-title" href={n.url} target="_blank" rel="noopener noreferrer">
-                {n.title_es || n.title}
+                {lang === "en" ? n.title : n.title_es || n.title}
               </a>
-              {n.summary && (
+              {n.summary && lang === "es" && (
                 <p className="news-summary">
                   <span className="news-by">IsaBot</span> {n.summary}
                 </p>
@@ -116,7 +111,6 @@ export function TechNewsPanel({
             </article>
           ))}
         </div>
-
       </div>
     </div>
   );
