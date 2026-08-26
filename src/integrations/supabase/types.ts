@@ -481,6 +481,48 @@ export type Database = {
           },
         ]
       }
+      isaspace_imported: {
+        Row: {
+          author_avatar: string | null
+          author_handle: string
+          author_name: string
+          content: string
+          created_at: string
+          external_id: string
+          id: string
+          image_url: string | null
+          published_at: string
+          source: string
+          url: string
+        }
+        Insert: {
+          author_avatar?: string | null
+          author_handle: string
+          author_name: string
+          content: string
+          created_at?: string
+          external_id: string
+          id?: string
+          image_url?: string | null
+          published_at?: string
+          source?: string
+          url: string
+        }
+        Update: {
+          author_avatar?: string | null
+          author_handle?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          external_id?: string
+          id?: string
+          image_url?: string | null
+          published_at?: string
+          source?: string
+          url?: string
+        }
+        Relationships: []
+      }
       isaspace_likes: {
         Row: {
           created_at: string
@@ -693,6 +735,45 @@ export type Database = {
           price_from?: number
           published?: boolean
           title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mentor_applications: {
+        Row: {
+          contact: string
+          created_at: string
+          experience: string
+          expertise: string
+          full_name: string
+          id: string
+          links: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact: string
+          created_at?: string
+          experience: string
+          expertise: string
+          full_name: string
+          id?: string
+          links?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          experience?: string
+          expertise?: string
+          full_name?: string
+          id?: string
+          links?: string | null
+          status?: string
           updated_at?: string
           user_id?: string
         }
