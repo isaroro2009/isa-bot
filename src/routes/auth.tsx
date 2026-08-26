@@ -103,44 +103,8 @@ function AuthPage() {
     }
   };
 
-  // Si Google no está configurado (invalid_client / 401 / provider deshabilitado)
-  // NO redirigimos: mostramos un aviso y dejamos el correo como camino principal.
-  const handleGoogle = async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) throw result.error;
-      if (result.redirected) return;
-      navigate({ to: "/" });
-    } catch (err) {
-      const raw = err instanceof Error ? err.message : String(err ?? "");
-      const misconfigured =
-        /invalid_client|unsupported provider|missing oauth|client id|not enabled|provider is not enabled|401/i.test(
-          raw,
-        );
-      if (misconfigured) {
-        setGoogleBlocked(true);
-        setError(t("auth.googleUnavailable"));
-        toast.error(t("auth.googleUnavailable"), { duration: 7000 });
-      } else {
-        failWith(err, t("auth.genericError"));
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const exploreAsGuest = () => {
-    try {
-      window.localStorage.setItem("isabot_guest_mode", "1");
-    } catch {
-      /* almacenamiento bloqueado: igual navegamos */
-    }
-    navigate({ to: "/" });
-  };
+
 
   return (
     <div className="auth-page">
