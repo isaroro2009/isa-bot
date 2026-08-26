@@ -359,7 +359,7 @@ export function IsaSpacePage() {
         </aside>
 
         <main className="isp-feed">
-          {tab !== "about" && (
+          {isFeedTab && (
             <button className="isp-open-composer" onClick={() => setComposerOpen(true)}>
               <Avatar name={myName} url={me?.avatar_url} size={38} />
               <span>Comparte tu vibe de hoy… 💭</span>
@@ -442,8 +442,8 @@ export function IsaSpacePage() {
               </ul>
             </section>
           )}
-          {loading && tab !== "about" && <p className="isp-empty">Cargando la galaxia… ✨</p>}
-          {!loading && tab !== "about" && feed.length === 0 && <p className="isp-empty">Todavía no hay publicaciones. ¡Sé la primera! 🌸</p>}
+          {loading && isFeedTab && <p className="isp-empty">Cargando la galaxia… ✨</p>}
+          {!loading && isFeedTab && feed.length === 0 && <p className="isp-empty">Todavía no hay publicaciones. ¡Sé la primera! 🌸</p>}
 
           {feed.map((p) => (
             <article key={p.id} className="isp-card isp-post">
@@ -555,7 +555,7 @@ export function IsaSpacePage() {
         </aside>
       </div>
 
-      {tab !== "about" && !composerOpen && (
+      {isFeedTab && !composerOpen && (
         <button className="isp-fab" onClick={() => setComposerOpen(true)} aria-label="Crear publicación">
           ✎ <span>Crear publicación</span>
         </button>
