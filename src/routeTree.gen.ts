@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PitchRouteImport } from './routes/pitch'
 import { Route as EmpresasRouteImport } from './routes/empresas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -25,6 +26,7 @@ import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenti
 import { Route as ApiVoiceVisionRouteImport } from './routes/api/voice/vision'
 import { Route as ApiVoiceTranscribeRouteImport } from './routes/api/voice/transcribe'
 import { Route as ApiVoiceSpeakRouteImport } from './routes/api/voice/speak'
+import { Route as ApiPublicWhatsappRouteImport } from './routes/api/public/whatsapp'
 import { Route as ApiPublicUnsubscribeRouteImport } from './routes/api/public/unsubscribe'
 import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticated/studio.$id'
 import { Route as AuthenticatedOnboardingOrgRouteImport } from './routes/_authenticated/onboarding.org'
@@ -46,6 +48,11 @@ import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authentic
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PitchRoute = PitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresasRoute = EmpresasRouteImport.update({
@@ -121,6 +128,11 @@ const ApiVoiceTranscribeRoute = ApiVoiceTranscribeRouteImport.update({
 const ApiVoiceSpeakRoute = ApiVoiceSpeakRouteImport.update({
   id: '/api/voice/speak',
   path: '/api/voice/speak',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWhatsappRoute = ApiPublicWhatsappRouteImport.update({
+  id: '/api/public/whatsapp',
+  path: '/api/public/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicUnsubscribeRoute = ApiPublicUnsubscribeRouteImport.update({
@@ -221,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -233,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
   '/studio/$id': typeof AuthenticatedStudioIdRoute
   '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/public/whatsapp': typeof ApiPublicWhatsappRoute
   '/api/voice/speak': typeof ApiVoiceSpeakRoute
   '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
   '/api/voice/vision': typeof ApiVoiceVisionRoute
@@ -255,6 +269,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -266,6 +281,7 @@ export interface FileRoutesByTo {
   '/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
   '/studio/$id': typeof AuthenticatedStudioIdRoute
   '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/public/whatsapp': typeof ApiPublicWhatsappRoute
   '/api/voice/speak': typeof ApiVoiceSpeakRoute
   '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
   '/api/voice/vision': typeof ApiVoiceVisionRoute
@@ -290,6 +306,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -302,6 +319,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
   '/_authenticated/studio/$id': typeof AuthenticatedStudioIdRoute
   '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/public/whatsapp': typeof ApiPublicWhatsappRoute
   '/api/voice/speak': typeof ApiVoiceSpeakRoute
   '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
   '/api/voice/vision': typeof ApiVoiceVisionRoute
@@ -326,6 +344,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/empresas'
+    | '/pitch'
     | '/reset-password'
     | '/admin'
     | '/isaspace'
@@ -338,6 +357,7 @@ export interface FileRouteTypes {
     | '/onboarding/org'
     | '/studio/$id'
     | '/api/public/unsubscribe'
+    | '/api/public/whatsapp'
     | '/api/voice/speak'
     | '/api/voice/transcribe'
     | '/api/voice/vision'
@@ -360,6 +380,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/empresas'
+    | '/pitch'
     | '/reset-password'
     | '/admin'
     | '/isaspace'
@@ -371,6 +392,7 @@ export interface FileRouteTypes {
     | '/onboarding/org'
     | '/studio/$id'
     | '/api/public/unsubscribe'
+    | '/api/public/whatsapp'
     | '/api/voice/speak'
     | '/api/voice/transcribe'
     | '/api/voice/vision'
@@ -394,6 +416,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/empresas'
+    | '/pitch'
     | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
@@ -406,6 +429,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding/org'
     | '/_authenticated/studio/$id'
     | '/api/public/unsubscribe'
+    | '/api/public/whatsapp'
     | '/api/voice/speak'
     | '/api/voice/transcribe'
     | '/api/voice/vision'
@@ -430,12 +454,14 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   EmpresasRoute: typeof EmpresasRoute
+  PitchRoute: typeof PitchRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiAgentRoute: typeof ApiAgentRoute
   ApiChatRoute: typeof ApiChatRoute
   ICodeRoute: typeof ICodeRoute
   UUsernameRoute: typeof UUsernameRoute
   ApiPublicUnsubscribeRoute: typeof ApiPublicUnsubscribeRoute
+  ApiPublicWhatsappRoute: typeof ApiPublicWhatsappRoute
   ApiVoiceSpeakRoute: typeof ApiVoiceSpeakRoute
   ApiVoiceTranscribeRoute: typeof ApiVoiceTranscribeRoute
   ApiVoiceVisionRoute: typeof ApiVoiceVisionRoute
@@ -458,6 +484,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pitch': {
+      id: '/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof PitchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/empresas': {
@@ -563,6 +596,13 @@ declare module '@tanstack/react-router' {
       path: '/api/voice/speak'
       fullPath: '/api/voice/speak'
       preLoaderRoute: typeof ApiVoiceSpeakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whatsapp': {
+      id: '/api/public/whatsapp'
+      path: '/api/public/whatsapp'
+      fullPath: '/api/public/whatsapp'
+      preLoaderRoute: typeof ApiPublicWhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/unsubscribe': {
@@ -733,12 +773,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   EmpresasRoute: EmpresasRoute,
+  PitchRoute: PitchRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiAgentRoute: ApiAgentRoute,
   ApiChatRoute: ApiChatRoute,
   ICodeRoute: ICodeRoute,
   UUsernameRoute: UUsernameRoute,
   ApiPublicUnsubscribeRoute: ApiPublicUnsubscribeRoute,
+  ApiPublicWhatsappRoute: ApiPublicWhatsappRoute,
   ApiVoiceSpeakRoute: ApiVoiceSpeakRoute,
   ApiVoiceTranscribeRoute: ApiVoiceTranscribeRoute,
   ApiVoiceVisionRoute: ApiVoiceVisionRoute,

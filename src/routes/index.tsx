@@ -2662,29 +2662,69 @@ ${rows}
       <div className="main">
         {!currentMessages.some((m) => m.sender === "user") && (
           <div className="intro-hero">
-            <div className="intro-actions">
+            <div className="hub-grid" role="navigation" aria-label="Accesos principales de IsaBot">
+              <article className="hub-card hub-space">
+                <button
+                  className="hub-main"
+                  onClick={() => {
+                    const url = `${window.location.origin}/isaspace?popup=1`;
+                    const win = window.open(url, "IsaSpace", "width=1280,height=860");
+                    if (!win) window.location.href = url;
+                  }}
+                >
+                  <span className="hub-preview" aria-hidden="true">
+                    <i className="hub-dot a" /><i className="hub-dot b" /><i className="hub-dot c" />
+                    <em>🪐</em>
+                  </span>
+                  <span className="hub-text">
+                    <strong>IsaSpace</strong>
+                    <small>Red creativa: publica proyectos, avances y busca colaboradores.</small>
+                  </span>
+                </button>
+                <div className="hub-quick">
+                  <button onClick={() => setPanel("isaspace")}>✨ Ver feed</button>
+                  <button onClick={() => { window.location.href = "/isaspace?compose=1"; }}>🚀 Publicar</button>
+                </div>
+              </article>
 
-              <button
-                className="intro-cta"
-                onClick={() => {
-                  const url = `${window.location.origin}/isaspace?popup=1`;
-                  const win = window.open(url, "IsaSpace", "width=1280,height=860");
-                  if (!win) window.location.href = url;
-                }}
-              >
-                🪐 IsaSpace
-              </button>
-              <button className="intro-cta" onClick={() => { window.location.href = "/studio"; }}>
-                🎨 IsaStudio
-              </button>
+              <article className="hub-card hub-academy">
+                <button className="hub-main" onClick={() => setPanel("academy")}>
+                  <span className="hub-preview" aria-hidden="true">
+                    <i className="hub-bar w1" /><i className="hub-bar w2" /><i className="hub-bar w3" />
+                    <em>🎓</em>
+                  </span>
+                  <span className="hub-text">
+                    <strong>IsaAcademy</strong>
+                    <small>Clases de IA, 3D y tech con retos que dan IsaBot Coins.</small>
+                  </span>
+                </button>
+                <div className="hub-quick">
+                  <button onClick={() => setPanel("academy")}>📚 Clases</button>
+                  <button onClick={() => setPanel("technews")}>📰 Noticias</button>
+                </div>
+              </article>
+
+              <article className="hub-card hub-studio">
+                <button className="hub-main" onClick={() => { window.location.href = "/studio"; }}>
+                  <span className="hub-preview" aria-hidden="true">
+                    <i className="hub-shape sq" /><i className="hub-shape ci" /><i className="hub-shape tx" />
+                    <em>🎨</em>
+                  </span>
+                  <span className="hub-text">
+                    <strong>IsaStudio</strong>
+                    <small>Suite tipo Canva: diseños, documentos, slides y export instantáneo.</small>
+                  </span>
+                </button>
+                <div className="hub-quick">
+                  <button onClick={() => { window.location.href = "/studio?new=design"; }}>🖼️ Diseño</button>
+                  <button onClick={openPdfGallery}>📚 PDFs</button>
+                </div>
+              </article>
+            </div>
+
+            <div className="intro-actions">
               <button className="intro-cta" onClick={() => { if (currentUser) setCallOpen(true); }}>
                 📞 Llamar a IsaBot
-              </button>
-              <button className="intro-cta" onClick={openPdfGallery}>
-                📚 Galería de PDFs
-              </button>
-              <button className="intro-cta" onClick={() => setPanel("academy")}>
-                🎓 IsaAcademy
               </button>
               <button className="intro-cta primary" onClick={() => setPanel("myday")}>
                 🚀 Planear mi día
