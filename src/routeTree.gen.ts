@@ -18,7 +18,6 @@ import { Route as ICodeRouteImport } from './routes/i.$code'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
@@ -81,11 +80,6 @@ const ApiAgentRoute = ApiAgentRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
-  id: '/market',
-  path: '/market',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
@@ -197,7 +191,6 @@ export interface FileRoutesByFullPath {
   '/empresas': typeof EmpresasRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
-  '/market': typeof AuthenticatedMarketRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
@@ -227,7 +220,6 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
-  '/market': typeof AuthenticatedMarketRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
@@ -258,7 +250,6 @@ export interface FileRoutesById {
   '/empresas': typeof EmpresasRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
-  '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
@@ -290,7 +281,6 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/admin'
     | '/isaspace'
-    | '/market'
     | '/profile'
     | '/api/agent'
     | '/api/chat'
@@ -320,7 +310,6 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/admin'
     | '/isaspace'
-    | '/market'
     | '/profile'
     | '/api/agent'
     | '/api/chat'
@@ -350,7 +339,6 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
-    | '/_authenticated/market'
     | '/_authenticated/profile'
     | '/api/agent'
     | '/api/chat'
@@ -459,13 +447,6 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/market': {
-      id: '/_authenticated/market'
-      path: '/market'
-      fullPath: '/market'
-      preLoaderRoute: typeof AuthenticatedMarketRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/isaspace': {
@@ -625,7 +606,6 @@ const AuthenticatedESlugRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedIsaspaceRoute: typeof AuthenticatedIsaspaceRoute
-  AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedESlugRouteRoute: typeof AuthenticatedESlugRouteRouteWithChildren
   AuthenticatedOnboardingOrgRoute: typeof AuthenticatedOnboardingOrgRoute
@@ -636,7 +616,6 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedIsaspaceRoute: AuthenticatedIsaspaceRoute,
-  AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedESlugRouteRoute: AuthenticatedESlugRouteRouteWithChildren,
   AuthenticatedOnboardingOrgRoute: AuthenticatedOnboardingOrgRoute,
