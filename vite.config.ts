@@ -6,6 +6,12 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { VitePWA } from "vite-plugin-pwa";
+import { loadEnv } from "vite";
+import path from "node:path";
+
+// Variables de entorno del servidor (sin prefijo VITE_) para las rutas /lovable/*.
+const serverEnv = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
+Object.assign(process.env, serverEnv);
 
 // Public web builds need the normal TanStack server output. Capacitor native
 // exports can opt into a static hash-routed bundle with `VITE_BASE=./ bun run build`.
@@ -15,6 +21,14 @@ const isCapacitorBuild = BASE === "./";
 export default defineConfig({
   vite: {
     base: BASE,
+    resolve: {
+      alias: {
+        "entities/lib/decode.js": path.resolve(process.cwd(), "node_modules/entities/lib/decode.js"),
+        "entities/lib/encode.js": path.resolve(process.cwd(), "node_modules/entities/lib/encode.js"),
+        entities: path.resolve(process.cwd(), "node_modules/entities"),
+      },
+    },
+
     plugins: [
       // 📱 App instalable + funciona sin internet.
       // El manifest vive en public/manifest.webmanifest y el registro del
