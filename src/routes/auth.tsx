@@ -179,8 +179,11 @@ function AuthPage() {
           </div>
         </div>
 
+        <button type="button" className="auth-google-btn" onClick={handleGoogle} disabled={loading}>
+          <span aria-hidden>🔵</span> {t("auth.google")}
+        </button>
 
-
+        <div className="auth-divider">{t("auth.orEmail")}</div>
 
         <form onSubmit={handleEmailAuth} className="auth-form">
           {mode === "signup" && (
