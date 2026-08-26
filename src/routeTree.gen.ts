@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as EmpresasRouteImport } from './routes/empresas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -40,6 +41,11 @@ import { Route as ApiPublicHooksBirthdayGreetingsRouteImport } from './routes/ap
 import { Route as AuthenticatedESlugJoinRouteImport } from './routes/_authenticated/e.$slug.join'
 import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authenticated/e.$slug.admin'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmpresasRoute = EmpresasRouteImport.update({
   id: '/empresas',
   path: '/empresas',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/empresas'
+    | '/reset-password'
     | '/admin'
     | '/isaspace'
     | '/profile'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/empresas'
+    | '/reset-password'
     | '/admin'
     | '/isaspace'
     | '/profile'
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/empresas'
+    | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
     | '/_authenticated/profile'
@@ -394,6 +406,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   EmpresasRoute: typeof EmpresasRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ApiAgentRoute: typeof ApiAgentRoute
   ApiChatRoute: typeof ApiChatRoute
   ICodeRoute: typeof ICodeRoute
@@ -414,6 +427,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empresas': {
       id: '/empresas'
       path: '/empresas'
@@ -673,6 +693,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   EmpresasRoute: EmpresasRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ApiAgentRoute: ApiAgentRoute,
   ApiChatRoute: ApiChatRoute,
   ICodeRoute: ICodeRoute,

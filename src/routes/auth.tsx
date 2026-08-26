@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import LandingModal from "@/components/LandingModal";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
@@ -31,6 +32,46 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  // Primero contamos qué es IsaBot; el formulario aparece al pulsar el CTA.
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem("isabot_intro_seen")) setShowIntro(false);
+    } catch {
+      /* almacenamiento bloqueado */
+    }
+  }, []);
+
+  const startAuth = () => {
+    try {
+      window.sessionStorage.setItem("isabot_intro_seen", "1");
+    } catch {
+      /* noop */
+    }
+    setShowIntro(false);
+  };
+
+  const handleForgot = async () => {
+    if (!email) {
+      setError(t("auth.forgotNeedEmail"));
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (err) throw err;
+      setInfo(t("auth.forgotSent"));
+      toast.success(t("auth.forgotSent"));
+    } catch (err) {
+      failWith(err, t("auth.genericError"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
@@ -103,6 +144,10 @@ function AuthPage() {
 
 
 
+
+  if (showIntro) {
+    return <LandingModal onStart={startAuth} />;
+  }
 
   return (
     <div className="auth-page">
@@ -183,6 +228,14 @@ function AuthPage() {
             {loading ? "..." : mode === "signin" ? t("auth.signin") : t("auth.signup")}
           </button>
         </form>
+
+        {mode === "signin" && (
+          <p className="auth-switch">
+            <button type="button" onClick={handleForgot} className="auth-switch-btn" disabled={loading}>
+              {t("auth.forgot")}
+            </button>
+          </p>
+        )}
 
         <p className="auth-switch">
           {mode === "signin" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
