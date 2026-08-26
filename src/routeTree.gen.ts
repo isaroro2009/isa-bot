@@ -25,6 +25,7 @@ import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenti
 import { Route as ApiVoiceVisionRouteImport } from './routes/api/voice/vision'
 import { Route as ApiVoiceTranscribeRouteImport } from './routes/api/voice/transcribe'
 import { Route as ApiVoiceSpeakRouteImport } from './routes/api/voice/speak'
+import { Route as ApiPublicWhatsappRouteImport } from './routes/api/public/whatsapp'
 import { Route as ApiPublicUnsubscribeRouteImport } from './routes/api/public/unsubscribe'
 import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticated/studio.$id'
 import { Route as AuthenticatedOnboardingOrgRouteImport } from './routes/_authenticated/onboarding.org'
@@ -121,6 +122,11 @@ const ApiVoiceTranscribeRoute = ApiVoiceTranscribeRouteImport.update({
 const ApiVoiceSpeakRoute = ApiVoiceSpeakRouteImport.update({
   id: '/api/voice/speak',
   path: '/api/voice/speak',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWhatsappRoute = ApiPublicWhatsappRouteImport.update({
+  id: '/api/public/whatsapp',
+  path: '/api/public/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicUnsubscribeRoute = ApiPublicUnsubscribeRouteImport.update({
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
   '/studio/$id': typeof AuthenticatedStudioIdRoute
   '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/public/whatsapp': typeof ApiPublicWhatsappRoute
   '/api/voice/speak': typeof ApiVoiceSpeakRoute
   '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
   '/api/voice/vision': typeof ApiVoiceVisionRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
   '/studio/$id': typeof AuthenticatedStudioIdRoute
   '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/public/whatsapp': typeof ApiPublicWhatsappRoute
   '/api/voice/speak': typeof ApiVoiceSpeakRoute
   '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
   '/api/voice/vision': typeof ApiVoiceVisionRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding/org': typeof AuthenticatedOnboardingOrgRoute
   '/_authenticated/studio/$id': typeof AuthenticatedStudioIdRoute
   '/api/public/unsubscribe': typeof ApiPublicUnsubscribeRoute
+  '/api/public/whatsapp': typeof ApiPublicWhatsappRoute
   '/api/voice/speak': typeof ApiVoiceSpeakRoute
   '/api/voice/transcribe': typeof ApiVoiceTranscribeRoute
   '/api/voice/vision': typeof ApiVoiceVisionRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/onboarding/org'
     | '/studio/$id'
     | '/api/public/unsubscribe'
+    | '/api/public/whatsapp'
     | '/api/voice/speak'
     | '/api/voice/transcribe'
     | '/api/voice/vision'
@@ -371,6 +381,7 @@ export interface FileRouteTypes {
     | '/onboarding/org'
     | '/studio/$id'
     | '/api/public/unsubscribe'
+    | '/api/public/whatsapp'
     | '/api/voice/speak'
     | '/api/voice/transcribe'
     | '/api/voice/vision'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding/org'
     | '/_authenticated/studio/$id'
     | '/api/public/unsubscribe'
+    | '/api/public/whatsapp'
     | '/api/voice/speak'
     | '/api/voice/transcribe'
     | '/api/voice/vision'
@@ -436,6 +448,7 @@ export interface RootRouteChildren {
   ICodeRoute: typeof ICodeRoute
   UUsernameRoute: typeof UUsernameRoute
   ApiPublicUnsubscribeRoute: typeof ApiPublicUnsubscribeRoute
+  ApiPublicWhatsappRoute: typeof ApiPublicWhatsappRoute
   ApiVoiceSpeakRoute: typeof ApiVoiceSpeakRoute
   ApiVoiceTranscribeRoute: typeof ApiVoiceTranscribeRoute
   ApiVoiceVisionRoute: typeof ApiVoiceVisionRoute
@@ -563,6 +576,13 @@ declare module '@tanstack/react-router' {
       path: '/api/voice/speak'
       fullPath: '/api/voice/speak'
       preLoaderRoute: typeof ApiVoiceSpeakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whatsapp': {
+      id: '/api/public/whatsapp'
+      path: '/api/public/whatsapp'
+      fullPath: '/api/public/whatsapp'
+      preLoaderRoute: typeof ApiPublicWhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/unsubscribe': {
@@ -739,6 +759,7 @@ const rootRouteChildren: RootRouteChildren = {
   ICodeRoute: ICodeRoute,
   UUsernameRoute: UUsernameRoute,
   ApiPublicUnsubscribeRoute: ApiPublicUnsubscribeRoute,
+  ApiPublicWhatsappRoute: ApiPublicWhatsappRoute,
   ApiVoiceSpeakRoute: ApiVoiceSpeakRoute,
   ApiVoiceTranscribeRoute: ApiVoiceTranscribeRoute,
   ApiVoiceVisionRoute: ApiVoiceVisionRoute,
