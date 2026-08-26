@@ -145,6 +145,10 @@ function AuthPage() {
 
 
 
+  if (showIntro) {
+    return <LandingModal onStart={startAuth} />;
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-bg-blob auth-bg-blob-1" aria-hidden />
