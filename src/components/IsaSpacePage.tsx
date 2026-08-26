@@ -585,6 +585,40 @@ export function IsaSpacePage() {
               </div>
             </article>
           ))}
+
+          {tab === "home" && (
+            <>
+              <div className="isp-imported-head">
+                <h3>🌍 Del fediverso · comunidad creativa global</h3>
+                <button className="isp-imported-refresh" onClick={runImport} disabled={importing}>
+                  {importing ? "Importando…" : "Importar publicaciones"}
+                </button>
+              </div>
+              {imported.length === 0 && (
+                <p className="isp-empty small">
+                  Aún no hay contenido importado. Si eres administradora, pulsa «Importar publicaciones».
+                </p>
+              )}
+              {imported.map((p) => (
+                <article key={p.id} className="isp-card isp-post isp-post-imported">
+                  <header className="isp-post-head">
+                    <Avatar name={p.author_name} url={p.author_avatar} />
+                    <strong>{p.author_name}</strong>
+                    <small>{p.author_handle} · {timeAgo(p.published_at)}</small>
+                  </header>
+                  <p className="isp-post-text">{p.content}</p>
+                  {p.image_url && (
+                    <div className="isp-post-img">
+                      <img src={p.image_url} alt="" loading="lazy" />
+                    </div>
+                  )}
+                  <a className="isp-imported-link" href={p.url} target="_blank" rel="noreferrer noopener">
+                    Ver original ↗
+                  </a>
+                </article>
+              ))}
+            </>
+          )}
         </main>
 
         <aside className="isp-rail">

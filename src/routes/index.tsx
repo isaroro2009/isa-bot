@@ -2611,7 +2611,7 @@ ${rows}
         <WelcomeModal userId={authUser.id} name={authUser.email?.split("@")[0] ?? null} />
       )}
 
-      {!authUser && <LandingModal />}
+      
 
 
       <header className="header">
