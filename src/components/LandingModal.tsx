@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
-export function LandingModal() {
+export function LandingModal({ onStart }: { onStart?: () => void } = {}) {
   const { t } = useI18n();
 
 
