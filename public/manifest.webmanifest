@@ -1,11 +1,16 @@
 {
+  "id": "/",
   "name": "IsaBot — tu co-piloto de IA creativa",
   "short_name": "IsaBot",
-  "description": "IsaBot de IsaRoRo Studio: chat de IA, imágenes, IsaAcademy y modo sin conexión.",
+  "description": "IsaBot de IsaRoRo Studio: chat de IA, imágenes, IsaAcademy, IsaStudio y modo sin conexión.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["productivity", "education", "utilities"],
   "background_color": "#f6ecff",
   "theme_color": "#c9a7ff",
   "icons": [
@@ -20,6 +25,17 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/icons/isabot-icon-512.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     }
+  ],
+  "shortcuts": [
+    { "name": "Chat con IsaBot", "short_name": "Chat", "url": "/", "icons": [{ "src": "/icons/isabot-icon-512.png", "sizes": "512x512" }] },
+    { "name": "IsaStudio", "short_name": "Studio", "url": "/studio", "icons": [{ "src": "/icons/isabot-icon-512.png", "sizes": "512x512" }] },
+    { "name": "IsaSpace", "short_name": "Space", "url": "/isaspace", "icons": [{ "src": "/icons/isabot-icon-512.png", "sizes": "512x512" }] }
   ]
 }
