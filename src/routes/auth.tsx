@@ -32,6 +32,46 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  // Primero contamos qué es IsaBot; el formulario aparece al pulsar el CTA.
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem("isabot_intro_seen")) setShowIntro(false);
+    } catch {
+      /* almacenamiento bloqueado */
+    }
+  }, []);
+
+  const startAuth = () => {
+    try {
+      window.sessionStorage.setItem("isabot_intro_seen", "1");
+    } catch {
+      /* noop */
+    }
+    setShowIntro(false);
+  };
+
+  const handleForgot = async () => {
+    if (!email) {
+      setError(t("auth.forgotNeedEmail"));
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (err) throw err;
+      setInfo(t("auth.forgotSent"));
+      toast.success(t("auth.forgotSent"));
+    } catch (err) {
+      failWith(err, t("auth.genericError"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
