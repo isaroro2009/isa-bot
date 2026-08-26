@@ -95,19 +95,33 @@ export const listPosts = createServerFn({ method: "GET" })
     });
   });
 
+async function rewardIsaspace(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  kind: "post" | "feedback",
+): Promise<number> {
+  const { data } = await supabase.rpc("ibc_reward_isaspace", { _kind: kind });
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row?.delta as number | undefined) ?? 0;
+}
+
 export const createPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { content: string; imageUrl?: string | null }) => input)
+  .inputValidator((input: { content: string; imageUrl?: string | null; postType?: IsaPostType }) => input)
   .handler(async ({ data, context }) => {
     const content = (data.content ?? "").trim().slice(0, 2000);
     if (!content) throw new Error("Escribe algo antes de publicar 💕");
+    const postType: IsaPostType =
+      data.postType === "progress" || data.postType === "collab" ? data.postType : "project";
     const { error } = await context.supabase.from("isaspace_posts").insert({
       user_id: context.userId,
       content,
       image_url: data.imageUrl ?? null,
+      post_type: postType,
     });
     if (error) throw error;
-    return { ok: true };
+    const reward = await rewardIsaspace(context.supabase, "post");
+    return { ok: true, reward };
   });
 
 export const deletePost = createServerFn({ method: "POST" })
