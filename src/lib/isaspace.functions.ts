@@ -47,13 +47,18 @@ export const listPosts = createServerFn({ method: "GET" })
     for (const c of comments ?? []) authorIds.add(c.user_id);
     const { data: profs } = await supabase
       .from("profiles")
-      .select("id, display_name, email, avatar_url")
+      .select("id, display_name, email, avatar_url, headline, interests")
       .in("id", Array.from(authorIds));
-    const nameOf = new Map<string, { name: string; avatar: string | null }>();
+    const nameOf = new Map<
+      string,
+      { name: string; avatar: string | null; skills: string[]; headline: string | null }
+    >();
     for (const p of profs ?? []) {
       nameOf.set(p.id, {
         name: p.display_name || (p.email ?? "").split("@")[0] || "Anónima",
         avatar: p.avatar_url,
+        skills: ((p.interests ?? []) as string[]).slice(0, 3),
+        headline: p.headline ?? null,
       });
     }
 
