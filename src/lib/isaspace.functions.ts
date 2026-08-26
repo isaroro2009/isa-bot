@@ -75,8 +75,11 @@ export const listPosts = createServerFn({ method: "GET" })
       return {
         ...p,
         image_url: p.image_url ? (signed.get(p.image_url) ?? (p.image_url.startsWith("http") ? p.image_url : null)) : null,
+        post_type: ((p as { post_type?: string }).post_type ?? "project") as IsaPostType,
         author_name: nameOf.get(p.user_id)?.name ?? "Anónima",
         author_avatar: nameOf.get(p.user_id)?.avatar ?? null,
+        author_skills: nameOf.get(p.user_id)?.skills ?? [],
+        author_headline: nameOf.get(p.user_id)?.headline ?? null,
         likes: postLikes.length,
         liked_by_me: postLikes.some((l) => l.user_id === userId),
         comments: (comments ?? [])
