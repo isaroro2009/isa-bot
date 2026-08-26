@@ -37,14 +37,26 @@ export function LandingModal({ onStart }: { onStart?: () => void } = {}) {
         </div>
 
         <div className="landing-actions">
-          <Link to="/auth" className="landing-btn primary">
-            {t("landing.cta")}
-          </Link>
+          {onStart ? (
+            <button type="button" className="landing-btn primary" onClick={onStart}>
+              {t("landing.cta")}
+            </button>
+          ) : (
+            <Link to="/auth" className="landing-btn primary">
+              {t("landing.cta")}
+            </Link>
+          )}
         </div>
 
-        <Link to="/auth" className="landing-signup">
-          {t("landing.signup")}
-        </Link>
+        {onStart ? (
+          <button type="button" className="landing-signup" onClick={onStart}>
+            {t("landing.signup")}
+          </button>
+        ) : (
+          <Link to="/auth" className="landing-signup">
+            {t("landing.signup")}
+          </Link>
+        )}
       </div>
     </div>
   );
