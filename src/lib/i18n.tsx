@@ -91,6 +91,26 @@ export const STRINGS: Dict = {
     en: "Unstable connection. Check your internet and try again.",
   },
   "auth.genericError": { es: "Ocurrió un error al iniciar sesión", en: "Something went wrong while signing in" },
+  "auth.forgot": { es: "¿Olvidaste tu contraseña?", en: "Forgot your password?" },
+  "auth.forgotNeedEmail": {
+    es: "Escribe tu correo arriba y vuelve a tocar el enlace 💌",
+    en: "Type your email above and tap the link again 💌",
+  },
+  "auth.forgotSent": {
+    es: "Te envié un enlace para crear una contraseña nueva. Revisa tu correo 💜",
+    en: "I sent you a link to set a new password. Check your inbox 💜",
+  },
+
+  // Reset password
+  "reset.title": { es: "Crea tu nueva contraseña", en: "Set your new password" },
+  "reset.sub": {
+    es: "Elige una contraseña de al menos 6 caracteres para volver a IsaBot.",
+    en: "Pick a password with at least 6 characters to get back into IsaBot.",
+  },
+  "reset.newPassword": { es: "Nueva contraseña", en: "New password" },
+  "reset.save": { es: "Guardar contraseña", en: "Save password" },
+  "reset.done": { es: "¡Contraseña actualizada! ✨", en: "Password updated! ✨" },
+  "reset.back": { es: "← Volver al inicio de sesión", en: "← Back to sign in" },
 
   // Landing
   "landing.title": { es: "¡Hola! Soy IsaBot ✨", en: "Hi! I'm IsaBot ✨" },
