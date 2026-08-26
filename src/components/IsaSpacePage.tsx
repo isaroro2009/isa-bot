@@ -11,6 +11,7 @@ import {
   listMembers,
   type IsaMember,
   type IsaPost,
+  type IsaPostType,
 } from "@/lib/isaspace.functions";
 import { listImported, importSocialFeed, type ImportedPost } from "@/lib/isaspaceImport.functions";
 import { applyAsMentor, getMyMentorApplication, type MentorApplication } from "@/lib/mentors.functions";
@@ -30,6 +31,30 @@ function Avatar({ name, url, size = 36 }: { name: string; url?: string | null; s
     </span>
   );
 }
+
+const POST_TYPES: { key: IsaPostType; label: string; badge: string }[] = [
+  { key: "project", label: "🚀 Nuevo Proyecto", badge: "🚀 Nuevo Proyecto" },
+  { key: "progress", label: "🎨 Avance / Prototipo", badge: "🎨 Avance / Prototipo" },
+  { key: "collab", label: "🤝 Busco Colaborador", badge: "🤝 Busco Colaborador" },
+];
+
+const MENTOR_TRACKS = [
+  {
+    icon: "🧊",
+    title: "Modelado 3D / Blender",
+    desc: "De la primera malla al render final: modelado, materiales y portafolio 3D listo para vender.",
+  },
+  {
+    icon: "💻",
+    title: "Desarrollo de Apps y Web",
+    desc: "Construye y publica tu app real con IA: base de datos, login, pagos y despliegue.",
+  },
+  {
+    icon: "📚",
+    title: "Publicación Digital / KDP",
+    desc: "Crea, maqueta y publica tus libros y planners en Amazon KDP con plantillas probadas.",
+  },
+];
 
 const TAG_OPTIONS = ["diseño", "IA", "estudio", "emprender", "arte", "música"];
 
@@ -88,6 +113,8 @@ export function IsaSpacePage() {
   const doImport = useServerFn(importSocialFeed);
   const doApplyMentor = useServerFn(applyAsMentor);
   const fetchMentorApp = useServerFn(getMyMentorApplication);
+  const [postType, setPostType] = useState<IsaPostType>("project");
+  const [coinToast, setCoinToast] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [commentText, setCommentText] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
@@ -251,7 +278,8 @@ export function IsaSpacePage() {
         imageUrl = path;
       }
       const tagLine = tags.length ? `\n\n${tags.map((t) => `#${t}`).join(" ")}` : "";
-      await doCreate({ data: { content: `${text.trim()}${tagLine}`.trim(), imageUrl } });
+      const res = await doCreate({ data: { content: `${text.trim()}${tagLine}`.trim(), imageUrl, postType } });
+      if ((res as { reward?: number })?.reward) setCoinToast("+5 IBC 🪙 por compartir tu avance");
       setText("");
       setFile(null);
       setTags([]);
@@ -273,7 +301,7 @@ export function IsaSpacePage() {
           <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>✨ Para ti</button>
           <button className={tab === "mine" ? "active" : ""} onClick={() => setTab("mine")}>👤 Mis publicaciones</button>
           <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>💜 Quiénes somos</button>
-          <button className={tab === "mentors" ? "active" : ""} onClick={() => setTab("mentors")}>🎓 Mentores</button>
+          <button className={tab === "mentors" ? "active" : ""} onClick={() => setTab("mentors")}>🎓 Mentorías Isa</button>
         </nav>
         <button className="isp-return" onClick={returnToIsaBot}>
           <span className="isp-return-badge">🏠</span>
@@ -364,8 +392,8 @@ export function IsaSpacePage() {
           {isFeedTab && (
             <button className="isp-open-composer" onClick={() => setComposerOpen(true)}>
               <Avatar name={myName} url={me?.avatar_url} size={38} />
-              <span>Comparte tu vibe de hoy… 💭</span>
-              <b>Crear publicación</b>
+              <span>Comparte tu avance de hoy… 🚀 +5 IBC</span>
+              <b>Publicar proyecto</b>
             </button>
           )}
 
@@ -376,10 +404,28 @@ export function IsaSpacePage() {
                   <strong>Crear publicación</strong>
                   <button className="isp-ghost" onClick={() => setComposerOpen(false)}>✕</button>
                 </header>
+                <div className="isp-type-picker">
+                  {POST_TYPES.map((tp) => (
+                    <button
+                      key={tp.key}
+                      className={postType === tp.key ? "active" : ""}
+                      onClick={() => setPostType(tp.key)}
+                      type="button"
+                    >
+                      {tp.label}
+                    </button>
+                  ))}
+                </div>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value.slice(0, 2000))}
-                  placeholder="¿Qué estás creando hoy? ✨"
+                  placeholder={
+                    postType === "collab"
+                      ? "¿Qué perfil buscas y en qué proyecto? 🤝"
+                      : postType === "progress"
+                        ? "Cuéntanos tu avance de hoy y qué feedback necesitas 🎨"
+                        : "Presenta tu proyecto: qué es, para quién y con qué lo construiste 🚀"
+                  }
                   rows={4}
                 />
                 {filePreview && (
@@ -446,13 +492,31 @@ export function IsaSpacePage() {
           )}
           {tab === "mentors" && (
             <section className="isp-card isp-about-dir">
-              <h3>🎓 Mentores</h3>
+              <h3>🎓 Mentorías Isa</h3>
               <p className="isp-about-intro">
-                <strong>Contactar mentores — próximamente 🚧</strong>
+                <strong>Aprende a construir proyectos reales (no teoría aburrida) con plantillas y
+                acompañamiento en vivo.</strong>
                 <br />
-                Estamos armando la red de mentores verificados de IsaBot. Muy pronto podrás agendar
-                sesiones 1:1 con creativas, diseñadoras y emprendedoras de la comunidad.
+                Sesiones 1:1 con un marco de ejecución paso a paso: sales con algo publicado, no con apuntes.
               </p>
+
+              <div className="isp-track-grid">
+                {MENTOR_TRACKS.map((tr) => (
+                  <div key={tr.title} className="isp-track">
+                    <span className="isp-track-icon">{tr.icon}</span>
+                    <b>{tr.title}</b>
+                    <small>{tr.desc}</small>
+                  </div>
+                ))}
+              </div>
+
+              <a
+                className="isp-publish isp-mentor-cta"
+                href="mailto:isaroro2021@gmail.com?subject=Quiero%20agendar%20una%20Mentor%C3%ADa%20Isa"
+              >
+                Agendar Sesión de Mentoría 💜
+              </a>
+              <p className="isp-empty small">Contactar mentores de la comunidad — próximamente 🚧</p>
 
               {mentorApp ? (
                 <div className="isp-empty small">
@@ -507,8 +571,23 @@ export function IsaSpacePage() {
             <article key={p.id} className="isp-card isp-post">
               <header className="isp-post-head">
                 <Avatar name={p.author_name} url={p.author_avatar} />
-                <strong>{p.author_name}</strong>
-                <small>{timeAgo(p.created_at)}</small>
+                <div className="isp-post-author">
+                  <strong>{p.author_name}</strong>
+                  <span className="isp-post-meta">
+                    <span className={`isp-type-badge t-${p.post_type}`}>
+                      {POST_TYPES.find((t) => t.key === p.post_type)?.badge ?? "🚀 Nuevo Proyecto"}
+                    </span>
+                    <small>{timeAgo(p.created_at)}</small>
+                  </span>
+                  {(p.author_skills.length > 0 || p.author_headline) && (
+                    <span className="isp-skill-badges">
+                      {p.author_headline && <em>{p.author_headline}</em>}
+                      {p.author_skills.map((s) => (
+                        <b key={s}>{s}</b>
+                      ))}
+                    </span>
+                  )}
+                </div>
                 {me?.id === p.user_id && (
                   <button
                     className="isp-more"
@@ -567,7 +646,8 @@ export function IsaSpacePage() {
                     if (e.key !== "Enter" || !(commentText[p.id] ?? "").trim()) return;
                     const v = (commentText[p.id] ?? "").trim();
                     setCommentText((c) => ({ ...c, [p.id]: "" }));
-                    await doComment({ data: { postId: p.id, content: v } });
+                    const r = await doComment({ data: { postId: p.id, content: v } });
+                    if ((r as { reward?: number })?.reward) setCoinToast("+5 IBC 🪙 por tu feedback constructivo");
                     await load();
                   }}
                 />
@@ -576,7 +656,8 @@ export function IsaSpacePage() {
                   onClick={async () => {
                     const v = (commentText[p.id] ?? "").trim();
                     setCommentText((c) => ({ ...c, [p.id]: "" }));
-                    await doComment({ data: { postId: p.id, content: v } });
+                    const r = await doComment({ data: { postId: p.id, content: v } });
+                    if ((r as { reward?: number })?.reward) setCoinToast("+5 IBC 🪙 por tu feedback constructivo");
                     await load();
                   }}
                 >
@@ -646,6 +727,12 @@ export function IsaSpacePage() {
           </section>
         </aside>
       </div>
+
+      {coinToast && (
+        <div className="isp-coin-toast" role="status" onAnimationEnd={() => setCoinToast(null)}>
+          {coinToast}
+        </div>
+      )}
 
       {isFeedTab && !composerOpen && (
         <button className="isp-fab" onClick={() => setComposerOpen(true)} aria-label="Crear publicación">
