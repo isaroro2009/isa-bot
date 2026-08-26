@@ -35,6 +35,7 @@ import { Route as ApiPublicHooksTechNewsRouteImport } from './routes/api/public/
 import { Route as ApiPublicHooksNightSalesRouteImport } from './routes/api/public/hooks/night-sales'
 import { Route as ApiPublicHooksInactivityRemindersRouteImport } from './routes/api/public/hooks/inactivity-reminders'
 import { Route as ApiPublicHooksDueRemindersRouteImport } from './routes/api/public/hooks/due-reminders'
+import { Route as ApiPublicHooksBirthdayGreetingsRouteImport } from './routes/api/public/hooks/birthday-greetings'
 import { Route as AuthenticatedESlugJoinRouteImport } from './routes/_authenticated/e.$slug.join'
 import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authenticated/e.$slug.admin'
 
@@ -174,6 +175,12 @@ const ApiPublicHooksDueRemindersRoute =
     path: '/api/public/hooks/due-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksBirthdayGreetingsRoute =
+  ApiPublicHooksBirthdayGreetingsRouteImport.update({
+    id: '/api/public/hooks/birthday-greetings',
+    path: '/api/public/hooks/birthday-greetings',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedESlugJoinRoute = AuthenticatedESlugJoinRouteImport.update({
   id: '/join',
   path: '/join',
@@ -206,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/studio/': typeof AuthenticatedStudioIndexRoute
   '/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
   '/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/birthday-greetings': typeof ApiPublicHooksBirthdayGreetingsRoute
   '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
@@ -234,6 +242,7 @@ export interface FileRoutesByTo {
   '/studio': typeof AuthenticatedStudioIndexRoute
   '/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
   '/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/birthday-greetings': typeof ApiPublicHooksBirthdayGreetingsRoute
   '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
@@ -265,6 +274,7 @@ export interface FileRoutesById {
   '/_authenticated/studio/': typeof AuthenticatedStudioIndexRoute
   '/_authenticated/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
   '/_authenticated/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/birthday-greetings': typeof ApiPublicHooksBirthdayGreetingsRoute
   '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/studio/'
     | '/e/$slug/admin'
     | '/e/$slug/join'
+    | '/api/public/hooks/birthday-greetings'
     | '/api/public/hooks/due-reminders'
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/e/$slug/admin'
     | '/e/$slug/join'
+    | '/api/public/hooks/birthday-greetings'
     | '/api/public/hooks/due-reminders'
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
@@ -354,6 +366,7 @@ export interface FileRouteTypes {
     | '/_authenticated/studio/'
     | '/_authenticated/e/$slug/admin'
     | '/_authenticated/e/$slug/join'
+    | '/api/public/hooks/birthday-greetings'
     | '/api/public/hooks/due-reminders'
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
@@ -376,6 +389,7 @@ export interface RootRouteChildren {
   ApiVoiceSpeakRoute: typeof ApiVoiceSpeakRoute
   ApiVoiceTranscribeRoute: typeof ApiVoiceTranscribeRoute
   ApiVoiceVisionRoute: typeof ApiVoiceVisionRoute
+  ApiPublicHooksBirthdayGreetingsRoute: typeof ApiPublicHooksBirthdayGreetingsRoute
   ApiPublicHooksDueRemindersRoute: typeof ApiPublicHooksDueRemindersRoute
   ApiPublicHooksInactivityRemindersRoute: typeof ApiPublicHooksInactivityRemindersRoute
   ApiPublicHooksNightSalesRoute: typeof ApiPublicHooksNightSalesRoute
@@ -568,6 +582,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDueRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/birthday-greetings': {
+      id: '/api/public/hooks/birthday-greetings'
+      path: '/api/public/hooks/birthday-greetings'
+      fullPath: '/api/public/hooks/birthday-greetings'
+      preLoaderRoute: typeof ApiPublicHooksBirthdayGreetingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/e/$slug/join': {
       id: '/_authenticated/e/$slug/join'
       path: '/join'
@@ -639,6 +660,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVoiceSpeakRoute: ApiVoiceSpeakRoute,
   ApiVoiceTranscribeRoute: ApiVoiceTranscribeRoute,
   ApiVoiceVisionRoute: ApiVoiceVisionRoute,
+  ApiPublicHooksBirthdayGreetingsRoute: ApiPublicHooksBirthdayGreetingsRoute,
   ApiPublicHooksDueRemindersRoute: ApiPublicHooksDueRemindersRoute,
   ApiPublicHooksInactivityRemindersRoute:
     ApiPublicHooksInactivityRemindersRoute,
