@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
@@ -10,6 +12,10 @@ export const Route = createFileRoute("/auth")({
     meta: [
       { title: "IsaBot — Co-piloto de IA Creativa para Estudiantes y Emprendedores" },
       { name: "description", content: "IsaBot es tu co-piloto de IA creativa: estudia mejor, emprende con foco y crea sin bloqueo. Un espacio hecho en IsaRoRo Studio." },
+      { property: "og:title", content: "IsaBot — Inicia sesión" },
+      { property: "og:description", content: "Entra a IsaBot con tu correo o explora como invitada: PDFs agénticos, rachas diarias, IsaBot Coins y noticias tech." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
@@ -17,6 +23,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +32,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [googleBlocked, setGoogleBlocked] = useState(false);
 
   useEffect(() => {
     // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
@@ -34,10 +42,7 @@ function AuthPage() {
       window.localStorage.setItem(k, "1");
       window.localStorage.removeItem(k);
     } catch {
-      toast.error(
-        "Tu navegador está bloqueando el almacenamiento. En iPhone: Ajustes → Safari → desactiva \"Bloquear todas las cookies\" y sal del modo privado.",
-        { duration: 9000 },
-      );
+      toast.error(t("auth.storageBlocked"), { duration: 9000 });
     }
 
     supabase.auth
@@ -46,18 +51,19 @@ function AuthPage() {
         if (data.user) navigate({ to: "/" });
       })
       .catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   const failWith = (err: unknown, fallback: string) => {
     const raw = err instanceof Error ? err.message : String(err ?? fallback);
     const friendly = /invalid login credentials/i.test(raw)
-      ? "Correo o contraseña incorrectos 💔"
+      ? t("auth.badCreds")
       : /email not confirmed/i.test(raw)
-        ? "Debes confirmar tu correo antes de entrar 💌"
+        ? t("auth.notConfirmed")
         : /storage|localStorage|quota|cookie/i.test(raw)
-          ? "Safari está bloqueando el almacenamiento. Desactiva el modo privado o el bloqueo de cookies e inténtalo de nuevo."
+          ? t("auth.storageBlocked")
           : /network|fetch|timeout/i.test(raw)
-            ? "Sin conexión estable. Revisa tu internet e inténtalo otra vez."
+            ? t("auth.network")
             : raw || fallback;
     setError(friendly);
     toast.error(friendly, { duration: 7000 });
@@ -82,8 +88,8 @@ function AuthPage() {
           },
         });
         if (err) throw err;
-        toast.success("¡Cuenta creada! Revisa tu correo para confirmar 💕");
-        setInfo("¡Cuenta creada! Revisa tu correo para confirmar y luego inicia sesión 💕");
+        toast.success(t("auth.created"));
+        setInfo(t("auth.created"));
         setMode("signin");
       } else {
         const { error: err } = await supabase.auth.signInWithPassword({ email, password });
@@ -91,12 +97,14 @@ function AuthPage() {
         navigate({ to: "/" });
       }
     } catch (err) {
-      failWith(err, "Ocurrió un error al iniciar sesión");
+      failWith(err, t("auth.genericError"));
     } finally {
       setLoading(false);
     }
   };
 
+  // Si Google no está configurado (invalid_client / 401 / provider deshabilitado)
+  // NO redirigimos: mostramos un aviso y dejamos el correo como camino principal.
   const handleGoogle = async () => {
     setError(null);
     setLoading(true);
@@ -108,10 +116,30 @@ function AuthPage() {
       if (result.redirected) return;
       navigate({ to: "/" });
     } catch (err) {
-      failWith(err, "Error al iniciar con Google");
+      const raw = err instanceof Error ? err.message : String(err ?? "");
+      const misconfigured =
+        /invalid_client|unsupported provider|missing oauth|client id|not enabled|provider is not enabled|401/i.test(
+          raw,
+        );
+      if (misconfigured) {
+        setGoogleBlocked(true);
+        setError(t("auth.googleUnavailable"));
+        toast.error(t("auth.googleUnavailable"), { duration: 7000 });
+      } else {
+        failWith(err, t("auth.genericError"));
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const exploreAsGuest = () => {
+    try {
+      window.localStorage.setItem("isabot_guest_mode", "1");
+    } catch {
+      /* almacenamiento bloqueado: igual navegamos */
+    }
+    navigate({ to: "/" });
   };
 
   return (
@@ -120,21 +148,22 @@ function AuthPage() {
       <div className="auth-bg-blob auth-bg-blob-2" aria-hidden />
 
       <div className="auth-card">
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 4 }}>
+          <LanguageToggle />
+        </div>
         <div className="auth-header">
           <div className="auth-emoji">✨</div>
           <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#9b7ec9", textTransform: "uppercase", marginBottom: 6 }}>
             IsaRoRo Studio
           </div>
           <h1 className="auth-title">
-            {mode === "signin" ? "Bienvenido de nuevo" : "Crea tu cuenta"}
+            {mode === "signin" ? t("auth.welcomeBack") : t("auth.createAccount")}
           </h1>
           <p className="auth-sub">
-            {mode === "signin"
-              ? "Tu co-piloto de IA creativa para estudiar mejor, emprender con foco y crear sin bloqueo."
-              : "Únete a IsaBot — el co-piloto de IA para estudiantes y emprendedores."}
+            {mode === "signin" ? t("auth.subSignin") : t("auth.subSignup")}
           </p>
           <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap", marginTop: 10 }}>
-            {["📚 Estudia mejor", "🚀 Emprende con foco", "🎨 Crea sin bloqueo"].map((chip) => (
+            {[t("auth.chip1"), t("auth.chip2"), t("auth.chip3")].map((chip) => (
               <span key={chip} style={{
                 fontSize: 11, fontWeight: 700, padding: "5px 10px", borderRadius: 999,
                 background: "rgba(201, 182, 255, 0.22)", color: "#5b4270",
@@ -143,23 +172,25 @@ function AuthPage() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleGoogle}
-          disabled={loading}
-          className="auth-google-btn"
-        >
-          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
-            <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
-            <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
-            <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.5 2.3-7.2 2.3-5.2 0-9.6-3.3-11.3-8L6.2 33C9.5 39.6 16.2 44 24 44z" />
-            <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.4-.4-3.5z" />
-          </svg>
-          <span>Continuar con Google</span>
-        </button>
+        {!googleBlocked && (
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={loading}
+            className="auth-google-btn"
+          >
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
+              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
+              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+              <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.5 2.3-7.2 2.3-5.2 0-9.6-3.3-11.3-8L6.2 33C9.5 39.6 16.2 44 24 44z" />
+              <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.4-.4-3.5z" />
+            </svg>
+            <span>{t("auth.google")}</span>
+          </button>
+        )}
 
         <div className="auth-divider">
-          <span>o con tu correo</span>
+          <span>{t("auth.orEmail")}</span>
         </div>
 
         <form onSubmit={handleEmailAuth} className="auth-form">
@@ -167,14 +198,14 @@ function AuthPage() {
             <>
               <input
                 type="text"
-                placeholder="Nombre para mostrar"
+                placeholder={t("auth.displayName")}
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 className="auth-input"
               />
               <input
                 type="tel"
-                placeholder="Celular (opcional)"
+                placeholder={t("auth.phone")}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="auth-input"
@@ -183,7 +214,7 @@ function AuthPage() {
           )}
           <input
             type="email"
-            placeholder="Correo"
+            placeholder={t("auth.email")}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -192,7 +223,7 @@ function AuthPage() {
           />
           <input
             type="password"
-            placeholder="Contraseña"
+            placeholder={t("auth.password")}
             required
             minLength={6}
             value={password}
@@ -205,12 +236,16 @@ function AuthPage() {
           {info && <div className="auth-alert auth-alert-info">{info}</div>}
 
           <button type="submit" disabled={loading} className="auth-submit-btn">
-            {loading ? "..." : mode === "signin" ? "Iniciar sesión" : "Crear cuenta"}
+            {loading ? "..." : mode === "signin" ? t("auth.signin") : t("auth.signup")}
           </button>
         </form>
 
+        <button type="button" className="auth-guest-btn" onClick={exploreAsGuest}>
+          {t("auth.guest")}
+        </button>
+
         <p className="auth-switch">
-          {mode === "signin" ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{" "}
+          {mode === "signin" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
           <button
             type="button"
             onClick={() => {
@@ -220,12 +255,12 @@ function AuthPage() {
             }}
             className="auth-switch-btn"
           >
-            {mode === "signin" ? "Regístrate" : "Inicia sesión"}
+            {mode === "signin" ? t("auth.register") : t("auth.signin")}
           </button>
         </p>
 
         <p className="auth-back">
-          <Link to="/">← Volver al chat</Link>
+          <Link to="/">{t("auth.back")}</Link>
         </p>
       </div>
     </div>
