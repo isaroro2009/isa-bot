@@ -30,6 +30,8 @@ import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedOnboardingOrgRouteImport } from './routes/_authenticated/onboarding.org'
 import { Route as AuthenticatedESlugRouteRouteImport } from './routes/_authenticated/e.$slug.route'
 import { Route as AuthenticatedESlugIndexRouteImport } from './routes/_authenticated/e.$slug.index'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksWeeklyGiftPublishRouteImport } from './routes/api/public/hooks/weekly-gift-publish'
 import { Route as ApiPublicHooksWeeklyFeedbackRouteImport } from './routes/api/public/hooks/weekly-feedback'
 import { Route as ApiPublicHooksWeeklyDigestRouteImport } from './routes/api/public/hooks/weekly-digest'
@@ -147,6 +149,16 @@ const AuthenticatedESlugIndexRoute = AuthenticatedESlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedESlugRouteRoute,
 } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksWeeklyGiftPublishRoute =
   ApiPublicHooksWeeklyGiftPublishRouteImport.update({
     id: '/api/public/hooks/weekly-gift-publish',
@@ -235,6 +247,8 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/e/$slug/': typeof AuthenticatedESlugIndexRoute
 }
 export interface FileRoutesByTo {
@@ -266,6 +280,8 @@ export interface FileRoutesByTo {
   '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/e/$slug': typeof AuthenticatedESlugIndexRoute
 }
 export interface FileRoutesById {
@@ -300,6 +316,8 @@ export interface FileRoutesById {
   '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/_authenticated/e/$slug/': typeof AuthenticatedESlugIndexRoute
 }
 export interface FileRouteTypes {
@@ -334,6 +352,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/e/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -365,6 +385,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/e/$slug'
   id:
     | '__root__'
@@ -398,6 +420,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/_authenticated/e/$slug/'
   fileRoutesById: FileRoutesById
 }
@@ -423,6 +447,8 @@ export interface RootRouteChildren {
   ApiPublicHooksWeeklyDigestRoute: typeof ApiPublicHooksWeeklyDigestRoute
   ApiPublicHooksWeeklyFeedbackRoute: typeof ApiPublicHooksWeeklyFeedbackRoute
   ApiPublicHooksWeeklyGiftPublishRoute: typeof ApiPublicHooksWeeklyGiftPublishRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -574,6 +600,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedESlugIndexRouteImport
       parentRoute: typeof AuthenticatedESlugRouteRoute
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/weekly-gift-publish': {
       id: '/api/public/hooks/weekly-gift-publish'
       path: '/api/public/hooks/weekly-gift-publish'
@@ -711,6 +751,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksWeeklyDigestRoute: ApiPublicHooksWeeklyDigestRoute,
   ApiPublicHooksWeeklyFeedbackRoute: ApiPublicHooksWeeklyFeedbackRoute,
   ApiPublicHooksWeeklyGiftPublishRoute: ApiPublicHooksWeeklyGiftPublishRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
