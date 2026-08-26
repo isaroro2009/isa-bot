@@ -6013,3 +6013,14 @@ pre, code { white-space: pre-wrap; word-break: break-word; }
   font-size: 14px;
   cursor: pointer;
 }
+
+/* IsaSpace — contenido importado y postulación de mentores */
+.isp-imported-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 22px 2px 10px; }
+.isp-imported-head h3 { margin: 0; font-size: 0.95rem; color: #5b4270; }
+.isp-imported-refresh { border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 0.78rem; cursor: pointer; color: #3d2450; background: linear-gradient(135deg, #c9a0e8, #f0b8c8); min-height: 36px; }
+.isp-imported-refresh:disabled { opacity: 0.6; cursor: default; }
+.isp-post-imported { border: 1px dashed rgba(160, 107, 138, 0.35); }
+.isp-imported-link { display: inline-block; margin-top: 8px; font-size: 0.78rem; font-weight: 700; color: #8b5fbf; text-decoration: none; }
+.isp-mentor-form { display: flex; flex-direction: column; gap: 10px; }
+.isp-mentor-form input, .isp-mentor-form textarea { width: 100%; border-radius: 14px; border: 1px solid rgba(160, 107, 138, 0.25); padding: 12px 14px; font: inherit; font-size: 0.88rem; background: #fff; min-height: 44px; }
+.isp-mentor-form textarea { min-height: 110px; resize: vertical; }
