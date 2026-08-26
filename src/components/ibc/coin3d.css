@@ -42,6 +42,54 @@
   --c-ink: #22165c;
 }
 
+.coin3d.skin-pastel {
+  --c-core-0: #fff6fb;
+  --c-core-1: #ffd6ec;
+  --c-core-2: #b9a7ee;
+  --c-rim-0: #fdf3ff;
+  --c-rim-1: #c7f0ea;
+  --c-rim-2: #8f86c9;
+  --c-glow: rgba(196, 168, 255, 0.5);
+  --c-line: #ffeaf6;
+  --c-ink: #6b5a8c;
+}
+
+.coin3d.skin-sakura {
+  --c-core-0: #fff1f5;
+  --c-core-1: #ffb3c9;
+  --c-core-2: #d2678f;
+  --c-rim-0: #fff6f8;
+  --c-rim-1: #8ac6a4;
+  --c-rim-2: #4d7a5f;
+  --c-glow: rgba(255, 160, 190, 0.55);
+  --c-line: #ffe0ea;
+  --c-ink: #6b3350;
+}
+
+.coin3d.skin-ocean {
+  --c-core-0: #eafcff;
+  --c-core-1: #4fd3c4;
+  --c-core-2: #0d3b53;
+  --c-rim-0: #dff8ff;
+  --c-rim-1: #2c9fbd;
+  --c-rim-2: #06283a;
+  --c-glow: rgba(79, 211, 196, 0.55);
+  --c-line: #cbf6ff;
+  --c-ink: #06283a;
+}
+
+.coin3d.skin-neon {
+  --c-core-0: #d9fbff;
+  --c-core-1: #00e5ff;
+  --c-core-2: #12172e;
+  --c-rim-0: #ffd6f0;
+  --c-rim-1: #ff3ea5;
+  --c-rim-2: #2a0d3f;
+  --c-glow: rgba(0, 229, 255, 0.6);
+  --c-line: #ff9ed4;
+  --c-ink: #0a0f22;
+}
+
 .coin3d-glow {
   position: absolute;
   inset: -18%;
