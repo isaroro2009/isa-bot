@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -32,7 +31,6 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
-  const [googleBlocked, setGoogleBlocked] = useState(false);
 
   useEffect(() => {
     // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
@@ -185,10 +183,6 @@ function AuthPage() {
             {loading ? "..." : mode === "signin" ? t("auth.signin") : t("auth.signup")}
           </button>
         </form>
-
-        <button type="button" className="auth-guest-btn" onClick={exploreAsGuest}>
-          {t("auth.guest")}
-        </button>
 
         <p className="auth-switch">
           {mode === "signin" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
