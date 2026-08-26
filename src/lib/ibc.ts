@@ -6,7 +6,8 @@ export type IbcActionKey =
   | "image"
   | "render3d"
   | "agent"
-  | "pro_tool";
+  | "pro_tool"
+  | "theme";
 
 export const IBC_COSTS: Record<IbcActionKey, { cost: number; label: string; freeForPro?: boolean; proOnly?: boolean }> = {
   text_basic: { cost: 1, label: "Texto básico / post social", freeForPro: true },
