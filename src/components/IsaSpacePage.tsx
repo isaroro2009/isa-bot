@@ -444,8 +444,64 @@ export function IsaSpacePage() {
               </ul>
             </section>
           )}
+          {tab === "mentors" && (
+            <section className="isp-card isp-about-dir">
+              <h3>🎓 Mentores</h3>
+              <p className="isp-about-intro">
+                <strong>Contactar mentores — próximamente 🚧</strong>
+                <br />
+                Estamos armando la red de mentores verificados de IsaBot. Muy pronto podrás agendar
+                sesiones 1:1 con creativas, diseñadoras y emprendedoras de la comunidad.
+              </p>
+
+              {mentorApp ? (
+                <div className="isp-empty small">
+                  ✅ Ya enviaste tu postulación como mentor verificado ({mentorApp.expertise}).
+                  <br />
+                  Estado: <strong>{mentorApp.status === "pending" ? "en revisión" : mentorApp.status}</strong>
+                </div>
+              ) : (
+                <form className="isp-mentor-form" onSubmit={sendMentorApplication}>
+                  <h4 style={{ margin: "14px 0 6px" }}>✨ Postúlate como mentor verificado</h4>
+                  <input
+                    placeholder="Tu nombre completo *"
+                    value={mentorForm.full_name}
+                    onChange={(e) => setMentorForm({ ...mentorForm, full_name: e.target.value })}
+                  />
+                  <input
+                    placeholder="Especialidad (diseño, IA, marketing…) *"
+                    value={mentorForm.expertise}
+                    onChange={(e) => setMentorForm({ ...mentorForm, expertise: e.target.value })}
+                  />
+                  <textarea
+                    rows={4}
+                    placeholder="Cuéntanos tu experiencia y cómo puedes ayudar *"
+                    value={mentorForm.experience}
+                    onChange={(e) => setMentorForm({ ...mentorForm, experience: e.target.value })}
+                  />
+                  <input
+                    placeholder="Portafolio / LinkedIn / Instagram"
+                    value={mentorForm.links}
+                    onChange={(e) => setMentorForm({ ...mentorForm, links: e.target.value })}
+                  />
+                  <input
+                    placeholder="Correo o WhatsApp de contacto *"
+                    value={mentorForm.contact}
+                    onChange={(e) => setMentorForm({ ...mentorForm, contact: e.target.value })}
+                  />
+                  <button className="isp-publish" type="submit" disabled={mentorSending}>
+                    {mentorSending ? "Enviando…" : "Enviar postulación 💜"}
+                  </button>
+                </form>
+              )}
+            </section>
+          )}
+
           {loading && isFeedTab && <p className="isp-empty">Cargando la galaxia… ✨</p>}
-          {!loading && isFeedTab && feed.length === 0 && <p className="isp-empty">Todavía no hay publicaciones. ¡Sé la primera! 🌸</p>}
+          {!loading && isFeedTab && feed.length === 0 && imported.length === 0 && (
+            <p className="isp-empty">Todavía no hay publicaciones. ¡Sé la primera! 🌸</p>
+          )}
+
 
           {feed.map((p) => (
             <article key={p.id} className="isp-card isp-post">
