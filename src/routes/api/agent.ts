@@ -382,7 +382,8 @@ export const Route = createFileRoute("/api/agent")({
             if (res.status !== 404 && res.status !== 400) break;
           }
           // Último recurso: motor de Lovable AI si hay clave.
-          const lovKey = process.env.LOVABLE_API_KEY;
+          // 💸 Solo usamos el gateway de Lovable si no hay ninguna clave propia.
+          const lovKey = process.env.GROQ_API_KEY || process.env.GOOGLE_AI_API_KEY ? null : process.env.LOVABLE_API_KEY;
           if (!useLovable && lovKey) {
             const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
               method: "POST",

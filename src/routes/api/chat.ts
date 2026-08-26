@@ -53,7 +53,11 @@ async function brainChat(
   groqKey: string,
   messages: unknown[],
 ): Promise<Response> {
-  if (brain.provider === "lovable") return lovableChat(brain.engine, messages);
+  // 💸 Cero tokens de Lovable: si hay clave propia (Groq), esa manda siempre.
+  if (brain.provider === "lovable") {
+    if (groqKey) return groqChat(groqKey, { model: DEFAULT_BRAIN.engine, messages });
+    return lovableChat(brain.engine, messages);
+  }
   if (brain.provider === "openrouter") {
     const res = await openrouterChat(brain.engine, messages);
     // Si falta la clave o OpenRouter falla, caemos al motor por defecto.
@@ -787,21 +791,19 @@ export const Route = createFileRoute("/api/chat")({
             { role: "user", content: lastUserContent },
           ];
 
-          // Si el usuario pide una imagen: Groq no genera imágenes; responde con texto honesto.
+          // 🎨 Imagen: motor gratuito Pollinations (sin API key, sin créditos).
           if (wantsImage) {
-            const res = await groqChat(key, {
-              model: GROQ_TEXT_MODEL,
-              messages: [
-                { role: "system", content: system + "\n\nIMPORTANTE: El usuario pidió una imagen pero por ahora no puedes generar imágenes. Discúlpate brevemente con cariño, describe con lujo de detalle cómo te imaginas esa imagen (colores, estilo, composición) para que la persona pueda visualizarla o usarla como prompt en otra herramienta." },
-                ...messages.slice(1),
-              ],
+            const prompt = (mensaje ?? "").replace(/^[^:]{0,40}:/, "").trim() || "arte kawaii";
+            const seed = Math.floor(Math.random() * 1_000_000);
+            const imageUrl =
+              "https://image.pollinations.ai/prompt/" +
+              encodeURIComponent(`${prompt}, high quality, detailed illustration`) +
+              `?width=1024&height=1024&nologo=true&seed=${seed}`;
+            return Response.json({
+              tipo: "imagen",
+              respuesta: imageUrl,
+              texto: "¡Listo! Aquí está tu imagen 🎨✨",
             });
-            if (!res.ok) {
-              return Response.json({ respuesta: "El servidor de IA respondió con error 💔 intenta de nuevo porfa" });
-            }
-            const data = (await res.json()) as { choices?: Array<{ message?: GwMessage }> };
-            const out = extractTextAndImage(data.choices?.[0]?.message);
-            return Response.json({ respuesta: out.text || "No se me ocurre nada ahora 🥺✨" });
           }
 
           // ── Cerebro de IsaBot: automático según lo que pide la persona
