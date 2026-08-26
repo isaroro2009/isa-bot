@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import "./coin3d.css";
 
-export type CoinSkinId = "rosita" | "gold" | "diamond";
+export type CoinSkinId = "rosita" | "gold" | "diamond" | "pastel" | "sakura" | "neon" | "ocean";
 
 export type CoinSkin = {
   id: CoinSkinId;
@@ -14,15 +14,20 @@ export type CoinSkin = {
 export const COIN_SKINS: CoinSkin[] = [
   { id: "rosita", name: "Rosita Classic", tagline: "Neón rosa + oro", requirement: "Gratis" },
   { id: "gold", name: "Gold Luxe", tagline: "Oro pulido, luz blanca", requirement: "Racha de 7 días o PRO" },
+  { id: "pastel", name: "Pastel Dream", tagline: "Menta, lila y durazno", requirement: "Racha de 3 días" },
+  { id: "sakura", name: "Sakura Blossom", tagline: "Pétalos rosados y jade", requirement: "Racha de 5 días" },
+  { id: "ocean", name: "Ocean Mint", tagline: "Azul profundo y menta", requirement: "Racha de 7 días o PRO" },
+  { id: "neon", name: "Dark Neon", tagline: "Cian eléctrico sobre negro", requirement: "Plan PRO" },
   { id: "diamond", name: "Diamond Cyber", tagline: "Cian iridiscente, neón morado", requirement: "Compra en la tienda" },
 ];
 
 const SKIN_KEY = "isabot.coin.skin";
+const ALL_SKINS = COIN_SKINS.map((s) => s.id) as string[];
 
 export function loadSkin(): CoinSkinId {
   if (typeof window === "undefined") return "rosita";
   const v = window.localStorage.getItem(SKIN_KEY);
-  return v === "gold" || v === "diamond" ? v : "rosita";
+  return ALL_SKINS.includes(v ?? "") ? (v as CoinSkinId) : "rosita";
 }
 
 export function saveSkin(id: CoinSkinId) {
