@@ -38,12 +38,10 @@ export function LandingModal() {
 
         <div className="landing-actions">
           <Link to="/auth" className="landing-btn primary">
-            🔐 {t("landing.cta")}
+            {t("landing.cta")}
           </Link>
-          <button type="button" className="landing-btn ghost" onClick={onExplore}>
-            👀 {t("landing.guest")}
-          </button>
         </div>
+
         <Link to="/auth" className="landing-signup">
           {t("landing.signup")}
         </Link>
