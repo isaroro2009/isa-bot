@@ -69,7 +69,6 @@ export const STRINGS: Dict = {
   "auth.hasAccount": { es: "¿Ya tienes cuenta?", en: "Already have an account?" },
   "auth.register": { es: "Regístrate", en: "Sign up" },
   "auth.back": { es: "← Volver al chat", en: "← Back to chat" },
-  "auth.guest": { es: "👀 Explorar como invitada (Demo)", en: "👀 Explore as guest (Demo)" },
   "auth.googleUnavailable": {
     es: "Google no está disponible ahora mismo. Entra con tu correo y contraseña 💜",
     en: "Google sign-in isn't available right now. Use your email and password 💜",
