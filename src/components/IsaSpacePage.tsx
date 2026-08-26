@@ -211,8 +211,9 @@ export function IsaSpacePage() {
     return Array.from(seen.values()).slice(0, 4).map((u, i) => ({ ...u, state: states[i % states.length] }));
   }, [posts]);
 
+  const isFeedTab = tab === "home" || tab === "mine";
   const feed = useMemo(
-    () => (tab === "about" ? [] : tab === "mine" ? posts.filter((p) => p.user_id === me?.id) : posts),
+    () => (tab === "mine" ? posts.filter((p) => p.user_id === me?.id) : tab === "home" ? posts : []),
     [posts, tab, me?.id],
   );
 
