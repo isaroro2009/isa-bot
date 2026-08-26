@@ -16,6 +16,7 @@ export const IBC_COSTS: Record<IbcActionKey, { cost: number; label: string; free
   render3d: { cost: 5, label: "Render 3D / keycap" },
   agent: { cost: 4, label: "Agente autónomo (PDF + correo)" },
   pro_tool: { cost: 6, label: "Herramienta PRO (Turbo)", proOnly: true },
+  theme: { cost: 20, label: "Tema de interfaz" },
 };
 
 /** Costo efectivo según el plan del usuario. Las herramientas PRO cuestan el doble en plan FREE. */
