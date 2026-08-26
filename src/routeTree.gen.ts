@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PitchRouteImport } from './routes/pitch'
 import { Route as EmpresasRouteImport } from './routes/empresas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -47,6 +48,11 @@ import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authentic
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PitchRoute = PitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresasRoute = EmpresasRouteImport.update({
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -262,6 +269,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/empresas': typeof EmpresasRoute
+  '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/empresas'
+    | '/pitch'
     | '/reset-password'
     | '/admin'
     | '/isaspace'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/empresas'
+    | '/pitch'
     | '/reset-password'
     | '/admin'
     | '/isaspace'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/empresas'
+    | '/pitch'
     | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
@@ -442,6 +454,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   EmpresasRoute: typeof EmpresasRoute
+  PitchRoute: typeof PitchRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiAgentRoute: typeof ApiAgentRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -471,6 +484,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pitch': {
+      id: '/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof PitchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/empresas': {
@@ -753,6 +773,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   EmpresasRoute: EmpresasRoute,
+  PitchRoute: PitchRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiAgentRoute: ApiAgentRoute,
   ApiChatRoute: ApiChatRoute,
