@@ -273,6 +273,7 @@ export function IsaSpacePage() {
           <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>✨ Para ti</button>
           <button className={tab === "mine" ? "active" : ""} onClick={() => setTab("mine")}>👤 Mis publicaciones</button>
           <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>💜 Quiénes somos</button>
+          <button className={tab === "mentors" ? "active" : ""} onClick={() => setTab("mentors")}>🎓 Mentores</button>
         </nav>
         <button className="isp-return" onClick={returnToIsaBot}>
           <span className="isp-return-badge">🏠</span>
