@@ -973,15 +973,7 @@ function IsaBot() {
   }, [sidebarOpen]);
 
   const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
-  // Modo invitado: deja explorar la app antes de pedir cuenta.
-  const [guestMode, setGuestMode] = useState(true);
-  useEffect(() => {
-    try {
-      setGuestMode(window.localStorage.getItem("isabot_guest_mode") === "1");
-    } catch {
-      setGuestMode(false);
-    }
-  }, []);
+
 
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -2619,14 +2611,8 @@ ${rows}
         <WelcomeModal userId={authUser.id} name={authUser.email?.split("@")[0] ?? null} />
       )}
 
-      {!authUser && !guestMode && (
-        <LandingModal
-          onExplore={() => {
-            try { window.localStorage.setItem("isabot_guest_mode", "1"); } catch { /* bloqueado */ }
-            setGuestMode(true);
-          }}
-        />
-      )}
+      {!authUser && <LandingModal />}
+
 
       <header className="header">
         <h1 className="logo">IsaBot ✨</h1>

@@ -69,7 +69,6 @@ export const STRINGS: Dict = {
   "auth.hasAccount": { es: "¿Ya tienes cuenta?", en: "Already have an account?" },
   "auth.register": { es: "Regístrate", en: "Sign up" },
   "auth.back": { es: "← Volver al chat", en: "← Back to chat" },
-  "auth.guest": { es: "👀 Explorar como invitada (Demo)", en: "👀 Explore as guest (Demo)" },
   "auth.googleUnavailable": {
     es: "Google no está disponible ahora mismo. Entra con tu correo y contraseña 💜",
     en: "Google sign-in isn't available right now. Use your email and password 💜",
@@ -94,11 +93,12 @@ export const STRINGS: Dict = {
   "auth.genericError": { es: "Ocurrió un error al iniciar sesión", en: "Something went wrong while signing in" },
 
   // Landing
-  "landing.title": { es: "¿Qué es IsaBot?", en: "What is IsaBot?" },
+  "landing.title": { es: "¡Hola! Soy IsaBot ✨", en: "Hi! I'm IsaBot ✨" },
   "landing.tagline": {
-    es: "Tu co-piloto de IA autónomo para estudiantes y creadoras.",
-    en: "Your autonomous AI co-pilot for students and creators.",
+    es: "Tu copiloto de IA creativa para estudiar, emprender y crear sin bloqueos. Conmigo puedes generar PDFs profesionales, imágenes, consultar noticias tech, acumular IsaBot Coins 🪙 y mantener tu racha diaria 🔥.",
+    en: "Your creative AI copilot to study, build and create without blocks. With me you can generate professional PDFs, images, read tech news, earn IsaBot Coins 🪙 and keep your daily streak 🔥.",
   },
+
   "landing.f1t": { es: "📄 PDFs agénticos", en: "📄 Agentic PDFs" },
   "landing.f1d": {
     es: "Pide un informe, una carta o un resumen y IsaBot lo escribe, lo maqueta y te lo entrega listo.",
@@ -119,9 +119,9 @@ export const STRINGS: Dict = {
     es: "El resumen diario del mundo tech, en tu idioma y explicado por IsaBot.",
     en: "The daily tech digest, in your language and explained by IsaBot.",
   },
-  "landing.cta": { es: "Iniciar sesión", en: "Sign in" },
-  "landing.guest": { es: "Explorar como invitada", en: "Explore as guest" },
+  "landing.cta": { es: "Iniciar sesión / Crear cuenta ✨", en: "Sign in / Create account ✨" },
   "landing.signup": { es: "Crear cuenta gratis", en: "Sign up free" },
+
 
   // News
   "news.title": { es: "📰 Noticias Tech del Día", en: "📰 Today's Tech News" },
