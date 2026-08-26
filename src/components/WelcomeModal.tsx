@@ -44,19 +44,27 @@ export default function WelcomeModal({ userId, name }: { userId: string; name?: 
     <div className="welcome-overlay" role="dialog" aria-modal="true" aria-label="Bienvenida a IsaBot">
       <div className="welcome-card">
         <div className="welcome-emoji">💜</div>
-        <h2>¡Bienvenida{name ? `, ${name}` : ""} a IsaBot!</h2>
+        <h2>¡Hola{name ? `, ${name}` : ""}! Esto es IsaBot ✨</h2>
         <p className="welcome-sub">
-          Soy tu copiloto de IA creativa, hecha por Isabella Rodríguez Roque. Esto puedes hacer desde hoy:
+          No soy solo un chat: soy tu copiloto creativo con IA, hecho por Isabella Rodríguez Roque.
+          Escribe una idea y en segundos la convierto en algo real 💫
         </p>
 
         <ul className="welcome-list">
-          <li>💬 Chatear con IA multimodal y generar imágenes</li>
-          <li>🎨 Paleta de colores, notas rápidas y gestor de tareas</li>
-          <li>🎓 IsaAcademy: clases de IA y tech con rachas y XP</li>
+          <li>💬 Chatea con IA multimodal: textos, ideas, resúmenes y análisis</li>
+          <li>🎨 Genera imágenes y arte desde una frase</li>
+          <li>📄 Documentos y planners profesionales en PDF, listos para descargar</li>
+          <li>💌 Correos redactados y enviados por ti, sin configurar nada</li>
+          <li>⏰ Recordatorios, plan del día y Pomodoro para no perder el foco</li>
+          <li>🎓 IsaAcademy: clases cortas de IA y tech con rachas y XP</li>
           <li>🪐 IsaSpace: comparte tus creaciones con la comunidad</li>
-          <li>🧺 IsaMarket: ofrece tus servicios freelance o encuentra talento</li>
-          <li>🏆 Gana IsaBot Coins cada día y canjéalos por recompensas</li>
+          <li>🪙 Gana IsaBot Coins cada día y desbloquea temas y skins</li>
         </ul>
+
+        <p className="welcome-sub">
+          Prueba a escribirme: <b>«hazme un PDF con un plan de contenido para Instagram»</b> o{" "}
+          <b>«dibújame un gatito astronauta»</b> 🚀
+        </p>
 
 
         <div className="welcome-pro">

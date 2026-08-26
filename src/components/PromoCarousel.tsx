@@ -57,11 +57,11 @@ const SLIDES: Slide[] = [
   {
     id: "planners",
     emoji: "🗓️",
-    title: "Planners digitales imprimibles",
-    desc: "Agendas en PDF para organizar tu semana, tus metas y tu emprendimiento.",
-    cta: "Ver planners",
+    title: "Planners y documentos en PDF",
+    desc: "Pídele al agente tu planner o informe y descárgalo al instante en PDF.",
+    cta: "Crear mi PDF",
     bg: "linear-gradient(135deg, #c9558d, #f0885f)",
-    action: { kind: "href", href: "/market" },
+    action: { kind: "href", href: "/studio" },
   },
   {
     id: "academy",

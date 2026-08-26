@@ -17,7 +17,26 @@ export const sendEmailWebhook = createServerFn({ method: "POST" })
   .inputValidator((input: WebhookEmailInput) => input)
   .handler(async ({ data }) => {
     const url = process.env["EMAIL_WEBHOOK_URL"];
-    if (!url) return { ok: false as const, reason: "webhook_not_configured" };
+
+    // 🚀 Sin webhook: enviamos directo con el mailer del servidor (sin OAuth ni logins).
+    if (!url) {
+      const { sendEmail } = await import("@/lib/mailer.server");
+      const res = await sendEmail({
+        to: data.recipient,
+        subject: data.subject,
+        kind: "agent",
+        html: `<div style="white-space:pre-wrap;font-family:system-ui,sans-serif;line-height:1.6;">${data.body_text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")}</div>`,
+        attachments: data.pdf_data
+          ? [{ name: data.pdf_name ?? "isabot.pdf", base64: data.pdf_data }]
+          : undefined,
+      });
+      return res.sent
+        ? { ok: true as const }
+        : { ok: false as const, reason: res.reason ?? "email_not_configured" };
+    }
+
 
     try {
       const res = await fetch(url, {

@@ -71,11 +71,14 @@ async function logEmail(entry: {
   }
 }
 
+export type MailAttachment = { name: string; base64: string };
+
 export async function sendEmail(opts: {
   to: string;
   subject: string;
   html: string;
   kind?: string;
+  attachments?: MailAttachment[];
 }): Promise<MailResult> {
   const result = await deliver(opts);
   await logEmail({
@@ -92,6 +95,7 @@ async function deliver(opts: {
   to: string;
   subject: string;
   html: string;
+  attachments?: MailAttachment[];
 }): Promise<MailResult> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
@@ -115,6 +119,9 @@ async function deliver(opts: {
           to: [{ email: opts.to }],
           subject: opts.subject,
           htmlContent: opts.html,
+          ...(opts.attachments?.length
+            ? { attachment: opts.attachments.map((a) => ({ name: a.name, content: a.base64 })) }
+            : {}),
         }),
       });
       if (!res.ok) {

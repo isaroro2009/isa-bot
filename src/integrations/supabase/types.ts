@@ -1100,6 +1100,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          birthday: string | null
           created_at: string
           display_name: string | null
           email: string
@@ -1112,9 +1113,11 @@ export type Database = {
           interests: string[]
           is_premium: boolean
           last_active_at: string | null
+          last_birthday_email_year: number | null
           last_inactivity_email_at: string | null
           last_plan_date: string | null
           last_seen_at: string | null
+          last_weekly_digest_at: string | null
           location: string | null
           phone: string | null
           premium_expires_at: string | null
@@ -1131,6 +1134,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          birthday?: string | null
           created_at?: string
           display_name?: string | null
           email: string
@@ -1143,9 +1147,11 @@ export type Database = {
           interests?: string[]
           is_premium?: boolean
           last_active_at?: string | null
+          last_birthday_email_year?: number | null
           last_inactivity_email_at?: string | null
           last_plan_date?: string | null
           last_seen_at?: string | null
+          last_weekly_digest_at?: string | null
           location?: string | null
           phone?: string | null
           premium_expires_at?: string | null
@@ -1162,6 +1168,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          birthday?: string | null
           created_at?: string
           display_name?: string | null
           email?: string
@@ -1174,9 +1181,11 @@ export type Database = {
           interests?: string[]
           is_premium?: boolean
           last_active_at?: string | null
+          last_birthday_email_year?: number | null
           last_inactivity_email_at?: string | null
           last_plan_date?: string | null
           last_seen_at?: string | null
+          last_weekly_digest_at?: string | null
           location?: string | null
           phone?: string | null
           premium_expires_at?: string | null
@@ -1806,6 +1815,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      ibc_admin_grant: {
+        Args: { _amount: number; _reason: string; _user_id: string }
+        Returns: number
       }
       ibc_checkin: {
         Args: never

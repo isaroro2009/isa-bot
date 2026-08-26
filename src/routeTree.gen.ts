@@ -18,7 +18,6 @@ import { Route as ICodeRouteImport } from './routes/i.$code'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
@@ -32,10 +31,12 @@ import { Route as AuthenticatedESlugRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedESlugIndexRouteImport } from './routes/_authenticated/e.$slug.index'
 import { Route as ApiPublicHooksWeeklyGiftPublishRouteImport } from './routes/api/public/hooks/weekly-gift-publish'
 import { Route as ApiPublicHooksWeeklyFeedbackRouteImport } from './routes/api/public/hooks/weekly-feedback'
+import { Route as ApiPublicHooksWeeklyDigestRouteImport } from './routes/api/public/hooks/weekly-digest'
 import { Route as ApiPublicHooksTechNewsRouteImport } from './routes/api/public/hooks/tech-news'
 import { Route as ApiPublicHooksNightSalesRouteImport } from './routes/api/public/hooks/night-sales'
 import { Route as ApiPublicHooksInactivityRemindersRouteImport } from './routes/api/public/hooks/inactivity-reminders'
 import { Route as ApiPublicHooksDueRemindersRouteImport } from './routes/api/public/hooks/due-reminders'
+import { Route as ApiPublicHooksBirthdayGreetingsRouteImport } from './routes/api/public/hooks/birthday-greetings'
 import { Route as AuthenticatedESlugJoinRouteImport } from './routes/_authenticated/e.$slug.join'
 import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authenticated/e.$slug.admin'
 
@@ -81,11 +82,6 @@ const ApiAgentRoute = ApiAgentRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
-  id: '/market',
-  path: '/market',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
@@ -157,6 +153,12 @@ const ApiPublicHooksWeeklyFeedbackRoute =
     path: '/api/public/hooks/weekly-feedback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksWeeklyDigestRoute =
+  ApiPublicHooksWeeklyDigestRouteImport.update({
+    id: '/api/public/hooks/weekly-digest',
+    path: '/api/public/hooks/weekly-digest',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTechNewsRoute = ApiPublicHooksTechNewsRouteImport.update({
   id: '/api/public/hooks/tech-news',
   path: '/api/public/hooks/tech-news',
@@ -180,6 +182,12 @@ const ApiPublicHooksDueRemindersRoute =
     path: '/api/public/hooks/due-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksBirthdayGreetingsRoute =
+  ApiPublicHooksBirthdayGreetingsRouteImport.update({
+    id: '/api/public/hooks/birthday-greetings',
+    path: '/api/public/hooks/birthday-greetings',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedESlugJoinRoute = AuthenticatedESlugJoinRouteImport.update({
   id: '/join',
   path: '/join',
@@ -197,7 +205,6 @@ export interface FileRoutesByFullPath {
   '/empresas': typeof EmpresasRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
-  '/market': typeof AuthenticatedMarketRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
@@ -213,10 +220,12 @@ export interface FileRoutesByFullPath {
   '/studio/': typeof AuthenticatedStudioIndexRoute
   '/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
   '/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/birthday-greetings': typeof ApiPublicHooksBirthdayGreetingsRoute
   '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
   '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
   '/e/$slug/': typeof AuthenticatedESlugIndexRoute
@@ -227,7 +236,6 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
-  '/market': typeof AuthenticatedMarketRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
@@ -242,10 +250,12 @@ export interface FileRoutesByTo {
   '/studio': typeof AuthenticatedStudioIndexRoute
   '/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
   '/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/birthday-greetings': typeof ApiPublicHooksBirthdayGreetingsRoute
   '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
   '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
   '/e/$slug': typeof AuthenticatedESlugIndexRoute
@@ -258,7 +268,6 @@ export interface FileRoutesById {
   '/empresas': typeof EmpresasRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
-  '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
@@ -274,10 +283,12 @@ export interface FileRoutesById {
   '/_authenticated/studio/': typeof AuthenticatedStudioIndexRoute
   '/_authenticated/e/$slug/admin': typeof AuthenticatedESlugAdminRoute
   '/_authenticated/e/$slug/join': typeof AuthenticatedESlugJoinRoute
+  '/api/public/hooks/birthday-greetings': typeof ApiPublicHooksBirthdayGreetingsRoute
   '/api/public/hooks/due-reminders': typeof ApiPublicHooksDueRemindersRoute
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
   '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
   '/_authenticated/e/$slug/': typeof AuthenticatedESlugIndexRoute
@@ -290,7 +301,6 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/admin'
     | '/isaspace'
-    | '/market'
     | '/profile'
     | '/api/agent'
     | '/api/chat'
@@ -306,10 +316,12 @@ export interface FileRouteTypes {
     | '/studio/'
     | '/e/$slug/admin'
     | '/e/$slug/join'
+    | '/api/public/hooks/birthday-greetings'
     | '/api/public/hooks/due-reminders'
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
     | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
     | '/e/$slug/'
@@ -320,7 +332,6 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/admin'
     | '/isaspace'
-    | '/market'
     | '/profile'
     | '/api/agent'
     | '/api/chat'
@@ -335,10 +346,12 @@ export interface FileRouteTypes {
     | '/studio'
     | '/e/$slug/admin'
     | '/e/$slug/join'
+    | '/api/public/hooks/birthday-greetings'
     | '/api/public/hooks/due-reminders'
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
     | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
     | '/e/$slug'
@@ -350,7 +363,6 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
-    | '/_authenticated/market'
     | '/_authenticated/profile'
     | '/api/agent'
     | '/api/chat'
@@ -366,10 +378,12 @@ export interface FileRouteTypes {
     | '/_authenticated/studio/'
     | '/_authenticated/e/$slug/admin'
     | '/_authenticated/e/$slug/join'
+    | '/api/public/hooks/birthday-greetings'
     | '/api/public/hooks/due-reminders'
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
     | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
     | '/_authenticated/e/$slug/'
@@ -388,10 +402,12 @@ export interface RootRouteChildren {
   ApiVoiceSpeakRoute: typeof ApiVoiceSpeakRoute
   ApiVoiceTranscribeRoute: typeof ApiVoiceTranscribeRoute
   ApiVoiceVisionRoute: typeof ApiVoiceVisionRoute
+  ApiPublicHooksBirthdayGreetingsRoute: typeof ApiPublicHooksBirthdayGreetingsRoute
   ApiPublicHooksDueRemindersRoute: typeof ApiPublicHooksDueRemindersRoute
   ApiPublicHooksInactivityRemindersRoute: typeof ApiPublicHooksInactivityRemindersRoute
   ApiPublicHooksNightSalesRoute: typeof ApiPublicHooksNightSalesRoute
   ApiPublicHooksTechNewsRoute: typeof ApiPublicHooksTechNewsRoute
+  ApiPublicHooksWeeklyDigestRoute: typeof ApiPublicHooksWeeklyDigestRoute
   ApiPublicHooksWeeklyFeedbackRoute: typeof ApiPublicHooksWeeklyFeedbackRoute
   ApiPublicHooksWeeklyGiftPublishRoute: typeof ApiPublicHooksWeeklyGiftPublishRoute
 }
@@ -459,13 +475,6 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/market': {
-      id: '/_authenticated/market'
-      path: '/market'
-      fullPath: '/market'
-      preLoaderRoute: typeof AuthenticatedMarketRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/isaspace': {
@@ -559,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksWeeklyFeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/weekly-digest': {
+      id: '/api/public/hooks/weekly-digest'
+      path: '/api/public/hooks/weekly-digest'
+      fullPath: '/api/public/hooks/weekly-digest'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/tech-news': {
       id: '/api/public/hooks/tech-news'
       path: '/api/public/hooks/tech-news'
@@ -585,6 +601,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/due-reminders'
       fullPath: '/api/public/hooks/due-reminders'
       preLoaderRoute: typeof ApiPublicHooksDueRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/birthday-greetings': {
+      id: '/api/public/hooks/birthday-greetings'
+      path: '/api/public/hooks/birthday-greetings'
+      fullPath: '/api/public/hooks/birthday-greetings'
+      preLoaderRoute: typeof ApiPublicHooksBirthdayGreetingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/e/$slug/join': {
@@ -625,7 +648,6 @@ const AuthenticatedESlugRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedIsaspaceRoute: typeof AuthenticatedIsaspaceRoute
-  AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedESlugRouteRoute: typeof AuthenticatedESlugRouteRouteWithChildren
   AuthenticatedOnboardingOrgRoute: typeof AuthenticatedOnboardingOrgRoute
@@ -636,7 +658,6 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedIsaspaceRoute: AuthenticatedIsaspaceRoute,
-  AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedESlugRouteRoute: AuthenticatedESlugRouteRouteWithChildren,
   AuthenticatedOnboardingOrgRoute: AuthenticatedOnboardingOrgRoute,
@@ -660,11 +681,13 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVoiceSpeakRoute: ApiVoiceSpeakRoute,
   ApiVoiceTranscribeRoute: ApiVoiceTranscribeRoute,
   ApiVoiceVisionRoute: ApiVoiceVisionRoute,
+  ApiPublicHooksBirthdayGreetingsRoute: ApiPublicHooksBirthdayGreetingsRoute,
   ApiPublicHooksDueRemindersRoute: ApiPublicHooksDueRemindersRoute,
   ApiPublicHooksInactivityRemindersRoute:
     ApiPublicHooksInactivityRemindersRoute,
   ApiPublicHooksNightSalesRoute: ApiPublicHooksNightSalesRoute,
   ApiPublicHooksTechNewsRoute: ApiPublicHooksTechNewsRoute,
+  ApiPublicHooksWeeklyDigestRoute: ApiPublicHooksWeeklyDigestRoute,
   ApiPublicHooksWeeklyFeedbackRoute: ApiPublicHooksWeeklyFeedbackRoute,
   ApiPublicHooksWeeklyGiftPublishRoute: ApiPublicHooksWeeklyGiftPublishRoute,
 }

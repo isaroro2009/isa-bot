@@ -170,6 +170,10 @@ import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
 import WelcomeModal from "@/components/WelcomeModal";
 import { PromoCarousel } from "@/components/PromoCarousel";
+import PdfGallery from "@/components/PdfGallery";
+import { openPdfGallery } from "@/lib/pdf-gallery";
+import { restoreTheme } from "@/lib/themes";
+import "@/lib/themes.css";
 
 
 
@@ -840,6 +844,7 @@ function IsaBotPage() {
       <IsaBot />
       <IbcOverlays />
       <OnboardingTour active={Boolean(ibcUserId)} />
+      <PdfGallery />
     </IbcProvider>
   );
 }
@@ -1027,6 +1032,8 @@ function IsaBot() {
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [callOpen, setCallOpen] = useState(false);
+  // 🎨 Restaura el tema comprado con IBC
+  useEffect(() => { restoreTheme(); }, []);
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
   const [recordingVoice, setRecordingVoice] = useState(false);
   const voiceRecRef = useRef<MediaRecorder | null>(null);
@@ -2662,8 +2669,11 @@ ${rows}
               <button className="intro-cta" onClick={() => { window.location.href = "/studio"; }}>
                 🎨 IsaStudio
               </button>
-              <button className="intro-cta" onClick={() => { window.location.href = "/market"; }}>
-                🧺 IsaMarket
+              <button className="intro-cta" onClick={() => { if (currentUser) setCallOpen(true); }}>
+                📞 Llamar a IsaBot
+              </button>
+              <button className="intro-cta" onClick={openPdfGallery}>
+                📚 Galería de PDFs
               </button>
               <button className="intro-cta" onClick={() => setPanel("academy")}>
                 🎓 IsaAcademy
@@ -2726,14 +2736,6 @@ ${rows}
           </div>
         )}
         <div className="quick-actions" role="toolbar" aria-label="Acciones rápidas">
-          <button
-            type="button"
-            className="qa-chip qa-call"
-            onClick={() => { if (currentUser) setCallOpen(true); }}
-            title="Llamar a IsaBot (gratis)"
-          >
-            <span>📞</span><span className="qa-txt">Habla con IsaBot</span>
-          </button>
           {neonUnlocked && (
             <button
               type="button"
