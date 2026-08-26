@@ -123,7 +123,38 @@ export function IsaSpacePage() {
     void fetchMembers()
       .then((m) => setMembers(m))
       .catch(() => undefined);
-  }, [load, loadProfile, fetchMembers]);
+    void fetchImported()
+      .then((r) => setImported(r))
+      .catch(() => undefined);
+    void fetchMentorApp()
+      .then((a) => setMentorApp(a))
+      .catch(() => undefined);
+  }, [load, loadProfile, fetchMembers, fetchImported, fetchMentorApp]);
+
+  async function runImport() {
+    setImporting(true);
+    try {
+      await doImport({ data: undefined as never });
+      setImported(await fetchImported());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo importar");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  async function sendMentorApplication(e: React.FormEvent) {
+    e.preventDefault();
+    setMentorSending(true);
+    try {
+      await doApplyMentor({ data: mentorForm });
+      setMentorApp(await fetchMentorApp());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo enviar la postulación");
+    } finally {
+      setMentorSending(false);
+    }
+  }
 
   async function saveAbout() {
     setSavingAbout(true);
