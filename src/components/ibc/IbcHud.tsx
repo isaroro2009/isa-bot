@@ -11,6 +11,8 @@ import {
   type CoinSkinId,
 } from "./IsaCoin3D";
 import "./ibc.css";
+import "@/lib/themes.css";
+import { ISA_THEMES, activeTheme, applyTheme, ownTheme, ownedThemes } from "@/lib/themes";
 
 const STREAK_GOAL = 7;
 
@@ -151,6 +153,8 @@ export function VaultDrawer() {
         </div>
 
 
+        <ThemeShop />
+
         <div className="ibc-streak">
           <div className="ibc-row">
             <span>🔥 Racha: {ibc.streakDays} día{ibc.streakDays === 1 ? "" : "s"}</span>
@@ -186,6 +190,64 @@ export function VaultDrawer() {
         )}
       </div>
     </div>
+  );
+}
+
+/** 🎨 Tienda de temas de interfaz: se compran con IBC y se aplican al instante. */
+function ThemeShop() {
+  const ibc = useIbc();
+  const [owned, setOwned] = useState<string[]>(["default"]);
+  const [current, setCurrent] = useState("default");
+  const [note, setNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOwned(ownedThemes());
+    setCurrent(activeTheme());
+  }, []);
+
+  async function pick(id: string, price: number) {
+    if (owned.includes(id) || price === 0 || ibc.unlimited) {
+      applyTheme(id);
+      setCurrent(id);
+      return;
+    }
+    const paid = await ibc.confirmCharge("theme", `Tema de interfaz: ${id}`);
+    if (!paid) return;
+    ownTheme(id);
+    applyTheme(id);
+    setOwned(ownedThemes());
+    setCurrent(id);
+    setNote("¡Tema desbloqueado! 💜 Ya es tuyo para siempre.");
+  }
+
+  return (
+    <>
+      <h4 style={{ margin: "18px 0 0", fontSize: ".95rem" }}>🎨 Temas de interfaz</h4>
+      <div className="theme-shop">
+        {ISA_THEMES.map((t) => {
+          const have = owned.includes(t.id) || t.price === 0;
+          return (
+            <button
+              key={t.id}
+              className={`theme-card${current === t.id ? " active" : ""}`}
+              onClick={() => void pick(t.id, t.price)}
+            >
+              <div className="theme-sw">
+                {t.swatch.map((c) => (
+                  <i key={c} style={{ background: c }} />
+                ))}
+              </div>
+              <b>{t.emoji} {t.name}</b>
+              <span>{t.tagline}</span>
+              <span className="theme-price">
+                {current === t.id ? "✅ En uso" : have ? "Usar" : `🪙 ${t.price} IBC`}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {note && <p className="ibc-empty-note">{note}</p>}
+    </>
   );
 }
 
