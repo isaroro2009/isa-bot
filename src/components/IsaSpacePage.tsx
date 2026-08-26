@@ -12,6 +12,8 @@ import {
   type IsaMember,
   type IsaPost,
 } from "@/lib/isaspace.functions";
+import { listImported, importSocialFeed, type ImportedPost } from "@/lib/isaspaceImport.functions";
+import { applyAsMentor, getMyMentorApplication, type MentorApplication } from "@/lib/mentors.functions";
 
 function timeAgo(iso: string) {
   const s = Math.floor(Math.max(0, Date.now() - new Date(iso).getTime()) / 1000);
@@ -70,7 +72,22 @@ export function IsaSpacePage() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [tab, setTab] = useState<"home" | "mine" | "about">("home");
+  const [tab, setTab] = useState<"home" | "mine" | "about" | "mentors">("home");
+  const [imported, setImported] = useState<ImportedPost[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [mentorApp, setMentorApp] = useState<MentorApplication | null>(null);
+  const [mentorForm, setMentorForm] = useState({
+    full_name: "",
+    expertise: "",
+    experience: "",
+    links: "",
+    contact: "",
+  });
+  const [mentorSending, setMentorSending] = useState(false);
+  const fetchImported = useServerFn(listImported);
+  const doImport = useServerFn(importSocialFeed);
+  const doApplyMentor = useServerFn(applyAsMentor);
+  const fetchMentorApp = useServerFn(getMyMentorApplication);
   const [tags, setTags] = useState<string[]>([]);
   const [commentText, setCommentText] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
