@@ -2097,7 +2097,7 @@ ${rows}
   }
 
   const userChats = chats.filter((c) => c.owner === currentUser);
-  const showLogin = hydrated && !currentUser;
+  
 
   // 🎭 Modo de respuesta + 🎨 entorno (reutilizado en el popover y en el menú)
   function pickPersonality(val: Personality) {
