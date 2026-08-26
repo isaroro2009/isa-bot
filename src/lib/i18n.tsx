@@ -120,9 +120,9 @@ export const STRINGS: Dict = {
     es: "El resumen diario del mundo tech, en tu idioma y explicado por IsaBot.",
     en: "The daily tech digest, in your language and explained by IsaBot.",
   },
-  "landing.cta": { es: "Iniciar sesión", en: "Sign in" },
-  "landing.guest": { es: "Explorar como invitada", en: "Explore as guest" },
+  "landing.cta": { es: "Iniciar sesión / Crear cuenta ✨", en: "Sign in / Create account ✨" },
   "landing.signup": { es: "Crear cuenta gratis", en: "Sign up free" },
+
 
   // News
   "news.title": { es: "📰 Noticias Tech del Día", en: "📰 Today's Tech News" },
