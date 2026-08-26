@@ -36,7 +36,10 @@ export function saveSkin(id: CoinSkinId) {
 
 export function isSkinUnlocked(id: CoinSkinId, opts: { isPro: boolean; streakDays: number; owned: boolean }) {
   if (id === "rosita") return true;
-  if (id === "gold") return opts.isPro || opts.streakDays >= 7;
+  if (id === "pastel") return opts.isPro || opts.streakDays >= 3;
+  if (id === "sakura") return opts.isPro || opts.streakDays >= 5;
+  if (id === "gold" || id === "ocean") return opts.isPro || opts.streakDays >= 7;
+  if (id === "neon") return opts.isPro;
   return opts.owned;
 }
 
