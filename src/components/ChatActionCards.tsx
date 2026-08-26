@@ -4,6 +4,7 @@ import { createReminder } from "@/lib/reminders.functions";
 import { sendEmailWebhook } from "@/lib/emailWebhook.functions";
 import { buildIsaBotPdf, type IsaPdfResult } from "@/lib/pdf-template";
 import { useIbc } from "@/components/ibc/useIbc";
+import { openPdfGallery, savePdf } from "@/lib/pdf-gallery";
 
 export type ReminderAction = {
   kind: "reminder";
@@ -284,6 +285,8 @@ export function DocActionCard({ action }: { action: DocAction }) {
       const title = action.prompt.slice(0, 70);
       const built = await buildIsaBotPdf(title, body);
       setPdf(built);
+      // 📚 Se guarda en la galería local para volver a verlo y descargarlo.
+      void savePdf({ title: title || "Documento de IsaBot", filename: built.filename, base64: built.base64 }).catch(() => undefined);
       mark("doc", "done");
 
       if (action.email) {
@@ -363,6 +366,9 @@ export function DocActionCard({ action }: { action: DocAction }) {
             <a className="action-card-btn" href={pdf.dataUrl} download={pdf.filename}>⬇️ Descargar PDF</a>
             <button className="action-card-btn ghost" onClick={() => setShowPreview(true)}>
               👁️ Previsualizar
+            </button>
+            <button className="action-card-btn ghost" onClick={openPdfGallery}>
+              📚 Galería de PDFs
             </button>
           </div>
           <ManualSendActions

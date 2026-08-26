@@ -2662,8 +2662,8 @@ ${rows}
               <button className="intro-cta" onClick={() => { window.location.href = "/studio"; }}>
                 🎨 IsaStudio
               </button>
-              <button className="intro-cta" onClick={() => { window.location.href = "/market"; }}>
-                🧺 IsaMarket
+              <button className="intro-cta" onClick={openPdfGallery}>
+                📚 Galería de PDFs
               </button>
               <button className="intro-cta" onClick={() => setPanel("academy")}>
                 🎓 IsaAcademy
@@ -2726,14 +2726,6 @@ ${rows}
           </div>
         )}
         <div className="quick-actions" role="toolbar" aria-label="Acciones rápidas">
-          <button
-            type="button"
-            className="qa-chip qa-call"
-            onClick={() => { if (currentUser) setCallOpen(true); }}
-            title="Llamar a IsaBot (gratis)"
-          >
-            <span>📞</span><span className="qa-txt">Habla con IsaBot</span>
-          </button>
           {neonUnlocked && (
             <button
               type="button"
