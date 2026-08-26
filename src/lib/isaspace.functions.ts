@@ -158,14 +158,17 @@ export const addComment = createServerFn({ method: "POST" })
   .inputValidator((input: { postId: string; content: string }) => input)
   .handler(async ({ data, context }) => {
     const content = (data.content ?? "").trim().slice(0, 800);
-    if (!content) return { ok: false };
+    if (!content) return { ok: false, reward: 0 };
     const { error } = await context.supabase.from("isaspace_comments").insert({
       post_id: data.postId,
       user_id: context.userId,
       content,
     });
     if (error) throw error;
-    return { ok: true };
+    // Solo el feedback constructivo (comentario con sustancia) suma IBC.
+    const constructive = content.length >= 40 && content.split(/\s+/).length >= 8;
+    const reward = constructive ? await rewardIsaspace(context.supabase, "feedback") : 0;
+    return { ok: true, reward };
   });
 
 // ── "Quiénes somos": tarjetas de presentación de la comunidad
