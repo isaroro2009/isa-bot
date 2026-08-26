@@ -6024,3 +6024,48 @@ pre, code { white-space: pre-wrap; word-break: break-word; }
 .isp-mentor-form { display: flex; flex-direction: column; gap: 10px; }
 .isp-mentor-form input, .isp-mentor-form textarea { width: 100%; border-radius: 14px; border: 1px solid rgba(160, 107, 138, 0.25); padding: 12px 14px; font: inherit; font-size: 0.88rem; background: #fff; min-height: 44px; }
 .isp-mentor-form textarea { min-height: 110px; resize: vertical; }
+
+/* ───────── IsaSpace · Proof of Creation (tipos de post, badges, mentorías) ───────── */
+.isp-type-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.isp-type-picker button {
+  border: 1px solid rgba(155, 126, 201, 0.35); background: rgba(201, 182, 255, 0.12);
+  color: #5b4270; font-weight: 700; font-size: 12px; padding: 8px 12px; border-radius: 999px; cursor: pointer;
+}
+.isp-type-picker button.active { background: #9b7ec9; color: #fff; border-color: #9b7ec9; }
+
+.isp-post-author { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.isp-post-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.isp-type-badge {
+  font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px;
+  background: rgba(155, 126, 201, 0.18); color: #5b4270; white-space: nowrap;
+}
+.isp-type-badge.t-progress { background: rgba(255, 183, 213, 0.28); color: #8c3f66; }
+.isp-type-badge.t-collab { background: rgba(140, 214, 199, 0.3); color: #1f6b5c; }
+.isp-skill-badges { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.isp-skill-badges em { font-size: 11px; opacity: 0.75; font-style: normal; }
+.isp-skill-badges b {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 3px 8px; border-radius: 6px; background: rgba(155, 126, 201, 0.14); color: #6b4f8f;
+}
+
+.isp-track-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin: 14px 0; }
+.isp-track {
+  display: flex; flex-direction: column; gap: 4px; padding: 14px;
+  border-radius: 16px; background: rgba(201, 182, 255, 0.12); border: 1px solid rgba(155, 126, 201, 0.22);
+}
+.isp-track-icon { font-size: 22px; }
+.isp-track b { font-size: 14px; }
+.isp-track small { font-size: 12px; opacity: 0.8; line-height: 1.4; }
+.isp-mentor-cta { display: inline-block; text-align: center; text-decoration: none; }
+
+.isp-coin-toast {
+  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
+  background: #2b1b3d; color: #ffe9a8; font-weight: 800; font-size: 13px;
+  padding: 10px 18px; border-radius: 999px; z-index: 60;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); animation: isp-coin-pop 2.6s ease forwards;
+}
+@keyframes isp-coin-pop {
+  0% { opacity: 0; transform: translate(-50%, 12px); }
+  12%, 80% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -8px); }
+}
