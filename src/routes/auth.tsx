@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
+import { lovable } from "@/integrations/lovable/index";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
@@ -50,6 +51,23 @@ function AuthPage() {
       /* noop */
     }
     setShowIntro(false);
+  };
+
+  const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      navigate({ to: "/" });
+    } catch (err) {
+      failWith(err, t("auth.googleUnavailable"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleForgot = async () => {
@@ -179,8 +197,11 @@ function AuthPage() {
           </div>
         </div>
 
+        <button type="button" className="auth-google-btn" onClick={handleGoogle} disabled={loading}>
+          <span aria-hidden>🔵</span> {t("auth.google")}
+        </button>
 
-
+        <div className="auth-divider">{t("auth.orEmail")}</div>
 
         <form onSubmit={handleEmailAuth} className="auth-form">
           {mode === "signup" && (

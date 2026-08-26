@@ -2097,7 +2097,7 @@ ${rows}
   }
 
   const userChats = chats.filter((c) => c.owner === currentUser);
-  const showLogin = hydrated && !currentUser;
+  
 
   // 🎭 Modo de respuesta + 🎨 entorno (reutilizado en el popover y en el menú)
   function pickPersonality(val: Personality) {
@@ -2826,23 +2826,7 @@ ${rows}
       )}
 
 
-      {/* Login */}
-      {showLogin && (
-        <div className="modal-overlay login-overlay">
-          <div className="login-card" onClick={(e) => e.stopPropagation()}>
-            <div className="login-emoji">💕</div>
-            <h2>¡Hola!</h2>
-            <p>Soy IsaBot~ Inicia sesión o crea una cuenta para chatear conmigo y guardar tus chats e imágenes 🌸</p>
-            <Link
-              to="/auth"
-              className="kawaii-btn"
-              style={{ display: "inline-block", textDecoration: "none", marginTop: 8 }}
-            >
-              Iniciar sesión / Crear cuenta ✨
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* La presentación de IsaBot (LandingModal) ya cubre el estado sin sesión */}
 
 
 
