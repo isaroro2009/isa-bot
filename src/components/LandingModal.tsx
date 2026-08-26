@@ -2,8 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
-export function LandingModal({ onExplore }: { onExplore: () => void }) {
+export function LandingModal() {
   const { t } = useI18n();
+
 
   const features = [
     { title: t("landing.f1t"), desc: t("landing.f1d") },
