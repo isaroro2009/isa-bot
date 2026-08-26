@@ -2606,12 +2606,22 @@ ${rows}
         <WelcomeModal userId={authUser.id} name={authUser.email?.split("@")[0] ?? null} />
       )}
 
+      {!authUser && !guestMode && (
+        <LandingModal
+          onExplore={() => {
+            try { window.localStorage.setItem("isabot_guest_mode", "1"); } catch { /* bloqueado */ }
+            setGuestMode(true);
+          }}
+        />
+      )}
 
       <header className="header">
         <h1 className="logo">IsaBot ✨</h1>
         <span className="motor-badge" title="Modelo propio de IsaBot">⚙️ {ISABOT_MODEL_LABEL}</span>
+        <LanguageToggle compact />
         <IbcHud />
       </header>
+
 
       {!online && (
         <div className="offline-banner">
