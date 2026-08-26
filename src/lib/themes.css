@@ -1,0 +1,93 @@
+/* 🎨 Temas de interfaz comprables con IBC. Solo cambian variables + fondo. */
+
+html[data-isa-theme="pastel"] body {
+  background: linear-gradient(270deg, #ffe9f5, #e7fbf6, #fff5e2, #f0e9ff);
+  background-size: 600% 600%;
+}
+html[data-isa-theme="pastel"] {
+  --isa-lavender: #d7c9ff;
+  --isa-blush: #ffd6ec;
+  --isa-mint: #c7f0ea;
+  --isa-accent: #f0a7cf;
+  --isa-primary: #b9c8f5;
+}
+
+html[data-isa-theme="sakura"] body {
+  background: linear-gradient(270deg, #ffe1ea, #fff0f6, #eaf7ef, #ffe1ea);
+  background-size: 600% 600%;
+}
+html[data-isa-theme="sakura"] {
+  --isa-blush: #ffc2d4;
+  --isa-accent: #ef7fa5;
+  --isa-primary: #8ac6a4;
+  --isa-plum: #6b3350;
+}
+
+html[data-isa-theme="ocean"] body {
+  background: linear-gradient(270deg, #0d3b53, #14586f, #0f7a72, #0d3b53);
+  background-size: 600% 600%;
+  color: #eafcff;
+}
+html[data-isa-theme="ocean"] {
+  --isa-plum: #eafcff;
+  --isa-accent: #4fd3c4;
+  --isa-primary: #2c9fbd;
+  --isa-cream: #0f2f42;
+}
+
+html[data-isa-theme="neon"] body {
+  background: linear-gradient(270deg, #070a16, #131a35, #1d0c2e, #070a16);
+  background-size: 600% 600%;
+  color: #e9f6ff;
+}
+html[data-isa-theme="neon"] {
+  --isa-plum: #e9f6ff;
+  --isa-accent: #00e5ff;
+  --isa-primary: #ff3ea5;
+  --isa-cream: #10152b;
+  --isa-lavender: #7b5cff;
+}
+
+html[data-isa-theme="golden"] body {
+  background: linear-gradient(270deg, #14110a, #241d0e, #2f2410, #14110a);
+  background-size: 600% 600%;
+  color: #fff3cf;
+}
+html[data-isa-theme="golden"] {
+  --isa-plum: #fff3cf;
+  --isa-accent: #e3bc6d;
+  --isa-primary: #b98c2f;
+  --isa-cream: #1c1709;
+}
+
+/* Las burbujas y tarjetas claras se oscurecen en los temas nocturnos */
+html[data-isa-theme="neon"] .bot,
+html[data-isa-theme="golden"] .bot,
+html[data-isa-theme="ocean"] .bot {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: inherit;
+}
+
+/* Tienda de temas */
+.theme-shop {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 10px 0 6px;
+}
+.theme-card {
+  border: 1.5px solid rgba(255, 143, 186, 0.35);
+  border-radius: 14px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.theme-card.active { border-color: #ff5fa2; box-shadow: 0 0 0 2px rgba(255, 95, 162, 0.25); }
+.theme-card .theme-sw { display: flex; gap: 4px; margin-bottom: 8px; }
+.theme-card .theme-sw i { width: 100%; height: 18px; border-radius: 6px; display: block; }
+.theme-card b { display: block; font-size: 0.9rem; }
+.theme-card span { font-size: 0.75rem; opacity: 0.75; }
+.theme-card .theme-price { display: block; margin-top: 6px; font-size: 0.78rem; font-weight: 800; }
