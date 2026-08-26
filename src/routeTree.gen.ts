@@ -31,6 +31,7 @@ import { Route as AuthenticatedESlugRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedESlugIndexRouteImport } from './routes/_authenticated/e.$slug.index'
 import { Route as ApiPublicHooksWeeklyGiftPublishRouteImport } from './routes/api/public/hooks/weekly-gift-publish'
 import { Route as ApiPublicHooksWeeklyFeedbackRouteImport } from './routes/api/public/hooks/weekly-feedback'
+import { Route as ApiPublicHooksWeeklyDigestRouteImport } from './routes/api/public/hooks/weekly-digest'
 import { Route as ApiPublicHooksTechNewsRouteImport } from './routes/api/public/hooks/tech-news'
 import { Route as ApiPublicHooksNightSalesRouteImport } from './routes/api/public/hooks/night-sales'
 import { Route as ApiPublicHooksInactivityRemindersRouteImport } from './routes/api/public/hooks/inactivity-reminders'
@@ -152,6 +153,12 @@ const ApiPublicHooksWeeklyFeedbackRoute =
     path: '/api/public/hooks/weekly-feedback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksWeeklyDigestRoute =
+  ApiPublicHooksWeeklyDigestRouteImport.update({
+    id: '/api/public/hooks/weekly-digest',
+    path: '/api/public/hooks/weekly-digest',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTechNewsRoute = ApiPublicHooksTechNewsRouteImport.update({
   id: '/api/public/hooks/tech-news',
   path: '/api/public/hooks/tech-news',
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
   '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
   '/e/$slug/': typeof AuthenticatedESlugIndexRoute
@@ -247,6 +255,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
   '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
   '/e/$slug': typeof AuthenticatedESlugIndexRoute
@@ -279,6 +288,7 @@ export interface FileRoutesById {
   '/api/public/hooks/inactivity-reminders': typeof ApiPublicHooksInactivityRemindersRoute
   '/api/public/hooks/night-sales': typeof ApiPublicHooksNightSalesRoute
   '/api/public/hooks/tech-news': typeof ApiPublicHooksTechNewsRoute
+  '/api/public/hooks/weekly-digest': typeof ApiPublicHooksWeeklyDigestRoute
   '/api/public/hooks/weekly-feedback': typeof ApiPublicHooksWeeklyFeedbackRoute
   '/api/public/hooks/weekly-gift-publish': typeof ApiPublicHooksWeeklyGiftPublishRoute
   '/_authenticated/e/$slug/': typeof AuthenticatedESlugIndexRoute
@@ -311,6 +321,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
     | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
     | '/e/$slug/'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
     | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
     | '/e/$slug'
@@ -371,6 +383,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/inactivity-reminders'
     | '/api/public/hooks/night-sales'
     | '/api/public/hooks/tech-news'
+    | '/api/public/hooks/weekly-digest'
     | '/api/public/hooks/weekly-feedback'
     | '/api/public/hooks/weekly-gift-publish'
     | '/_authenticated/e/$slug/'
@@ -394,6 +407,7 @@ export interface RootRouteChildren {
   ApiPublicHooksInactivityRemindersRoute: typeof ApiPublicHooksInactivityRemindersRoute
   ApiPublicHooksNightSalesRoute: typeof ApiPublicHooksNightSalesRoute
   ApiPublicHooksTechNewsRoute: typeof ApiPublicHooksTechNewsRoute
+  ApiPublicHooksWeeklyDigestRoute: typeof ApiPublicHooksWeeklyDigestRoute
   ApiPublicHooksWeeklyFeedbackRoute: typeof ApiPublicHooksWeeklyFeedbackRoute
   ApiPublicHooksWeeklyGiftPublishRoute: typeof ApiPublicHooksWeeklyGiftPublishRoute
 }
@@ -554,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksWeeklyFeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/weekly-digest': {
+      id: '/api/public/hooks/weekly-digest'
+      path: '/api/public/hooks/weekly-digest'
+      fullPath: '/api/public/hooks/weekly-digest'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/tech-news': {
       id: '/api/public/hooks/tech-news'
       path: '/api/public/hooks/tech-news'
@@ -666,6 +687,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksInactivityRemindersRoute,
   ApiPublicHooksNightSalesRoute: ApiPublicHooksNightSalesRoute,
   ApiPublicHooksTechNewsRoute: ApiPublicHooksTechNewsRoute,
+  ApiPublicHooksWeeklyDigestRoute: ApiPublicHooksWeeklyDigestRoute,
   ApiPublicHooksWeeklyFeedbackRoute: ApiPublicHooksWeeklyFeedbackRoute,
   ApiPublicHooksWeeklyGiftPublishRoute: ApiPublicHooksWeeklyGiftPublishRoute,
 }
