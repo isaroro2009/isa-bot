@@ -558,6 +558,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          post_type: string
           user_id: string
         }
         Insert: {
@@ -565,6 +566,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          post_type?: string
           user_id: string
         }
         Update: {
@@ -572,6 +574,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          post_type?: string
           user_id?: string
         }
         Relationships: []
@@ -1940,6 +1943,13 @@ export type Database = {
         Returns: {
           balance: number
           refunded: number
+        }[]
+      }
+      ibc_reward_isaspace: {
+        Args: { _kind: string }
+        Returns: {
+          balance: number
+          delta: number
         }[]
       }
       ibc_spend: {

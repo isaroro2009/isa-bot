@@ -113,11 +113,12 @@ export const STRINGS: Dict = {
   "reset.back": { es: "← Volver al inicio de sesión", en: "← Back to sign in" },
 
   // Landing
-  "landing.title": { es: "¡Hola! Soy IsaBot ✨", en: "Hi! I'm IsaBot ✨" },
+  "landing.title": { es: "¡Bienvenida/o a IsaBot! 🌸", en: "Welcome to IsaBot! 🌸" },
   "landing.tagline": {
-    es: "Tu copiloto de IA creativa para estudiar, emprender y crear sin bloqueos. Conmigo puedes generar PDFs profesionales, imágenes, consultar noticias tech, acumular IsaBot Coins 🪙 y mantener tu racha diaria 🔥.",
-    en: "Your creative AI copilot to study, build and create without blocks. With me you can generate professional PDFs, images, read tech news, earn IsaBot Coins 🪙 and keep your daily streak 🔥.",
+    es: "La primera IA gamificada diseñada para estudiantes y creadores. Aprende, genera PDFs y diseños profesionales, mantén tu racha diaria y gana IsaBot Coins (IBC) 🪙 por cada logro.",
+    en: "The first gamified AI designed for students and creators. Learn, generate professional PDFs and designs, maintain your daily streak, and earn IsaBot Coins (IBC) 🪙 for every milestone.",
   },
+
 
   "landing.f1t": { es: "📄 PDFs agénticos", en: "📄 Agentic PDFs" },
   "landing.f1d": {

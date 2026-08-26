@@ -1,14 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type IsaPostType = "project" | "progress" | "collab";
+
 export type IsaPost = {
   id: string;
   user_id: string;
   content: string;
   image_url: string | null;
   created_at: string;
+  post_type: IsaPostType;
   author_name: string;
   author_avatar: string | null;
+  author_skills: string[];
+  author_headline: string | null;
   likes: number;
   liked_by_me: boolean;
   comments: { id: string; user_id: string; content: string; created_at: string; author_name: string }[];
@@ -20,7 +25,7 @@ export const listPosts = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data: posts, error } = await supabase
       .from("isaspace_posts")
-      .select("id, user_id, content, image_url, created_at")
+      .select("id, user_id, content, image_url, created_at, post_type")
       .order("created_at", { ascending: false })
       .limit(60);
     if (error) throw error;
@@ -42,13 +47,18 @@ export const listPosts = createServerFn({ method: "GET" })
     for (const c of comments ?? []) authorIds.add(c.user_id);
     const { data: profs } = await supabase
       .from("profiles")
-      .select("id, display_name, email, avatar_url")
+      .select("id, display_name, email, avatar_url, headline, interests")
       .in("id", Array.from(authorIds));
-    const nameOf = new Map<string, { name: string; avatar: string | null }>();
+    const nameOf = new Map<
+      string,
+      { name: string; avatar: string | null; skills: string[]; headline: string | null }
+    >();
     for (const p of profs ?? []) {
       nameOf.set(p.id, {
         name: p.display_name || (p.email ?? "").split("@")[0] || "Anónima",
         avatar: p.avatar_url,
+        skills: ((p.interests ?? []) as string[]).slice(0, 3),
+        headline: p.headline ?? null,
       });
     }
 
@@ -65,8 +75,11 @@ export const listPosts = createServerFn({ method: "GET" })
       return {
         ...p,
         image_url: p.image_url ? (signed.get(p.image_url) ?? (p.image_url.startsWith("http") ? p.image_url : null)) : null,
+        post_type: ((p as { post_type?: string }).post_type ?? "project") as IsaPostType,
         author_name: nameOf.get(p.user_id)?.name ?? "Anónima",
         author_avatar: nameOf.get(p.user_id)?.avatar ?? null,
+        author_skills: nameOf.get(p.user_id)?.skills ?? [],
+        author_headline: nameOf.get(p.user_id)?.headline ?? null,
         likes: postLikes.length,
         liked_by_me: postLikes.some((l) => l.user_id === userId),
         comments: (comments ?? [])
@@ -82,19 +95,33 @@ export const listPosts = createServerFn({ method: "GET" })
     });
   });
 
+async function rewardIsaspace(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  kind: "post" | "feedback",
+): Promise<number> {
+  const { data } = await supabase.rpc("ibc_reward_isaspace", { _kind: kind });
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row?.delta as number | undefined) ?? 0;
+}
+
 export const createPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { content: string; imageUrl?: string | null }) => input)
+  .inputValidator((input: { content: string; imageUrl?: string | null; postType?: IsaPostType }) => input)
   .handler(async ({ data, context }) => {
     const content = (data.content ?? "").trim().slice(0, 2000);
     if (!content) throw new Error("Escribe algo antes de publicar 💕");
+    const postType: IsaPostType =
+      data.postType === "progress" || data.postType === "collab" ? data.postType : "project";
     const { error } = await context.supabase.from("isaspace_posts").insert({
       user_id: context.userId,
       content,
       image_url: data.imageUrl ?? null,
+      post_type: postType,
     });
     if (error) throw error;
-    return { ok: true };
+    const reward = await rewardIsaspace(context.supabase, "post");
+    return { ok: true, reward };
   });
 
 export const deletePost = createServerFn({ method: "POST" })
@@ -131,14 +158,17 @@ export const addComment = createServerFn({ method: "POST" })
   .inputValidator((input: { postId: string; content: string }) => input)
   .handler(async ({ data, context }) => {
     const content = (data.content ?? "").trim().slice(0, 800);
-    if (!content) return { ok: false };
+    if (!content) return { ok: false, reward: 0 };
     const { error } = await context.supabase.from("isaspace_comments").insert({
       post_id: data.postId,
       user_id: context.userId,
       content,
     });
     if (error) throw error;
-    return { ok: true };
+    // Solo el feedback constructivo (comentario con sustancia) suma IBC.
+    const constructive = content.length >= 40 && content.split(/\s+/).length >= 8;
+    const reward = constructive ? await rewardIsaspace(context.supabase, "feedback") : 0;
+    return { ok: true, reward };
   });
 
 // ── "Quiénes somos": tarjetas de presentación de la comunidad
