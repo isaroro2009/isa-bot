@@ -52,6 +52,23 @@ function AuthPage() {
     setShowIntro(false);
   };
 
+  const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      navigate({ to: "/" });
+    } catch (err) {
+      failWith(err, t("auth.googleUnavailable"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleForgot = async () => {
     if (!email) {
       setError(t("auth.forgotNeedEmail"));
