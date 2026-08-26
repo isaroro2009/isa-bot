@@ -169,7 +169,6 @@ import accGlasses from "@/assets/acc-glasses.png.asset.json";
 import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
 import WelcomeModal from "@/components/WelcomeModal";
-import LandingModal from "@/components/LandingModal";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
 import { PromoCarousel } from "@/components/PromoCarousel";
@@ -2611,7 +2610,7 @@ ${rows}
         <WelcomeModal userId={authUser.id} name={authUser.email?.split("@")[0] ?? null} />
       )}
 
-      {!authUser && <LandingModal />}
+      
 
 
       <header className="header">

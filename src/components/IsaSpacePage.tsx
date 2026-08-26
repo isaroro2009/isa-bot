@@ -12,6 +12,8 @@ import {
   type IsaMember,
   type IsaPost,
 } from "@/lib/isaspace.functions";
+import { listImported, importSocialFeed, type ImportedPost } from "@/lib/isaspaceImport.functions";
+import { applyAsMentor, getMyMentorApplication, type MentorApplication } from "@/lib/mentors.functions";
 
 function timeAgo(iso: string) {
   const s = Math.floor(Math.max(0, Date.now() - new Date(iso).getTime()) / 1000);
@@ -70,7 +72,22 @@ export function IsaSpacePage() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [tab, setTab] = useState<"home" | "mine" | "about">("home");
+  const [tab, setTab] = useState<"home" | "mine" | "about" | "mentors">("home");
+  const [imported, setImported] = useState<ImportedPost[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [mentorApp, setMentorApp] = useState<MentorApplication | null>(null);
+  const [mentorForm, setMentorForm] = useState({
+    full_name: "",
+    expertise: "",
+    experience: "",
+    links: "",
+    contact: "",
+  });
+  const [mentorSending, setMentorSending] = useState(false);
+  const fetchImported = useServerFn(listImported);
+  const doImport = useServerFn(importSocialFeed);
+  const doApplyMentor = useServerFn(applyAsMentor);
+  const fetchMentorApp = useServerFn(getMyMentorApplication);
   const [tags, setTags] = useState<string[]>([]);
   const [commentText, setCommentText] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
@@ -106,7 +123,38 @@ export function IsaSpacePage() {
     void fetchMembers()
       .then((m) => setMembers(m))
       .catch(() => undefined);
-  }, [load, loadProfile, fetchMembers]);
+    void fetchImported()
+      .then((r) => setImported(r))
+      .catch(() => undefined);
+    void fetchMentorApp()
+      .then((a) => setMentorApp(a))
+      .catch(() => undefined);
+  }, [load, loadProfile, fetchMembers, fetchImported, fetchMentorApp]);
+
+  async function runImport() {
+    setImporting(true);
+    try {
+      await doImport({ data: undefined as never });
+      setImported(await fetchImported());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo importar");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  async function sendMentorApplication(e: React.FormEvent) {
+    e.preventDefault();
+    setMentorSending(true);
+    try {
+      await doApplyMentor({ data: mentorForm });
+      setMentorApp(await fetchMentorApp());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo enviar la postulación");
+    } finally {
+      setMentorSending(false);
+    }
+  }
 
   async function saveAbout() {
     setSavingAbout(true);
@@ -163,8 +211,9 @@ export function IsaSpacePage() {
     return Array.from(seen.values()).slice(0, 4).map((u, i) => ({ ...u, state: states[i % states.length] }));
   }, [posts]);
 
+  const isFeedTab = tab === "home" || tab === "mine";
   const feed = useMemo(
-    () => (tab === "about" ? [] : tab === "mine" ? posts.filter((p) => p.user_id === me?.id) : posts),
+    () => (tab === "mine" ? posts.filter((p) => p.user_id === me?.id) : tab === "home" ? posts : []),
     [posts, tab, me?.id],
   );
 
@@ -224,6 +273,7 @@ export function IsaSpacePage() {
           <button className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>✨ Para ti</button>
           <button className={tab === "mine" ? "active" : ""} onClick={() => setTab("mine")}>👤 Mis publicaciones</button>
           <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}>💜 Quiénes somos</button>
+          <button className={tab === "mentors" ? "active" : ""} onClick={() => setTab("mentors")}>🎓 Mentores</button>
         </nav>
         <button className="isp-return" onClick={returnToIsaBot}>
           <span className="isp-return-badge">🏠</span>
@@ -311,7 +361,7 @@ export function IsaSpacePage() {
         </aside>
 
         <main className="isp-feed">
-          {tab !== "about" && (
+          {isFeedTab && (
             <button className="isp-open-composer" onClick={() => setComposerOpen(true)}>
               <Avatar name={myName} url={me?.avatar_url} size={38} />
               <span>Comparte tu vibe de hoy… 💭</span>
@@ -394,8 +444,64 @@ export function IsaSpacePage() {
               </ul>
             </section>
           )}
-          {loading && tab !== "about" && <p className="isp-empty">Cargando la galaxia… ✨</p>}
-          {!loading && tab !== "about" && feed.length === 0 && <p className="isp-empty">Todavía no hay publicaciones. ¡Sé la primera! 🌸</p>}
+          {tab === "mentors" && (
+            <section className="isp-card isp-about-dir">
+              <h3>🎓 Mentores</h3>
+              <p className="isp-about-intro">
+                <strong>Contactar mentores — próximamente 🚧</strong>
+                <br />
+                Estamos armando la red de mentores verificados de IsaBot. Muy pronto podrás agendar
+                sesiones 1:1 con creativas, diseñadoras y emprendedoras de la comunidad.
+              </p>
+
+              {mentorApp ? (
+                <div className="isp-empty small">
+                  ✅ Ya enviaste tu postulación como mentor verificado ({mentorApp.expertise}).
+                  <br />
+                  Estado: <strong>{mentorApp.status === "pending" ? "en revisión" : mentorApp.status}</strong>
+                </div>
+              ) : (
+                <form className="isp-mentor-form" onSubmit={sendMentorApplication}>
+                  <h4 style={{ margin: "14px 0 6px" }}>✨ Postúlate como mentor verificado</h4>
+                  <input
+                    placeholder="Tu nombre completo *"
+                    value={mentorForm.full_name}
+                    onChange={(e) => setMentorForm({ ...mentorForm, full_name: e.target.value })}
+                  />
+                  <input
+                    placeholder="Especialidad (diseño, IA, marketing…) *"
+                    value={mentorForm.expertise}
+                    onChange={(e) => setMentorForm({ ...mentorForm, expertise: e.target.value })}
+                  />
+                  <textarea
+                    rows={4}
+                    placeholder="Cuéntanos tu experiencia y cómo puedes ayudar *"
+                    value={mentorForm.experience}
+                    onChange={(e) => setMentorForm({ ...mentorForm, experience: e.target.value })}
+                  />
+                  <input
+                    placeholder="Portafolio / LinkedIn / Instagram"
+                    value={mentorForm.links}
+                    onChange={(e) => setMentorForm({ ...mentorForm, links: e.target.value })}
+                  />
+                  <input
+                    placeholder="Correo o WhatsApp de contacto *"
+                    value={mentorForm.contact}
+                    onChange={(e) => setMentorForm({ ...mentorForm, contact: e.target.value })}
+                  />
+                  <button className="isp-publish" type="submit" disabled={mentorSending}>
+                    {mentorSending ? "Enviando…" : "Enviar postulación 💜"}
+                  </button>
+                </form>
+              )}
+            </section>
+          )}
+
+          {loading && isFeedTab && <p className="isp-empty">Cargando la galaxia… ✨</p>}
+          {!loading && isFeedTab && feed.length === 0 && imported.length === 0 && (
+            <p className="isp-empty">Todavía no hay publicaciones. ¡Sé la primera! 🌸</p>
+          )}
+
 
           {feed.map((p) => (
             <article key={p.id} className="isp-card isp-post">
@@ -479,6 +585,40 @@ export function IsaSpacePage() {
               </div>
             </article>
           ))}
+
+          {tab === "home" && (
+            <>
+              <div className="isp-imported-head">
+                <h3>🌍 Del fediverso · comunidad creativa global</h3>
+                <button className="isp-imported-refresh" onClick={runImport} disabled={importing}>
+                  {importing ? "Importando…" : "Importar publicaciones"}
+                </button>
+              </div>
+              {imported.length === 0 && (
+                <p className="isp-empty small">
+                  Aún no hay contenido importado. Si eres administradora, pulsa «Importar publicaciones».
+                </p>
+              )}
+              {imported.map((p) => (
+                <article key={p.id} className="isp-card isp-post isp-post-imported">
+                  <header className="isp-post-head">
+                    <Avatar name={p.author_name} url={p.author_avatar} />
+                    <strong>{p.author_name}</strong>
+                    <small>{p.author_handle} · {timeAgo(p.published_at)}</small>
+                  </header>
+                  <p className="isp-post-text">{p.content}</p>
+                  {p.image_url && (
+                    <div className="isp-post-img">
+                      <img src={p.image_url} alt="" loading="lazy" />
+                    </div>
+                  )}
+                  <a className="isp-imported-link" href={p.url} target="_blank" rel="noreferrer noopener">
+                    Ver original ↗
+                  </a>
+                </article>
+              ))}
+            </>
+          )}
         </main>
 
         <aside className="isp-rail">
@@ -507,7 +647,7 @@ export function IsaSpacePage() {
         </aside>
       </div>
 
-      {tab !== "about" && !composerOpen && (
+      {isFeedTab && !composerOpen && (
         <button className="isp-fab" onClick={() => setComposerOpen(true)} aria-label="Crear publicación">
           ✎ <span>Crear publicación</span>
         </button>
