@@ -44,9 +44,14 @@ export const Route = createFileRoute("/api/public/whatsapp")({
           return new Response("Bad request", { status: 400 });
         }
 
-        const { parseIncoming, parseGreenIncoming, isabotReply, sendWhatsAppText } = await import(
-          "@/lib/whatsapp.server"
-        );
+        const {
+          parseIncoming,
+          parseGreenIncoming,
+          isabotReply,
+          sendWhatsAppText,
+          readKeywordFilterRequired,
+          hasIsabotKeyword,
+        } = await import("@/lib/whatsapp.server");
         const green = parseGreenIncoming(payload);
         const incoming = green
           ? { from: green.chatId, text: green.text }
@@ -55,6 +60,10 @@ export const Route = createFileRoute("/api/public/whatsapp")({
         if (!incoming) return Response.json({ ok: true, ignored: true });
 
         const text = incoming.text.slice(0, 2000);
+        // 🔑 Filtro de palabra clave: solo responder si el mensaje menciona a "isabot".
+        if ((await readKeywordFilterRequired()) && !hasIsabotKeyword(text)) {
+          return Response.json({ ok: true, ignored: true, reason: "missing_keyword" });
+        }
         try {
           const reply = await isabotReply(text);
           const sent = await sendWhatsAppText(incoming.from, reply);

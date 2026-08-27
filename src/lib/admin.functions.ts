@@ -444,6 +444,7 @@ export type WhatsAppConfig = {
   hasGreenToken: boolean;
   greenState: string | null;
   greenConnected: boolean;
+  keywordFilter: boolean;
   instance: string;
   hasKey: boolean;
   connected: boolean;
@@ -497,10 +498,13 @@ export const getWhatsAppConfig = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<WhatsAppConfig> => {
     await assertAdmin(context.supabase, context.userId);
-    const { readWhatsAppConfig, evolutionStatus, readGreenConfig, greenStatus } = await import(
-      "@/lib/whatsapp.server"
-    );
-    const [cfg, green] = await Promise.all([readWhatsAppConfig(), readGreenConfig()]);
+    const { readWhatsAppConfig, evolutionStatus, readGreenConfig, greenStatus, readKeywordFilterRequired } =
+      await import("@/lib/whatsapp.server");
+    const [cfg, green, keywordFilter] = await Promise.all([
+      readWhatsAppConfig(),
+      readGreenConfig(),
+      readKeywordFilterRequired(),
+    ]);
     const [live, greenLive] = await Promise.all([evolutionStatus(cfg), greenStatus(green)]);
     return {
       url: cfg.url,
@@ -508,6 +512,7 @@ export const getWhatsAppConfig = createServerFn({ method: "GET" })
       hasGreenToken: Boolean(green.apiToken),
       greenState: greenLive.state,
       greenConnected: greenLive.connected,
+      keywordFilter,
       instance: cfg.instance,
       hasKey: Boolean(cfg.key),
       connected: live.connected,
@@ -521,7 +526,14 @@ export const getWhatsAppConfig = createServerFn({ method: "GET" })
 export const saveWhatsAppConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (d: { url?: string; key?: string; instance?: string; greenId?: string; greenToken?: string }) => d,
+    (d: {
+      url?: string;
+      key?: string;
+      instance?: string;
+      greenId?: string;
+      greenToken?: string;
+      keywordFilter?: boolean;
+    }) => d,
   )
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     await assertAdmin(context.supabase, context.userId);
@@ -543,6 +555,14 @@ export const saveWhatsAppConfig = createServerFn({ method: "POST" })
     push("EVOLUTION_INSTANCE", data.instance);
     push("GREEN_API_ID_INSTANCE", data.greenId);
     push("GREEN_API_TOKEN_INSTANCE", data.greenToken);
+    if (typeof data.keywordFilter === "boolean") {
+      rows.push({
+        key: "WHATSAPP_REQUIRE_KEYWORD",
+        value: data.keywordFilter ? "1" : "0",
+        updated_by: context.userId,
+        updated_at: new Date().toISOString(),
+      });
+    }
 
     if (rows.length) {
       const { error } = await admin.from("integration_settings").upsert(rows, { onConflict: "key" });

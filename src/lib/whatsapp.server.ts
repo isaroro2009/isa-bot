@@ -84,6 +84,27 @@ export async function readGreenConfig(): Promise<GreenConfig> {
   return cfg;
 }
 
+/** Filtro de palabra clave: si está activo, IsaBot solo responde a mensajes que contengan "isabot". */
+export async function readKeywordFilterRequired(): Promise<boolean> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await (supabaseAdmin as any)
+      .from("integration_settings")
+      .select("value")
+      .eq("key", "WHATSAPP_REQUIRE_KEYWORD")
+      .maybeSingle();
+    if (data?.value === "0") return false;
+  } catch {
+    /* sin base de datos: filtro activo por defecto */
+  }
+  return true;
+}
+
+/** ¿El mensaje invoca a IsaBot? (insensible a mayúsculas) */
+export function hasIsabotKeyword(text: string): boolean {
+  return /isabot/i.test(text);
+}
+
 function greenBase(cfg: GreenConfig): string {
   return `https://api.green-api.com/waInstance${cfg.idInstance}`;
 }

@@ -24,6 +24,7 @@ export function IntegrationStatusPanel() {
   const [greenId, setGreenId] = useState("");
   const [greenToken, setGreenToken] = useState("");
   const [qr, setQr] = useState<string | null>(null);
+  const [keywordFilter, setKeywordFilter] = useState(true);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +36,7 @@ export function IntegrationStatusPanel() {
     setUrl(c.url);
     setInstance(c.instance);
     setGreenId(c.greenId);
+    setKeywordFilter(c.keywordFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -55,6 +57,7 @@ export function IntegrationStatusPanel() {
           instance: instance || undefined,
           greenId: greenId || undefined,
           greenToken: greenToken || undefined,
+          keywordFilter,
         },
       });
       setApiKey("");
@@ -188,6 +191,25 @@ export function IntegrationStatusPanel() {
             type="password"
             autoComplete="off"
           />
+        </label>
+
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 13,
+            cursor: "pointer",
+            minHeight: 44,
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={keywordFilter}
+            onChange={(e) => setKeywordFilter(e.target.checked)}
+            style={{ width: 20, height: 20, accentColor: "#1f9d63" }}
+          />
+          Requerir palabra clave ("IsaBot") para responder
         </label>
 
         <button style={{ ...btnStyle, background: "#1f9d63", justifySelf: "start" }} onClick={onSave} disabled={busy}>
