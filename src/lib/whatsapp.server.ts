@@ -58,8 +58,101 @@ export async function isabotReply(text: string): Promise<string> {
   return "¡Hola! Soy IsaBot 💜 Ahora mismo no puedo pensar bien, inténtalo en un momentito o entra a la app.";
 }
 
-/** Envía un mensaje de texto por WhatsApp (Cloud API o Evolution API). */
+export type EvolutionConfig = { url: string; key: string; instance: string };
+
+/** Lee la config de Evolution API: primero la guardada en el panel, luego las variables de entorno. */
+export async function readWhatsAppConfig(): Promise<EvolutionConfig> {
+  const cfg: EvolutionConfig = {
+    url: (process.env["EVOLUTION_API_URL"] ?? "").replace(/\/$/, ""),
+    key: process.env["EVOLUTION_API_KEY"] ?? "",
+    instance: process.env["EVOLUTION_INSTANCE"] ?? "isabot",
+  };
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await (supabaseAdmin as any)
+      .from("integration_settings")
+      .select("key, value")
+      .in("key", ["EVOLUTION_API_URL", "EVOLUTION_API_KEY", "EVOLUTION_INSTANCE"]);
+    for (const row of (data ?? []) as { key: string; value: string }[]) {
+      if (row.key === "EVOLUTION_API_URL") cfg.url = row.value.replace(/\/$/, "");
+      if (row.key === "EVOLUTION_API_KEY") cfg.key = row.value;
+      if (row.key === "EVOLUTION_INSTANCE") cfg.instance = row.value;
+    }
+  } catch {
+    /* sin base de datos: usamos las variables de entorno */
+  }
+  return cfg;
+}
+
+type QrResult = { qr: string | null; state: string | null; error: string | null; connected: boolean };
+
+function pickQr(j: any): string | null {
+  return (
+    j?.base64 ?? j?.qrcode?.base64 ?? j?.qrcode?.code ?? j?.code ?? j?.qr ?? null
+  );
+}
+
+/** Estado actual de la sesión (open = WhatsApp conectado). */
+export async function evolutionStatus(cfg: EvolutionConfig): Promise<QrResult> {
+  if (!cfg.url || !cfg.key)
+    return { qr: null, state: null, connected: false, error: "missing_credentials" };
+  try {
+    const res = await fetch(`${cfg.url}/instance/connectionState/${cfg.instance}`, {
+      headers: { apikey: cfg.key },
+    });
+    const j: any = await res.json().catch(() => ({}));
+    const state = j?.instance?.state ?? j?.state ?? null;
+    return { qr: null, state, connected: state === "open", error: res.ok ? null : `http_${res.status}` };
+  } catch (e) {
+    return { qr: null, state: null, connected: false, error: e instanceof Error ? e.message : "network_error" };
+  }
+}
+
+/** Crea la instancia si hace falta y devuelve el QR para escanear. */
+export async function evolutionConnect(cfg: EvolutionConfig): Promise<QrResult> {
+  if (!cfg.url || !cfg.key)
+    return { qr: null, state: null, connected: false, error: "missing_credentials" };
+  const headers = { "Content-Type": "application/json", apikey: cfg.key };
+  try {
+    // Crea la instancia (si ya existe, la API devuelve 403/409 y seguimos).
+    await fetch(`${cfg.url}/instance/create`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ instanceName: cfg.instance, qrcode: true, integration: "WHATSAPP-BAILEYS" }),
+    }).catch(() => null);
+
+    const res = await fetch(`${cfg.url}/instance/connect/${cfg.instance}`, { headers: { apikey: cfg.key } });
+    const j: any = await res.json().catch(() => ({}));
+    const qr = pickQr(j);
+    const state = j?.instance?.state ?? j?.state ?? null;
+    return {
+      qr,
+      state,
+      connected: state === "open",
+      error: qr || state ? null : `http_${res.status}`,
+    };
+  } catch (e) {
+    return { qr: null, state: null, connected: false, error: e instanceof Error ? e.message : "network_error" };
+  }
+}
+
+/** Envía un mensaje de texto por WhatsApp usando Evolution API. */
 export async function sendWhatsAppText(to: string, body: string): Promise<{ ok: boolean; reason?: string }> {
+  const cfg = await readWhatsAppConfig();
+  if (cfg.url && cfg.key && cfg.instance) {
+    try {
+      const res = await fetch(`${cfg.url}/message/sendText/${cfg.instance}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: cfg.key },
+        body: JSON.stringify({ number: to, text: body, textMessage: { text: body } }),
+      });
+      return res.ok ? { ok: true } : { ok: false, reason: `evolution_${res.status}` };
+    } catch {
+      return { ok: false, reason: "evolution_network_error" };
+    }
+  }
+
+  // Compatibilidad opcional con Meta Cloud API si alguien aún tiene esas variables.
   const cloudToken = process.env["WHATSAPP_TOKEN"];
   const phoneId = process.env["WHATSAPP_PHONE_ID"];
   if (cloudToken && phoneId) {
@@ -71,45 +164,45 @@ export async function sendWhatsAppText(to: string, body: string): Promise<{ ok: 
     return res.ok ? { ok: true } : { ok: false, reason: `cloud_${res.status}` };
   }
 
-  const evoUrl = process.env["EVOLUTION_API_URL"];
-  const evoKey = process.env["EVOLUTION_API_KEY"];
-  const evoInstance = process.env["EVOLUTION_INSTANCE"];
-  if (evoUrl && evoKey && evoInstance) {
-    const res = await fetch(`${evoUrl.replace(/\/$/, "")}/message/sendText/${evoInstance}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: evoKey },
-      body: JSON.stringify({ number: to, text: body }),
-    });
-    return res.ok ? { ok: true } : { ok: false, reason: `evolution_${res.status}` };
-  }
-
   return { ok: false, reason: "whatsapp_not_configured" };
 }
 
-/** Extrae { from, text } de un payload de Cloud API o Evolution API. */
+/** Extrae { from, text } de eventos de Evolution API (MESSAGES_UPSERT / SEND_MESSAGE) o Cloud API. */
 export function parseIncoming(payload: unknown): { from: string; text: string } | null {
-  const p = payload as Record<string, unknown>;
-
-  // WhatsApp Cloud API
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const msg = (p as any)?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    if (msg?.from && msg?.text?.body) return { from: String(msg.from), text: String(msg.text.body) };
-  } catch {
-    /* no es Cloud API */
-  }
+  const p = payload as any;
 
   // Evolution API
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const d = (p as any)?.data ?? p;
-    const jid: string | undefined = d?.key?.remoteJid;
+    const event = String(p?.event ?? "").toUpperCase().replace(/\./g, "_");
+    const raw = p?.data ?? p;
+    const d = Array.isArray(raw) ? raw[0] : raw;
+    const jid: string | undefined = d?.key?.remoteJid ?? d?.remoteJid;
+    const m = d?.message ?? {};
     const text: string | undefined =
-      d?.message?.conversation ?? d?.message?.extendedTextMessage?.text;
-    if (jid && text && !d?.key?.fromMe) return { from: jid.split("@")[0], text: String(text) };
+      m?.conversation ??
+      m?.extendedTextMessage?.text ??
+      m?.imageMessage?.caption ??
+      m?.videoMessage?.caption ??
+      m?.ephemeralMessage?.message?.conversation ??
+      d?.text;
+    const fromMe = Boolean(d?.key?.fromMe);
+    const isGroup = typeof jid === "string" && jid.endsWith("@g.us");
+    const okEvent = !event || event === "MESSAGES_UPSERT" || event === "SEND_MESSAGE" || event.startsWith("MESSAGES");
+    if (okEvent && jid && text && !fromMe && !isGroup) {
+      return { from: String(jid).split("@")[0]!, text: String(text) };
+    }
+  } catch {
+    /* no es Evolution */
+  }
+
+  // WhatsApp Cloud API (compatibilidad)
+  try {
+    const msg = p?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    if (msg?.from && msg?.text?.body) return { from: String(msg.from), text: String(msg.text.body) };
   } catch {
     /* payload desconocido */
   }
 
   return null;
 }
+
