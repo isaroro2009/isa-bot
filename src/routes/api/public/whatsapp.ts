@@ -44,8 +44,13 @@ export const Route = createFileRoute("/api/public/whatsapp")({
           return new Response("Bad request", { status: 400 });
         }
 
-        const { parseIncoming, isabotReply, sendWhatsAppText } = await import("@/lib/whatsapp.server");
-        const incoming = parseIncoming(payload);
+        const { parseIncoming, parseGreenIncoming, isabotReply, sendWhatsAppText } = await import(
+          "@/lib/whatsapp.server"
+        );
+        const green = parseGreenIncoming(payload);
+        const incoming = green
+          ? { from: green.chatId, text: green.text }
+          : parseIncoming(payload);
         // Siempre 200 para que WhatsApp no reintente eventos de estado.
         if (!incoming) return Response.json({ ok: true, ignored: true });
 
