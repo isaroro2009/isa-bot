@@ -429,3 +429,34 @@ export const setUnlimitedCoins = createServerFn({ method: "POST" })
     if (error) throw error;
     return { ok: true };
   });
+
+export type IntegrationStatus = {
+  id: string;
+  label: string;
+  status: "active" | "pending";
+  missing: string[];
+  hint: string;
+};
+
+/** Estado de las integraciones externas (sin exponer valores de secretos). */
+export const getIntegrationStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<IntegrationStatus[]> => {
+    await assertAdmin(context.supabase, context.userId);
+
+    const required = ["WHATSAPP_TOKEN", "WHATSAPP_PHONE_ID", "WHATSAPP_VERIFY_TOKEN"];
+    const missing = required.filter((k) => !process.env[k]);
+
+    return [
+      {
+        id: "whatsapp",
+        label: "WhatsApp — Meta Cloud API",
+        status: missing.length === 0 ? "active" : "pending",
+        missing,
+        hint:
+          missing.length === 0
+            ? "Webhook activo en /api/public/whatsapp"
+            : "Pending Credentials · el webhook responde 403/ignora mensajes hasta configurar las claves",
+      },
+    ];
+  });
