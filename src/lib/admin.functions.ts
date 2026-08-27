@@ -440,6 +440,10 @@ export type IntegrationStatus = {
 
 export type WhatsAppConfig = {
   url: string;
+  greenId: string;
+  hasGreenToken: boolean;
+  greenState: string | null;
+  greenConnected: boolean;
   instance: string;
   hasKey: boolean;
   connected: boolean;
@@ -453,8 +457,12 @@ export const getIntegrationStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<IntegrationStatus[]> => {
     await assertAdmin(context.supabase, context.userId);
-    const { readWhatsAppConfig } = await import("@/lib/whatsapp.server");
-    const cfg = await readWhatsAppConfig();
+    const { readWhatsAppConfig, readGreenConfig } = await import("@/lib/whatsapp.server");
+    const [cfg, green] = await Promise.all([readWhatsAppConfig(), readGreenConfig()]);
+
+    const greenMissing: string[] = [];
+    if (!green.idInstance) greenMissing.push("GREEN_API_ID_INSTANCE");
+    if (!green.apiToken) greenMissing.push("GREEN_API_TOKEN_INSTANCE");
 
     const missing: string[] = [];
     if (!cfg.url) missing.push("EVOLUTION_API_URL");
@@ -462,8 +470,18 @@ export const getIntegrationStatus = createServerFn({ method: "GET" })
 
     return [
       {
+        id: "whatsapp-green",
+        label: "WhatsApp — Green API",
+        status: greenMissing.length === 0 ? "active" : "pending",
+        missing: greenMissing,
+        hint:
+          greenMissing.length === 0
+            ? `Instancia ${green.idInstance} · webhook activo en /api/public/whatsapp`
+            : "Guarda tu ID de instancia y token de Green API para activar WhatsApp",
+      },
+      {
         id: "whatsapp",
-        label: "WhatsApp — Evolution API / Node Session",
+        label: "WhatsApp — Evolution API / Node Session (alternativa)",
         status: missing.length === 0 ? "active" : "pending",
         missing,
         hint:
@@ -479,11 +497,17 @@ export const getWhatsAppConfig = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<WhatsAppConfig> => {
     await assertAdmin(context.supabase, context.userId);
-    const { readWhatsAppConfig, evolutionStatus } = await import("@/lib/whatsapp.server");
-    const cfg = await readWhatsAppConfig();
-    const live = await evolutionStatus(cfg);
+    const { readWhatsAppConfig, evolutionStatus, readGreenConfig, greenStatus } = await import(
+      "@/lib/whatsapp.server"
+    );
+    const [cfg, green] = await Promise.all([readWhatsAppConfig(), readGreenConfig()]);
+    const [live, greenLive] = await Promise.all([evolutionStatus(cfg), greenStatus(green)]);
     return {
       url: cfg.url,
+      greenId: green.idInstance,
+      hasGreenToken: Boolean(green.apiToken),
+      greenState: greenLive.state,
+      greenConnected: greenLive.connected,
       instance: cfg.instance,
       hasKey: Boolean(cfg.key),
       connected: live.connected,
@@ -496,7 +520,9 @@ export const getWhatsAppConfig = createServerFn({ method: "GET" })
 /** Guarda URL / API key / instancia de Evolution API. */
 export const saveWhatsAppConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { url: string; key?: string; instance?: string }) => d)
+  .inputValidator(
+    (d: { url?: string; key?: string; instance?: string; greenId?: string; greenToken?: string }) => d,
+  )
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -515,6 +541,8 @@ export const saveWhatsAppConfig = createServerFn({ method: "POST" })
     push("EVOLUTION_API_URL", data.url);
     push("EVOLUTION_API_KEY", data.key);
     push("EVOLUTION_INSTANCE", data.instance);
+    push("GREEN_API_ID_INSTANCE", data.greenId);
+    push("GREEN_API_TOKEN_INSTANCE", data.greenToken);
 
     if (rows.length) {
       const { error } = await admin.from("integration_settings").upsert(rows, { onConflict: "key" });

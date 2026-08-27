@@ -21,6 +21,8 @@ export function IntegrationStatusPanel() {
   const [url, setUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [instance, setInstance] = useState("");
+  const [greenId, setGreenId] = useState("");
+  const [greenToken, setGreenToken] = useState("");
   const [qr, setQr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -32,6 +34,7 @@ export function IntegrationStatusPanel() {
     setCfg(c);
     setUrl(c.url);
     setInstance(c.instance);
+    setGreenId(c.greenId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -45,8 +48,17 @@ export function IntegrationStatusPanel() {
     setBusy(true);
     setMsg(null);
     try {
-      await saveConfig({ data: { url, key: apiKey || undefined, instance: instance || undefined } });
+      await saveConfig({
+        data: {
+          url,
+          key: apiKey || undefined,
+          instance: instance || undefined,
+          greenId: greenId || undefined,
+          greenToken: greenToken || undefined,
+        },
+      });
       setApiKey("");
+      setGreenToken("");
       await reload();
       setMsg("Credenciales guardadas ✅");
     } catch (e) {
@@ -136,6 +148,58 @@ export function IntegrationStatusPanel() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* 🟢 Green API */}
+      <div
+        style={{
+          marginTop: 14,
+          padding: 14,
+          borderRadius: 14,
+          background: "rgba(60,200,140,.10)",
+          border: "1px dashed rgba(40,170,110,.45)",
+          display: "grid",
+          gap: 10,
+        }}
+      >
+        <strong style={{ color: "#1f6b4a" }}>🟢 WhatsApp con Green API (recomendado)</strong>
+        <small style={{ opacity: 0.8 }}>
+          Crea una instancia en Green API, escanea el QR desde su panel y pega aquí las credenciales.
+          Luego configura el webhook hacia <code>/api/public/whatsapp</code>.
+        </small>
+
+        <label style={{ display: "grid", gap: 4, fontSize: 13 }}>
+          GREEN_API_ID_INSTANCE
+          <input
+            style={inputStyle}
+            value={greenId}
+            onChange={(e) => setGreenId(e.target.value)}
+            placeholder="1101234567"
+            inputMode="numeric"
+          />
+        </label>
+        <label style={{ display: "grid", gap: 4, fontSize: 13 }}>
+          GREEN_API_TOKEN_INSTANCE {cfg?.hasGreenToken && <em style={{ opacity: 0.7 }}>(guardado ✅)</em>}
+          <input
+            style={inputStyle}
+            value={greenToken}
+            onChange={(e) => setGreenToken(e.target.value)}
+            placeholder={cfg?.hasGreenToken ? "•••••••• (deja vacío para conservarlo)" : "tu token de instancia"}
+            type="password"
+            autoComplete="off"
+          />
+        </label>
+
+        <button style={{ ...btnStyle, background: "#1f9d63", justifySelf: "start" }} onClick={onSave} disabled={busy}>
+          Guardar credenciales Green API
+        </button>
+
+        <small style={{ opacity: 0.85 }}>
+          Estado:{" "}
+          <strong style={{ color: cfg?.greenConnected ? "#1f9d63" : "#b5651d" }}>
+            {cfg?.greenConnected ? "Activo (autorizado)" : (cfg?.greenState ?? "sin credenciales")}
+          </strong>
+        </small>
       </div>
 
       {/* 📱 Conectar WhatsApp vía QR */}
