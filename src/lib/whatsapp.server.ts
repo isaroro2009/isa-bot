@@ -60,6 +60,84 @@ export async function isabotReply(text: string): Promise<string> {
 
 export type EvolutionConfig = { url: string; key: string; instance: string };
 
+export type GreenConfig = { idInstance: string; apiToken: string };
+
+/** Lee las credenciales de Green API (panel primero, luego variables de entorno). */
+export async function readGreenConfig(): Promise<GreenConfig> {
+  const cfg: GreenConfig = {
+    idInstance: process.env["GREEN_API_ID_INSTANCE"] ?? "",
+    apiToken: process.env["GREEN_API_TOKEN_INSTANCE"] ?? "",
+  };
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await (supabaseAdmin as any)
+      .from("integration_settings")
+      .select("key, value")
+      .in("key", ["GREEN_API_ID_INSTANCE", "GREEN_API_TOKEN_INSTANCE"]);
+    for (const row of (data ?? []) as { key: string; value: string }[]) {
+      if (row.key === "GREEN_API_ID_INSTANCE") cfg.idInstance = row.value.trim();
+      if (row.key === "GREEN_API_TOKEN_INSTANCE") cfg.apiToken = row.value.trim();
+    }
+  } catch {
+    /* sin base de datos */
+  }
+  return cfg;
+}
+
+function greenBase(cfg: GreenConfig): string {
+  return `https://api.green-api.com/waInstance${cfg.idInstance}`;
+}
+
+/** Estado de la instancia de Green API (authorized = WhatsApp conectado). */
+export async function greenStatus(
+  cfg: GreenConfig,
+): Promise<{ state: string | null; connected: boolean; error: string | null }> {
+  if (!cfg.idInstance || !cfg.apiToken)
+    return { state: null, connected: false, error: "missing_credentials" };
+  try {
+    const res = await fetch(`${greenBase(cfg)}/getStateInstance/${cfg.apiToken}`);
+    const j: any = await res.json().catch(() => ({}));
+    const state = j?.stateInstance ?? null;
+    return { state, connected: state === "authorized", error: res.ok ? null : `http_${res.status}` };
+  } catch (e) {
+    return { state: null, connected: false, error: e instanceof Error ? e.message : "network_error" };
+  }
+}
+
+/** Envía un mensaje de texto por Green API. */
+export async function sendGreenText(
+  cfg: GreenConfig,
+  chatId: string,
+  message: string,
+): Promise<{ ok: boolean; reason?: string }> {
+  try {
+    const res = await fetch(`${greenBase(cfg)}/sendMessage/${cfg.apiToken}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chatId, message }),
+    });
+    return res.ok ? { ok: true } : { ok: false, reason: `green_${res.status}` };
+  } catch {
+    return { ok: false, reason: "green_network_error" };
+  }
+}
+
+/** Extrae { chatId, text } de un webhook de Green API (incomingMessageReceived). */
+export function parseGreenIncoming(payload: unknown): { chatId: string; text: string } | null {
+  const p = payload as any;
+  if (!p || p.typeWebhook !== "incomingMessageReceived") return null;
+  const chatId: string | undefined = p?.senderData?.chatId;
+  if (!chatId || String(chatId).endsWith("@g.us")) return null;
+  const md = p?.messageData ?? {};
+  const text: string | undefined =
+    md?.textMessageData?.textMessage ??
+    md?.extendedTextMessageData?.text ??
+    md?.extendedTextMessageData?.description ??
+    md?.imageMessageData?.caption;
+  if (!text) return null;
+  return { chatId: String(chatId), text: String(text) };
+}
+
 /** Lee la config de Evolution API: primero la guardada en el panel, luego las variables de entorno. */
 export async function readWhatsAppConfig(): Promise<EvolutionConfig> {
   const cfg: EvolutionConfig = {
@@ -138,6 +216,13 @@ export async function evolutionConnect(cfg: EvolutionConfig): Promise<QrResult> 
 
 /** Envía un mensaje de texto por WhatsApp usando Evolution API. */
 export async function sendWhatsAppText(to: string, body: string): Promise<{ ok: boolean; reason?: string }> {
+  // Green API tiene prioridad si está configurada.
+  const green = await readGreenConfig();
+  if (green.idInstance && green.apiToken) {
+    const chatId = to.includes("@") ? to : `${to.replace(/\D/g, "")}@c.us`;
+    return sendGreenText(green, chatId, body);
+  }
+
   const cfg = await readWhatsAppConfig();
   if (cfg.url && cfg.key && cfg.instance) {
     try {
