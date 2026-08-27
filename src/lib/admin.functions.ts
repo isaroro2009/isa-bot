@@ -438,25 +438,97 @@ export type IntegrationStatus = {
   hint: string;
 };
 
+export type WhatsAppConfig = {
+  url: string;
+  instance: string;
+  hasKey: boolean;
+  connected: boolean;
+  qr: string | null;
+  state: string | null;
+  error: string | null;
+};
+
 /** Estado de las integraciones externas (sin exponer valores de secretos). */
 export const getIntegrationStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<IntegrationStatus[]> => {
     await assertAdmin(context.supabase, context.userId);
+    const { readWhatsAppConfig } = await import("@/lib/whatsapp.server");
+    const cfg = await readWhatsAppConfig();
 
-    const required = ["WHATSAPP_TOKEN", "WHATSAPP_PHONE_ID", "WHATSAPP_VERIFY_TOKEN"];
-    const missing = required.filter((k) => !process.env[k]);
+    const missing: string[] = [];
+    if (!cfg.url) missing.push("EVOLUTION_API_URL");
+    if (!cfg.key) missing.push("EVOLUTION_API_KEY");
 
     return [
       {
         id: "whatsapp",
-        label: "WhatsApp — Meta Cloud API",
+        label: "WhatsApp — Evolution API / Node Session",
         status: missing.length === 0 ? "active" : "pending",
         missing,
         hint:
           missing.length === 0
-            ? "Webhook activo en /api/public/whatsapp"
-            : "Pending Credentials · el webhook responde 403/ignora mensajes hasta configurar las claves",
+            ? `Sesión "${cfg.instance}" · webhook activo en /api/public/whatsapp`
+            : "Sin credenciales · conecta tu sesión escaneando el QR desde este panel",
       },
     ];
   });
+
+/** Lee la configuración de Evolution API (sin exponer la API key). */
+export const getWhatsAppConfig = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<WhatsAppConfig> => {
+    await assertAdmin(context.supabase, context.userId);
+    const { readWhatsAppConfig, evolutionStatus } = await import("@/lib/whatsapp.server");
+    const cfg = await readWhatsAppConfig();
+    const live = await evolutionStatus(cfg);
+    return {
+      url: cfg.url,
+      instance: cfg.instance,
+      hasKey: Boolean(cfg.key),
+      connected: live.connected,
+      qr: live.qr,
+      state: live.state,
+      error: live.error,
+    };
+  });
+
+/** Guarda URL / API key / instancia de Evolution API. */
+export const saveWhatsAppConfig = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { url: string; key?: string; instance?: string }) => d)
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const admin = supabaseAdmin as any;
+
+    const rows: { key: string; value: string; updated_by: string; updated_at: string }[] = [];
+    const push = (k: string, v?: string) => {
+      if (typeof v === "string" && v.trim())
+        rows.push({
+          key: k,
+          value: v.trim(),
+          updated_by: context.userId,
+          updated_at: new Date().toISOString(),
+        });
+    };
+    push("EVOLUTION_API_URL", data.url);
+    push("EVOLUTION_API_KEY", data.key);
+    push("EVOLUTION_INSTANCE", data.instance);
+
+    if (rows.length) {
+      const { error } = await admin.from("integration_settings").upsert(rows, { onConflict: "key" });
+      if (error) throw error;
+    }
+    return { ok: true };
+  });
+
+/** Crea/reinicia la sesión y devuelve el QR para escanear con WhatsApp. */
+export const connectWhatsAppQr = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ qr: string | null; state: string | null; error: string | null }> => {
+    await assertAdmin(context.supabase, context.userId);
+    const { readWhatsAppConfig, evolutionConnect } = await import("@/lib/whatsapp.server");
+    return evolutionConnect(await readWhatsAppConfig());
+  });
+
