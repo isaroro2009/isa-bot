@@ -19,6 +19,7 @@ import {
 
 import { getAiConfig } from "@/lib/memory.functions";
 import { AdminMetrics } from "@/components/AdminMetrics";
+import { IntegrationStatusPanel } from "@/components/IntegrationStatusPanel";
 import { BotWeeklyReport } from "@/components/BotWeeklyReport";
 import { listB2BLeads, updateB2BLeadStatus, type B2BLead } from "@/lib/b2bLeads.functions";
 import {
@@ -341,6 +342,8 @@ function AdminPage() {
             <AdminMetrics />
           </div>
         )}
+
+        {!error && <IntegrationStatusPanel />}
 
         {!error && <BotWeeklyReport />}
 
