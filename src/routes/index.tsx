@@ -171,7 +171,7 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { PromoCarousel } from "@/components/PromoCarousel";
 import PdfGallery from "@/components/PdfGallery";
 import { openPdfGallery } from "@/lib/pdf-gallery";
-import { restoreTheme } from "@/lib/themes";
+import { ISA_THEMES, activeTheme, applyTheme, ownTheme, ownedThemes } from "@/lib/themes";
 import { useI18n } from "@/lib/i18n";
 import "@/lib/themes.css";
 
@@ -985,6 +985,8 @@ function IsaBot() {
   // 🎨 Sinestesia de IA — el tema visual también cambia el tono del modelo
   const [vibe, setVibe] = useState<Vibe>("kawaii");
   const [customVibe, setCustomVibe] = useState<CustomVibe>(DEFAULT_CUSTOM_VIBE);
+  const [interfaceTheme, setInterfaceTheme] = useState("default");
+  const [ownedInterfaceThemes, setOwnedInterfaceThemes] = useState<string[]>(["default"]);
 
   // Notas rápidas (gratis)
   const [notes, setNotes] = useState<Note[]>([]);
@@ -1051,7 +1053,12 @@ function IsaBot() {
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   // 🎨 Restaura el tema comprado con IBC
-  useEffect(() => { restoreTheme(); }, []);
+  useEffect(() => {
+    const savedTheme = activeTheme();
+    setInterfaceTheme(savedTheme);
+    setOwnedInterfaceThemes(ownedThemes());
+    applyTheme(savedTheme);
+  }, []);
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
   const [recordingVoice, setRecordingVoice] = useState(false);
   const voiceRecRef = useRef<MediaRecorder | null>(null);
@@ -2133,6 +2140,20 @@ ${rows}
     setBrain(val);
   }
 
+  async function pickInterfaceTheme(id: string) {
+    const theme = ISA_THEMES.find((item) => item.id === id);
+    if (!theme) return;
+    const owned = ownedInterfaceThemes.includes(id) || theme.price === 0 || ibc.unlimited;
+    if (!owned) {
+      const paid = await ibc.confirmCharge("theme", `Tema de interfaz: ${id}`);
+      if (!paid) return;
+      ownTheme(id);
+      setOwnedInterfaceThemes(ownedThemes());
+    }
+    applyTheme(id);
+    setInterfaceTheme(id);
+  }
+
   const customVibeEditor = vibe === "custom" && (
     <div className="custom-vibe-editor">
       <label>✨ Nombre de tu estilo:</label>
@@ -2386,6 +2407,19 @@ ${rows}
               {b.premium && !isPremium ? "🔒" : b.emoji} {b.name}
             </option>
           ))}
+        </select>
+      </label>
+      <label className="chat-tool-field chat-theme-field">
+        <span>🎨 Tema</span>
+        <select value={interfaceTheme} onChange={(e) => void pickInterfaceTheme(e.target.value)}>
+          {ISA_THEMES.map((theme) => {
+            const owned = ownedInterfaceThemes.includes(theme.id) || theme.price === 0 || ibc.unlimited;
+            return (
+              <option key={theme.id} value={theme.id}>
+                {theme.emoji} {theme.name}{owned ? "" : ` · ${theme.price} IBC`}
+              </option>
+            );
+          })}
         </select>
       </label>
     </div>
