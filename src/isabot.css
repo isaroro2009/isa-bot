@@ -6716,3 +6716,71 @@ html[data-vibe="zen"] .intro-hero {
   .hub-preview { flex-basis: 68px; height: 60px; }
   .input-area { min-height: 54px; border-radius: 14px; }
 }
+
+/* Correcciones críticas: intro única, cyberpunk, menú, idioma y footer anclado */
+.menu-btn,
+.menu-btn:hover,
+.menu-btn:focus-visible {
+  color: #1f2937 !important;
+  z-index: 1501 !important;
+}
+
+.footer {
+  position: sticky !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  z-index: 50 !important;
+  background: #fff !important;
+}
+
+html[data-vibe="cyberpunk"] .header,
+html[data-vibe="cyberpunk"] .motor-badge,
+html[data-vibe="cyberpunk"] .lang-toggle,
+html[data-vibe="cyberpunk"] .top-panel,
+html[data-vibe="cyberpunk"] .offline-banner {
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid #0ff !important;
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.18) !important;
+}
+
+html[data-vibe="cyberpunk"] .logo,
+html[data-vibe="cyberpunk"] .lang-toggle-btn,
+html[data-vibe="cyberpunk"] .lang-toggle-btn.active {
+  color: #fff !important;
+}
+
+html[data-vibe="cyberpunk"] .messages .u,
+html[data-vibe="cyberpunk"] .messages .b,
+html[data-vibe="cyberpunk"] .messages .user,
+html[data-vibe="cyberpunk"] .messages .bot,
+html[data-vibe="cyberpunk"] .u,
+html[data-vibe="cyberpunk"] .b {
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid #0ff !important;
+  box-shadow: 0 0 14px rgba(0, 255, 255, 0.22) !important;
+}
+
+html[data-vibe="cyberpunk"] .footer {
+  background: #111 !important;
+  color: #fff !important;
+  border-top: 1px solid #0ff !important;
+}
+
+html[data-vibe="cyberpunk"] .input-area {
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid #0ff !important;
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.18) !important;
+}
+
+html[data-vibe="cyberpunk"] .input-area input[type="text"] {
+  color: #fff !important;
+}
+
+html[data-vibe="cyberpunk"] .input-area input[type="text"]::placeholder,
+html[data-vibe="cyberpunk"] .qa-hint,
+html[data-vibe="cyberpunk"] .legal-link {
+  color: rgba(255, 255, 255, 0.72) !important;
+}

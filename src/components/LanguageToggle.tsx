@@ -11,7 +11,11 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
           type="button"
           className={`lang-toggle-btn ${lang === code ? "active" : ""}`}
           aria-pressed={lang === code}
-          onClick={() => setLang(code)}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setLang(code);
+          }}
         >
           {code === "es" ? "🇪🇸" : "🇺🇸"}
           {!compact && <span>{code.toUpperCase()}</span>}

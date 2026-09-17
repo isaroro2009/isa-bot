@@ -175,6 +175,7 @@ import { PromoCarousel } from "@/components/PromoCarousel";
 import PdfGallery from "@/components/PdfGallery";
 import { openPdfGallery } from "@/lib/pdf-gallery";
 import { restoreTheme } from "@/lib/themes";
+import { useI18n } from "@/lib/i18n";
 import "@/lib/themes.css";
 
 
@@ -927,6 +928,52 @@ const WEEKLY_CHALLENGES: Array<{ title: string; emoji: string }> = [
 
 function IsaBot() {
   const ibc = useIbc();
+  const { lang } = useI18n();
+  const homeCopy = lang === "en" ? {
+    menu: "Menu",
+    closeMenu: "Close menu",
+    chats: "My Chats 💬",
+    hubNav: "IsaBot main access",
+    spaceDesc: "Creative network: publish projects, progress and find collaborators.",
+    feed: "✨ View feed",
+    post: "🚀 Post",
+    academyDesc: "AI, 3D and tech classes with challenges that earn IsaBot Coins.",
+    classes: "📚 Classes",
+    news: "📰 News",
+    studioDesc: "Canva-like suite: designs, documents, slides and instant export.",
+    design: "🖼️ Design",
+    pdfs: "📚 PDFs",
+    call: "📞 Call IsaBot",
+    planDay: "🚀 Plan my day",
+    modelTitle: "IsaBot native model",
+    askPlaceholder: "Ask IsaBot...",
+    recording: "🎙️ Recording... release to send",
+    quickHintStart: "💡 Type ",
+    quickHintPhrase: "analyze my idea",
+    quickHintEnd: " to activate Crack Mode ✨",
+  } : {
+    menu: "Menú",
+    closeMenu: "Cerrar menú",
+    chats: "Mis Chats 💬",
+    hubNav: "Accesos principales de IsaBot",
+    spaceDesc: "Red creativa: publica proyectos, avances y busca colaboradores.",
+    feed: "✨ Ver feed",
+    post: "🚀 Publicar",
+    academyDesc: "Clases de IA, 3D y tech con retos que dan IsaBot Coins.",
+    classes: "📚 Clases",
+    news: "📰 Noticias",
+    studioDesc: "Suite tipo Canva: diseños, documentos, slides y export instantáneo.",
+    design: "🖼️ Diseño",
+    pdfs: "📚 PDFs",
+    call: "📞 Llamar a IsaBot",
+    planDay: "🚀 Planear mi día",
+    modelTitle: "Modelo propio de IsaBot",
+    askPlaceholder: "Pregúntale a IsaBot...",
+    recording: "🎙️ Grabando... suelta para enviar",
+    quickHintStart: "💡 Escribe ",
+    quickHintPhrase: "analiza mi idea",
+    quickHintEnd: " para activar el Modo Crack ✨",
+  };
   const [hydrated, setHydrated] = useState(false);
 
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -2445,7 +2492,16 @@ ${rows}
 
   return (
     <div className="chat-container">
-      <button className="menu-btn" aria-label="Menú" onClick={() => setSidebarOpen((s) => !s)}>☰</button>
+      <button
+        type="button"
+        className="menu-btn text-gray-800"
+        aria-label={homeCopy.menu}
+        aria-expanded={sidebarOpen}
+        onMouseEnter={() => setSidebarOpen(true)}
+        onClick={() => setSidebarOpen((s) => !s)}
+      >
+        ☰
+      </button>
 
       {sidebarOpen && <div className="sidebar-overlay active" onClick={() => setSidebarOpen(false)} />}
 
@@ -2459,11 +2515,11 @@ ${rows}
         }}
       >
         <div className="sidebar-header">
-          <h2>Mis Chats 💬</h2>
+          <h2>{homeCopy.chats}</h2>
           <button
             className="sidebar-close"
             onClick={() => setSidebarOpen(false)}
-            aria-label="Cerrar menú"
+            aria-label={homeCopy.closeMenu}
             type="button"
           >
             ✕
@@ -2615,7 +2671,7 @@ ${rows}
 
       <header className="header">
         <h1 className="logo">IsaBot ✨</h1>
-        <span className="motor-badge" title="Modelo propio de IsaBot">⚙️ {ISABOT_MODEL_LABEL}</span>
+        <span className="motor-badge" title={homeCopy.modelTitle}>⚙️ {ISABOT_MODEL_LABEL}</span>
         <LanguageToggle compact />
         <IbcHud />
       </header>
@@ -2662,7 +2718,7 @@ ${rows}
       <div className="main">
         {!currentMessages.some((m) => m.sender === "user") && (
           <div className="intro-hero">
-            <div className="hub-grid" role="navigation" aria-label="Accesos principales de IsaBot">
+            <div className="hub-grid" role="navigation" aria-label={homeCopy.hubNav}>
               <article className="hub-card hub-space">
                 <button
                   className="hub-main"
@@ -2678,12 +2734,12 @@ ${rows}
                   </span>
                   <span className="hub-text">
                     <strong>IsaSpace</strong>
-                    <small>Red creativa: publica proyectos, avances y busca colaboradores.</small>
+                    <small>{homeCopy.spaceDesc}</small>
                   </span>
                 </button>
                 <div className="hub-quick">
-                  <button onClick={() => setPanel("isaspace")}>✨ Ver feed</button>
-                  <button onClick={() => { window.location.href = "/isaspace?compose=1"; }}>🚀 Publicar</button>
+                  <button onClick={() => setPanel("isaspace")}>{homeCopy.feed}</button>
+                  <button onClick={() => { window.location.href = "/isaspace?compose=1"; }}>{homeCopy.post}</button>
                 </div>
               </article>
 
@@ -2695,12 +2751,12 @@ ${rows}
                   </span>
                   <span className="hub-text">
                     <strong>IsaAcademy</strong>
-                    <small>Clases de IA, 3D y tech con retos que dan IsaBot Coins.</small>
+                    <small>{homeCopy.academyDesc}</small>
                   </span>
                 </button>
                 <div className="hub-quick">
-                  <button onClick={() => setPanel("academy")}>📚 Clases</button>
-                  <button onClick={() => setPanel("technews")}>📰 Noticias</button>
+                  <button onClick={() => setPanel("academy")}>{homeCopy.classes}</button>
+                  <button onClick={() => setPanel("technews")}>{homeCopy.news}</button>
                 </div>
               </article>
 
@@ -2712,22 +2768,22 @@ ${rows}
                   </span>
                   <span className="hub-text">
                     <strong>IsaStudio</strong>
-                    <small>Suite tipo Canva: diseños, documentos, slides y export instantáneo.</small>
+                    <small>{homeCopy.studioDesc}</small>
                   </span>
                 </button>
                 <div className="hub-quick">
-                  <button onClick={() => { window.location.href = "/studio?new=design"; }}>🖼️ Diseño</button>
-                  <button onClick={openPdfGallery}>📚 PDFs</button>
+                  <button onClick={() => { window.location.href = "/studio?new=design"; }}>{homeCopy.design}</button>
+                  <button onClick={openPdfGallery}>{homeCopy.pdfs}</button>
                 </div>
               </article>
             </div>
 
             <div className="intro-actions">
               <button className="intro-cta" onClick={() => { if (currentUser) setCallOpen(true); }}>
-                📞 Llamar a IsaBot
+                {homeCopy.call}
               </button>
               <button className="intro-cta primary" onClick={() => setPanel("myday")}>
-                🚀 Planear mi día
+                {homeCopy.planDay}
               </button>
             </div>
           </div>
@@ -2795,7 +2851,7 @@ ${rows}
             </button>
           )}
           <span className="qa-hint">
-            💡 Escribe <b>"analiza mi idea"</b> para activar el Modo Crack ✨
+            {homeCopy.quickHintStart}<b>"{homeCopy.quickHintPhrase}"</b>{homeCopy.quickHintEnd}
           </span>
         </div>
         {quickSettingsPopover}
@@ -2826,7 +2882,7 @@ ${rows}
           <input
             ref={inputRef}
             type="text"
-            placeholder={recordingVoice ? "🎙️ Grabando... suelta para enviar" : "Pregúntale a IsaBot..."}
+            placeholder={recordingVoice ? homeCopy.recording : homeCopy.askPlaceholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (!sending) void sendMessage(); } }}
