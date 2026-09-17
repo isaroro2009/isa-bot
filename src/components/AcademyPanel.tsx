@@ -171,7 +171,7 @@ export function AcademyPanel({
         {loading && <div className="news-loading">Preparando tus clases… 📚</div>}
         {error && <div className="fb-error">💔 {error}</div>}
 
-        {state && !lesson && (
+        {state && !lesson && !customCourse && (
           <>
             <div className="acad3-chips">
               <div className="acad3-chip fire">
