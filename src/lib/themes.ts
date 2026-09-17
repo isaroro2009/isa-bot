@@ -12,7 +12,7 @@ export type IsaTheme = {
 };
 
 export const ISA_THEMES: IsaTheme[] = [
-  { id: "default", name: "IsaBot Classic", emoji: "💜", tagline: "El rosa y morado de siempre", price: 0, swatch: ["#ff8fba", "#b06cf0", "#fff0f7"] },
+  { id: "default", name: "Classic", emoji: "💜", tagline: "El rosa y morado de siempre", price: 0, swatch: ["#ff8fba", "#b06cf0", "#fff0f7"] },
   { id: "pastel", name: "Pastel Dream", emoji: "🍬", tagline: "Menta, lila y durazno suave", price: 20, swatch: ["#ffd6ec", "#c7f0ea", "#fff6e5"] },
   { id: "neon", name: "Dark Neon", emoji: "⚡", tagline: "Modo oscuro cyber con neón cian", price: 20, swatch: ["#0b0f1e", "#00e5ff", "#ff3ea5"] },
   { id: "sakura", name: "Sakura Blossom", emoji: "🌸", tagline: "Pétalos rosados y verde jade", price: 20, swatch: ["#ffc2d4", "#f7f0ff", "#8ac6a4"] },

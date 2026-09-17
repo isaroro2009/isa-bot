@@ -1,71 +1,136 @@
-/* 🎨 Temas de interfaz comprables con IBC. Solo cambian variables + fondo. */
-
-html[data-isa-theme="pastel"] body {
-  background: linear-gradient(270deg, #ffe9f5, #e7fbf6, #fff5e2, #f0e9ff);
-  background-size: 600% 600%;
-}
-html[data-isa-theme="pastel"] {
-  --isa-lavender: #d7c9ff;
-  --isa-blush: #ffd6ec;
-  --isa-mint: #c7f0ea;
-  --isa-accent: #f0a7cf;
-  --isa-primary: #b9c8f5;
-}
-
-html[data-isa-theme="sakura"] body {
-  background: linear-gradient(270deg, #ffe1ea, #fff0f6, #eaf7ef, #ffe1ea);
-  background-size: 600% 600%;
-}
-html[data-isa-theme="sakura"] {
-  --isa-blush: #ffc2d4;
-  --isa-accent: #ef7fa5;
-  --isa-primary: #8ac6a4;
-  --isa-plum: #6b3350;
+/* Temas de interfaz: una única fuente de color para chat, barra y panel lateral. */
+:root,
+html[data-isa-theme="default"],
+html[data-vibe="classic"] {
+  --bg: #fafafa;
+  --text: #333333;
+  --panel: #ffffff;
+  --u-bg: #f1e9ff;
+  --u-txt: #333333;
+  --b-bg: #f6f6f8;
+  --b-txt: #333333;
+  --accent: #c9a7ff;
+  --theme-border: #e5d5fb;
+  --input-bg: #ffffff;
 }
 
-html[data-isa-theme="ocean"] body {
-  background: linear-gradient(270deg, #0d3b53, #14586f, #0f7a72, #0d3b53);
-  background-size: 600% 600%;
-  color: #eafcff;
-}
-html[data-isa-theme="ocean"] {
-  --isa-plum: #eafcff;
-  --isa-accent: #4fd3c4;
-  --isa-primary: #2c9fbd;
-  --isa-cream: #0f2f42;
-}
-
-html[data-isa-theme="neon"] body {
-  background: linear-gradient(270deg, #070a16, #131a35, #1d0c2e, #070a16);
-  background-size: 600% 600%;
-  color: #e9f6ff;
-}
-html[data-isa-theme="neon"] {
-  --isa-plum: #e9f6ff;
-  --isa-accent: #00e5ff;
-  --isa-primary: #ff3ea5;
-  --isa-cream: #10152b;
-  --isa-lavender: #7b5cff;
+html[data-isa-theme="pastel"],
+html[data-vibe="pastel-dream"] {
+  --bg: #fff9fd;
+  --text: #4f4258;
+  --panel: #fffefe;
+  --u-bg: #ffdff0;
+  --u-txt: #553d50;
+  --b-bg: #e5f7f1;
+  --b-txt: #344d49;
+  --accent: #b9a7eb;
+  --theme-border: #d7c9ff;
+  --input-bg: #ffffff;
 }
 
-html[data-isa-theme="golden"] body {
-  background: linear-gradient(270deg, #14110a, #241d0e, #2f2410, #14110a);
-  background-size: 600% 600%;
-  color: #fff3cf;
-}
-html[data-isa-theme="golden"] {
-  --isa-plum: #fff3cf;
-  --isa-accent: #e3bc6d;
-  --isa-primary: #b98c2f;
-  --isa-cream: #1c1709;
+html[data-isa-theme="neon"],
+html[data-vibe="dark-neon"] {
+  --bg: #0f172a;
+  --text: #ffffff;
+  --panel: #111827;
+  --u-bg: #24172f;
+  --u-txt: #ffffff;
+  --b-bg: #111827;
+  --b-txt: #eaffff;
+  --accent: #00ffff;
+  --theme-border: #ff3ea5;
+  --input-bg: #0f172a;
 }
 
-/* Las burbujas y tarjetas claras se oscurecen en los temas nocturnos */
-html[data-isa-theme="neon"] .bot,
-html[data-isa-theme="golden"] .bot,
-html[data-isa-theme="ocean"] .bot {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: inherit;
+html[data-isa-theme="sakura"],
+html[data-vibe="sakura"] {
+  --bg: #fff7fa;
+  --text: #5f3d4d;
+  --panel: #fffdfd;
+  --u-bg: #ffcfe0;
+  --u-txt: #603748;
+  --b-bg: #f5eef8;
+  --b-txt: #514256;
+  --accent: #ef7fa5;
+  --theme-border: #ffc2d4;
+  --input-bg: #ffffff;
+}
+
+html[data-isa-theme="golden"],
+html[data-vibe="golden-luxe"] {
+  --bg: #1f1f1f;
+  --text: #fdfdfd;
+  --panel: #272727;
+  --u-bg: #3b3420;
+  --u-txt: #fdfdfd;
+  --b-bg: #292929;
+  --b-txt: #fdfdfd;
+  --accent: #ffd700;
+  --theme-border: #8f7918;
+  --input-bg: #242424;
+}
+
+html[data-isa-theme="ocean"],
+html[data-vibe="ocean-mint"] {
+  --bg: #0d3b53;
+  --text: #eafcff;
+  --panel: #103f55;
+  --u-bg: #14636c;
+  --u-txt: #f3ffff;
+  --b-bg: #123449;
+  --b-txt: #eafcff;
+  --accent: #4fd3c4;
+  --theme-border: #2c9fbd;
+  --input-bg: #102f42;
+}
+
+html[data-isa-theme] body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-isa-theme] .chat-container,
+html[data-isa-theme] .main {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-isa-theme] .user {
+  background: var(--u-bg) !important;
+  color: var(--u-txt) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-isa-theme] .bot-row .bot {
+  background: var(--b-bg) !important;
+  color: var(--b-txt) !important;
+  border: 1px solid var(--accent) !important;
+}
+
+html[data-isa-theme] .sidebar,
+html[data-isa-theme] .footer {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-isa-theme] .chat-toolbar,
+html[data-isa-theme] .chat-tool-field,
+html[data-isa-theme] .chat-tool-field select,
+html[data-isa-theme] .input-area {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-isa-theme] .input-area input[type="text"] {
+  color: var(--text) !important;
+}
+
+html[data-isa-theme="neon"] .input-area input[type="text"]::placeholder,
+html[data-isa-theme="golden"] .input-area input[type="text"]::placeholder,
+html[data-isa-theme="ocean"] .input-area input[type="text"]::placeholder {
+  color: color-mix(in srgb, var(--text) 68%, transparent) !important;
 }
 
 /* Tienda de temas */
@@ -85,7 +150,7 @@ html[data-isa-theme="ocean"] .bot {
   font: inherit;
   color: inherit;
 }
-.theme-card.active { border-color: #ff5fa2; box-shadow: 0 0 0 2px rgba(255, 95, 162, 0.25); }
+.theme-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
 .theme-card .theme-sw { display: flex; gap: 4px; margin-bottom: 8px; }
 .theme-card .theme-sw i { width: 100%; height: 18px; border-radius: 6px; display: block; }
 .theme-card b { display: block; font-size: 0.9rem; }
