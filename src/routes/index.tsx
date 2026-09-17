@@ -8,8 +8,6 @@ import { getMyProfile, acknowledgePremiumGift } from "@/lib/profile.functions";
 import { sendWelcomeEmail } from "@/lib/welcome.functions";
 import { sendLoginAlert } from "@/lib/login-alert.functions";
 import { OnboardingTour } from "@/components/OnboardingTour";
-import { VoiceCall } from "@/components/VoiceCall";
-import { RemindersPanel } from "@/components/RemindersPanel";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
 import { parseEmailIntent, parseDocIntent } from "@/lib/chat-intents";
 import { ChatActionCardView, type ChatAction } from "@/components/ChatActionCards";
@@ -27,7 +25,6 @@ import { TechNewsPanel } from "@/components/TechNewsPanel";
 
 import { claimReferralCode, getMyReferralInfo } from "@/lib/referrals.functions";
 import { ShareCardButton } from "@/components/ShareCard";
-import { SalesAgentPanel } from "@/components/SalesAgentPanel";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { heartbeat } from "@/lib/presence.functions";
 
@@ -852,7 +849,7 @@ function IsaBotPage() {
   );
 }
 
-type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "reminders" | "myday" | "invite" | "feedback" | "technews" | "academy" | "sales" | "ibcagent";
+type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "myday" | "invite" | "feedback" | "technews" | "academy" | "ibcagent";
 
 const VIBES: Array<{ id: Vibe; label: string; hint: string }> = [
   { id: "kawaii", label: "🌸 Kawaii", hint: "Tierno, animado y motivador" },
@@ -928,7 +925,7 @@ const WEEKLY_CHALLENGES: Array<{ title: string; emoji: string }> = [
 
 function IsaBot() {
   const ibc = useIbc();
-  const { lang } = useI18n();
+  const { lang, setLang } = useI18n();
   const homeCopy = lang === "en" ? {
     menu: "Menu",
     closeMenu: "Close menu",
@@ -943,14 +940,10 @@ function IsaBot() {
     studioDesc: "Canva-like suite: designs, documents, slides and instant export.",
     design: "🖼️ Design",
     pdfs: "📚 PDFs",
-    call: "📞 Call IsaBot",
     planDay: "🚀 Plan my day",
     modelTitle: "IsaBot native model",
     askPlaceholder: "Ask IsaBot...",
     recording: "🎙️ Recording... release to send",
-    quickHintStart: "💡 Type ",
-    quickHintPhrase: "analyze my idea",
-    quickHintEnd: " to activate Crack Mode ✨",
   } : {
     menu: "Menú",
     closeMenu: "Cerrar menú",
@@ -965,14 +958,10 @@ function IsaBot() {
     studioDesc: "Suite tipo Canva: diseños, documentos, slides y export instantáneo.",
     design: "🖼️ Diseño",
     pdfs: "📚 PDFs",
-    call: "📞 Llamar a IsaBot",
     planDay: "🚀 Planear mi día",
     modelTitle: "Modelo propio de IsaBot",
     askPlaceholder: "Pregúntale a IsaBot...",
     recording: "🎙️ Grabando... suelta para enviar",
-    quickHintStart: "💡 Escribe ",
-    quickHintPhrase: "analiza mi idea",
-    quickHintEnd: " para activar el Modo Crack ✨",
   };
   const [hydrated, setHydrated] = useState(false);
 
@@ -1059,30 +1048,8 @@ function IsaBot() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [settingsExpanded, setSettingsExpanded] = useState(true);
-  const [quickSettingsOpen, setQuickSettingsOpen] = useState(false);
-  const quickSettingsRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!quickSettingsOpen) return;
-    function onDown(e: PointerEvent) {
-      const t = e.target as HTMLElement | null;
-      if (quickSettingsRef.current?.contains(t as Node)) return;
-      if (t?.closest?.(".quick-settings-btn")) return;
-      setQuickSettingsOpen(false);
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setQuickSettingsOpen(false);
-    }
-    document.addEventListener("pointerdown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [quickSettingsOpen]);
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [callOpen, setCallOpen] = useState(false);
   // 🎨 Restaura el tema comprado con IBC
   useEffect(() => { restoreTheme(); }, []);
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
@@ -1783,7 +1750,7 @@ ${rows}
           }});
           updateCurrentChat((msgs) => [
             ...msgs.filter((m) => !m.thinking),
-            { sender: "bot", text: `¡Listo! Te lo recuerdo por correo 💌\n\n${reminderSummary(parsed)}\n\nPuedes verlo o pausarlo en **Herramientas → ⏰ Recordatorios por correo**.` },
+            { sender: "bot", text: `¡Listo! Te lo recuerdo por correo 💌\n\n${reminderSummary(parsed)}\n\nPuedes verlo o pausarlo en **Ajustes y Preferencias**.` },
           ]);
           return;
         } catch (e) {
@@ -2149,7 +2116,6 @@ ${rows}
   function pickPersonality(val: Personality) {
     if (!FREE_PERSONALITIES.includes(val) && !isPremium) {
       setPanel("subscribe");
-      setQuickSettingsOpen(false);
       setSidebarOpen(false);
       return;
     }
@@ -2161,7 +2127,6 @@ ${rows}
     const b = BRAINS.find((x) => x.id === val);
     if (b?.premium && !isPremium) {
       setPanel("subscribe");
-      setQuickSettingsOpen(false);
       setSidebarOpen(false);
       return;
     }
@@ -2355,7 +2320,7 @@ ${rows}
         <button
           className="premium-cta-btn"
           style={{ marginBottom: "12px" }}
-          onClick={() => { setPanel("subscribe"); setSidebarOpen(false); setQuickSettingsOpen(false); }}
+          onClick={() => { setPanel("subscribe"); setSidebarOpen(false); }}
         >
           👑 Desbloquear 8 modos Premium
         </button>
@@ -2398,92 +2363,31 @@ ${rows}
     </div>
   );
 
-  // En celular los ajustes viven en una mini ventana flotante (no dentro del menú)
-  const mobileSettingsBtn = (
-    <button
-      type="button"
-      className="kawaii-sidebar-btn mobile-settings-open"
-      onClick={() => { setSidebarOpen(false); setPanel(null); setQuickSettingsOpen(true); }}
-    >
-      ⚙️ Ajustes y Preferencias
-    </button>
-  );
-
-  const activePersonalityMeta = PERSONALITY_OPTIONS.find((p) => p.id === personality);
-
-
-  const quickSettingsPopover = quickSettingsOpen && (
-    <div className="quick-settings-pop" ref={quickSettingsRef} role="dialog" aria-label="Ajustes rápidos">
-      <div className="quick-settings-head">
-        <span>⚙️ Modo de respuesta y entorno</span>
-        <button type="button" onClick={() => setQuickSettingsOpen(false)} aria-label="Cerrar">✕</button>
-      </div>
-      <div className="quick-settings-body">
-        <label>🧠 Cerebro de IA:</label>
-        <div className="brain-grid">
-          {BRAINS.map((b) => {
-            const locked = b.premium && !isPremium;
-            return (
-              <button
-                key={b.id}
-                type="button"
-                className={`brain-chip ${brain === b.id ? "active" : ""} ${locked ? "locked" : ""}`}
-                onClick={() => pickBrain(b.id)}
-                title={locked ? "Requiere Premium" : b.hint}
-              >
-                <span className="brain-emoji">{locked ? "🔒" : b.emoji}</span>
-                <span className="brain-name">{b.name}</span>
-                <small>{b.hint}</small>
-              </button>
-            );
-          })}
-        </div>
-
-        {localBrainBlock}
-
-
-        <div className="quick-settings-sep" />
-
-        <label>🎭 Modo de respuesta:</label>
-        <div className="mode-grid">
+  const chatToolbar = (
+    <div className="chat-toolbar" role="toolbar" aria-label="Opciones del chat">
+      <label className="chat-tool-field">
+        <span>🎭 Personalidad</span>
+        <select value={personality} onChange={(e) => pickPersonality(e.target.value as Personality)}>
           {PERSONALITY_OPTIONS.map((p) => {
             const locked = !FREE_PERSONALITIES.includes(p.id) && !isPremium;
             return (
-              <button
-                key={p.id}
-                type="button"
-                className={`mode-chip ${personality === p.id ? "active" : ""} ${locked ? "locked" : ""}`}
-                onClick={() => pickPersonality(p.id)}
-                title={locked ? "Requiere Premium" : p.name}
-              >
-                <span>{locked ? "🔒" : p.emoji}</span> {p.name}
-              </button>
+              <option key={p.id} value={p.id}>
+                {locked ? "🔒" : p.emoji} {p.name}
+              </option>
             );
           })}
-        </div>
-        {customPersonalityEditor}
-
-        <div className="quick-settings-sep" />
-
-        <label>🎨 Entorno / Vibe:</label>
-        <div className="vibe-row">
-          {VIBES.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              className={`vibe-chip ${vibe === v.id ? "active" : ""}`}
-              onClick={() => setVibe(v.id)}
-              title={v.hint}
-            >
-              {v.label}
-            </button>
+        </select>
+      </label>
+      <label className="chat-tool-field">
+        <span>🧠 Cerebro IA</span>
+        <select value={brain} onChange={(e) => pickBrain(e.target.value)}>
+          {BRAINS.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.premium && !isPremium ? "🔒" : b.emoji} {b.name}
+            </option>
           ))}
-        </div>
-        {customVibeEditor}
-
-        <div className="quick-settings-sep" />
-        {remindersBlock}
-      </div>
+        </select>
+      </label>
     </div>
   );
 
@@ -2557,7 +2461,6 @@ ${rows}
           </ul>
 
           {settingsSection}
-          {mobileSettingsBtn}
 
 
           {/* ── Herramientas ── */}
@@ -2568,7 +2471,6 @@ ${rows}
             <button className="tool-btn free" onClick={() => setPanel("tasks")}>📋 Gestor de Tareas</button>
             <button className="tool-btn free" onClick={() => { setPalette(generatePalette()); setPanel("palette"); }}>🎨 Paletas de Colores</button>
             <button className="tool-btn free" onClick={() => setPanel("notes")}>📝 Notas Rápidas</button>
-            <button className="tool-btn free" onClick={() => setPanel("reminders")}>⏰ Recordatorios por correo</button>
             <button className="tool-btn free" onClick={() => setPanel("ibcagent")}>🤖 Agente autónomo (PDF)</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>
               {isPremium ? "✏️" : "🔒"} Outlines para Procreate
@@ -2604,8 +2506,6 @@ ${rows}
             <div className="premium-badge">👑 Premium activo ✨</div>
           )}
           <button className="kawaii-sidebar-btn" onClick={createNewChat}>✨ Nuevo chat ➕</button>
-          <button className="kawaii-sidebar-btn" onClick={() => { setCrackOpen(true); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg, #9b7ec9, #e8a5c7)", color: "white", fontWeight: 800 }}>🚀 Modo Crack</button>
-          
           <button className="kawaii-sidebar-btn" onClick={() => { exportChatToPdf(); setSidebarOpen(false); }}>📄 Exportar chat a PDF</button>
 
           {isDesktopApp() && (
@@ -2618,7 +2518,6 @@ ${rows}
 
               <button className="kawaii-sidebar-btn" onClick={() => { ibc.openVault(); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffd6ec,#e0d5ff)", color: "#6b3fa0", fontWeight: 800 }}>🪙 Mi bóveda de IsaBot Coins</button>
             <button className="kawaii-sidebar-btn" onClick={() => { setPanel("invite"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffe6c7,#ffd6ec)", color: "#6b3fa0", fontWeight: 800 }}>💌 Invita y gana (puntos + Premium)</button>
-              <button className="kawaii-sidebar-btn" onClick={() => { setPanel("sales"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#1b1b3a,#3a1b52)", color: "#ffd6ec", fontWeight: 800 }}>🌙 Ventas Nocturnas (clientes mientras duermes)</button>
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("technews"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#e6e0ff,#d8f0ff)", color: "#5a3a9a", fontWeight: 800 }}>📰 Noticias Tech del Día</button>
               <button className="kawaii-sidebar-btn" onClick={() => { setPanel("feedback"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#e0f0ff,#ffd6ec)", color: "#6b3fa0", fontWeight: 800 }}>💡 Danos tu feedback</button>
 
@@ -2672,7 +2571,7 @@ ${rows}
       <header className="header">
         <h1 className="logo">IsaBot ✨</h1>
         <span className="motor-badge" title={homeCopy.modelTitle}>⚙️ {ISABOT_MODEL_LABEL}</span>
-        <LanguageToggle compact />
+        <LanguageToggle compact lang={lang} onChange={setLang} />
         <IbcHud />
       </header>
 
@@ -2779,9 +2678,6 @@ ${rows}
             </div>
 
             <div className="intro-actions">
-              <button className="intro-cta" onClick={() => { if (currentUser) setCallOpen(true); }}>
-                {homeCopy.call}
-              </button>
               <button className="intro-cta primary" onClick={() => setPanel("myday")}>
                 {homeCopy.planDay}
               </button>
@@ -2850,22 +2746,10 @@ ${rows}
               <span>⚡</span><span className="qa-txt">{neonOn ? "Neón ON" : "Cyberpunk Neón"}</span>
             </button>
           )}
-          <span className="qa-hint">
-            {homeCopy.quickHintStart}<b>"{homeCopy.quickHintPhrase}"</b>{homeCopy.quickHintEnd}
-          </span>
         </div>
-        {quickSettingsPopover}
+        {chatToolbar}
+        {personality === "custom" && isPremium && <div className="chat-toolbar-custom">{customPersonalityEditor}</div>}
         <div className="input-area">
-          <button
-            type="button"
-            className={`quick-settings-btn ${quickSettingsOpen ? "active" : ""}`}
-            title="Modo de respuesta y entorno"
-            aria-label="Modo de respuesta y entorno"
-            aria-expanded={quickSettingsOpen}
-            onClick={() => setQuickSettingsOpen((s) => !s)}
-          >
-            {activePersonalityMeta?.emoji ?? "⚙️"}
-          </button>
           <label htmlFor="fileInput" className="attach-btn" title="Adjuntar foto">📎</label>
 
           <input
@@ -2887,6 +2771,7 @@ ${rows}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (!sending) void sendMessage(); } }}
             disabled={recordingVoice || sending}
+            className="flex-1 w-full"
           />
           <button
             className={`mic-btn ${recordingVoice ? "recording" : ""}`}
@@ -2910,16 +2795,6 @@ ${rows}
       </footer>
 
       {privacyOpen && <PrivacyPolicyModal onClose={() => setPrivacyOpen(false)} />}
-
-      {callOpen && currentUser && (
-        <VoiceCall
-          personality={personality}
-          customPersonality={personality === "custom" ? customPersonality : undefined}
-          displayName={authUser?.email?.split("@")[0] ?? undefined}
-          onClose={() => setCallOpen(false)}
-        />
-      )}
-
 
       {/* La presentación de IsaBot (LandingModal) ya cubre el estado sin sesión */}
 
@@ -3666,9 +3541,6 @@ ${rows}
             <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>{isPremium ? "⏱️" : "🔒"} Pomodoro 25/5</button>
             <button className="tool-btn premium" onClick={() => { if (isPremium) { setPanel("weekly"); } else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>{isPremium ? "📅" : "🔒"} Planeador Mensual</button>
-
-            {mobileSettingsBtn}
-
           </div>
         </div>
       )}
@@ -3742,17 +3614,13 @@ ${rows}
         </div>
       )}
 
-      {panel === "reminders" && <RemindersPanel onClose={() => setPanel(null)} />}
-
       {panel === "myday" && <DailyPlanPanel onClose={() => setPanel(null)} />}
 
       {panel === "invite" && <InvitePanel onClose={() => setPanel(null)} />}
 
-
-      {panel === "sales" && <SalesAgentPanel onClose={() => setPanel(null)} />}
       {panel === "feedback" && <FeedbackPanel onClose={() => setPanel(null)} />}
       {panel === "technews" && (
-        <TechNewsPanel onClose={() => setPanel(null)} onAsk={(q) => { void sendMessage(q); }} />
+        <TechNewsPanel key={lang} lang={lang} onClose={() => setPanel(null)} onAsk={(q) => { void sendMessage(q); }} />
       )}
 
 

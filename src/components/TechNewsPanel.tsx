@@ -1,16 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getTechNews, type TechNewsItem } from "@/lib/techNews.functions";
-import { useI18n, timeAgo } from "@/lib/i18n";
+import { translate, useI18n, timeAgo, type Lang } from "@/lib/i18n";
 
 export function TechNewsPanel({
   onClose,
+  lang: forcedLang,
 }: {
   onClose: () => void;
   onAsk?: (question: string) => void;
+  lang?: Lang;
 }) {
   const load = useServerFn(getTechNews);
-  const { lang, t } = useI18n();
+  const { lang: contextLang } = useI18n();
+  const lang = forcedLang ?? contextLang;
+  const t = (key: string) => translate(key, lang);
   const [items, setItems] = useState<TechNewsItem[]>([]);
   const [digest, setDigest] = useState("");
   const [topic, setTopic] = useState("all");
