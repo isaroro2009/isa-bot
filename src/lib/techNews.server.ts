@@ -4,6 +4,7 @@
 
 export type RawItem = {
   title: string;
+  content: string;
   url: string;
   source: string;
   published_at: string;
@@ -95,6 +96,7 @@ async function fetchHackerNews(limit = 15): Promise<RawItem[]> {
           if (!it?.title || it.type !== "story") return null;
           return {
             title: decodeEntities(it.title).slice(0, 260),
+            content: "",
             url: it.url ?? `https://news.ycombinator.com/item?id=${id}`,
             source: "Hacker News",
             published_at: new Date((it.time ?? Date.now() / 1000) * 1000).toISOString(),
@@ -121,6 +123,12 @@ function parseRss(xml: string, source: string, limit = 8): RawItem[] {
       block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/i)?.[1] ??
       block.match(/<updated[^>]*>([\s\S]*?)<\/updated>/i)?.[1] ??
       block.match(/<published[^>]*>([\s\S]*?)<\/published>/i)?.[1];
+    const description =
+      block.match(/<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i)?.[1] ??
+      block.match(/<content[^>]*>([\s\S]*?)<\/content>/i)?.[1] ??
+      block.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] ??
+      block.match(/<summary[^>]*>([\s\S]*?)<\/summary>/i)?.[1] ??
+      "";
     if (!title || !link) continue;
     const cleanTitle = decodeEntities(title).slice(0, 260);
     const cleanLink = decodeEntities(link);
@@ -128,6 +136,7 @@ function parseRss(xml: string, source: string, limit = 8): RawItem[] {
     const parsed = date ? new Date(decodeEntities(date)) : null;
     out.push({
       title: cleanTitle,
+      content: decodeEntities(description).slice(0, 5000),
       url: cleanLink,
       source,
       published_at:
@@ -225,25 +234,25 @@ export async function aiDigest(titles: string[]): Promise<string> {
 
 /** Traduce los titulares al español y escribe un resumen corto de IsaBot para cada uno. */
 export async function aiTranslateItems(
-  items: Array<{ title: string; source: string }>,
-): Promise<Array<{ title_es: string; summary: string }>> {
-  const fallback = items.map((i) => ({ title_es: i.title, summary: "" }));
+  items: Array<{ title: string; source: string; content: string }>,
+): Promise<Array<{ title_es: string; summary: string; content_es: string }>> {
+  const fallback = items.map((i) => ({ title_es: i.title, summary: "", content_es: i.content }));
   if (items.length === 0) return fallback;
   const raw = await groqChat(
     {
       model: "openai/gpt-oss-20b",
       temperature: 0.4,
-      max_tokens: 900,
+      max_tokens: 1800,
       response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
           content:
-            'Eres IsaBot. Recibes titulares de tecnología (a veces en inglés). Devuelve SOLO un JSON con la forma {"items":[{"i":0,"titulo":"...","resumen":"..."}]}. "titulo" es el titular traducido y natural en español (máx. 110 caracteres). "resumen" son 1 o 2 frases en español, cálidas y claras, explicando de qué va y por qué importa (máx. 220 caracteres, sin markdown, máximo 1 emoji). Un objeto por cada titular, respetando el índice "i".',
+            'Eres IsaBot. Recibes noticias de tecnología. Devuelve SOLO JSON {"items":[{"i":0,"titulo":"...","resumen":"...","contenido":"..."}]}. Traduce título y contenido al español natural sin inventar datos. El resumen explica en 1 o 2 frases por qué importa. Conserva los detalles del contenido, máximo 1200 caracteres. Un objeto por índice.',
         },
         {
           role: "user",
-          content: items.map((it, i) => `${i}. ${it.title.slice(0, 160)}`).join("\n"),
+          content: items.map((it, i) => `${i}. ${it.title.slice(0, 160)}\n${it.content.slice(0, 1400)}`).join("\n\n"),
         },
       ],
     },
@@ -252,7 +261,7 @@ export async function aiTranslateItems(
   if (!raw) return fallback;
   try {
     const parsed = JSON.parse(raw) as {
-      items?: Array<{ i?: number; titulo?: string; resumen?: string }>;
+      items?: Array<{ i?: number; titulo?: string; resumen?: string; contenido?: string }>;
     };
     const out = [...fallback];
     for (const entry of parsed.items ?? []) {
@@ -261,6 +270,7 @@ export async function aiTranslateItems(
       out[idx] = {
         title_es: (entry.titulo ?? out[idx].title_es).slice(0, 260),
         summary: (entry.resumen ?? "").slice(0, 400),
+        content_es: (entry.contenido ?? out[idx].content_es).slice(0, 5000),
       };
     }
     return out;
@@ -287,16 +297,16 @@ export async function refreshTechNews(): Promise<{ inserted: number; total: numb
   // Solo traducimos lo que aún no está traducido en la base (ahorra tokens de Groq)
   const { data: known } = await admin
     .from("tech_news")
-    .select("url, title_es, summary")
+    .select("url, title_es, summary, content_es")
     .in("url", items.map((i) => i.url));
-  const cache = new Map<string, { title_es: string | null; summary: string | null }>(
-    ((known ?? []) as Array<{ url: string; title_es: string | null; summary: string | null }>).map(
-      (r) => [r.url, { title_es: r.title_es, summary: r.summary }],
+  const cache = new Map<string, { title_es: string | null; summary: string | null; content_es: string | null }>(
+    ((known ?? []) as Array<{ url: string; title_es: string | null; summary: string | null; content_es: string | null }>).map(
+      (r) => [r.url, { title_es: r.title_es, summary: r.summary, content_es: r.content_es }],
     ),
   );
 
   const pending = items.filter((i) => !cache.get(i.url)?.title_es);
-  const translated = new Map<string, { title_es: string; summary: string }>();
+  const translated = new Map<string, { title_es: string; summary: string; content_es: string }>();
 
   // Lotes pequeños y espaciados para respetar el límite de tokens por minuto
   for (let i = 0; i < pending.length; i += 6) {
@@ -316,6 +326,8 @@ export async function refreshTechNews(): Promise<{ inserted: number; total: numb
       title: i.title,
       title_es: fresh?.title_es || cached?.title_es || i.title,
       summary: fresh?.summary || cached?.summary || null,
+      content: i.content || null,
+      content_es: fresh?.content_es || cached?.content_es || i.content || null,
       url: i.url,
       source: i.source,
       topic: i.topic,

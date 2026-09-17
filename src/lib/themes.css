@@ -84,6 +84,36 @@ html[data-vibe="ocean-mint"] {
   --input-bg: #102f42;
 }
 
+html[data-isa-theme="forest"] {
+  --bg: #14251d;
+  --text: #f1f7ef;
+  --panel: #1b3025;
+  --u-bg: #355a3b;
+  --u-txt: #f7fff3;
+  --b-bg: #1a2b22;
+  --b-txt: #f1f7ef;
+  --accent: #9dd96c;
+  --theme-border: #5d914b;
+  --input-bg: #182a21;
+}
+
+html[data-isa-theme="solar"] {
+  --bg: #17223b;
+  --text: #fff8e7;
+  --panel: #202d4b;
+  --u-bg: #723f52;
+  --u-txt: #fff8e7;
+  --b-bg: #1d2944;
+  --b-txt: #fff8e7;
+  --accent: #ffd93d;
+  --theme-border: #ff6b6b;
+  --input-bg: #1c2842;
+}
+
+html[data-isa-theme="ai-custom"] {
+  color-scheme: light dark;
+}
+
 html[data-isa-theme] body {
   background: var(--bg) !important;
   color: var(--text) !important;

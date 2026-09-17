@@ -6,6 +6,8 @@ export type TechNewsItem = {
   title: string;
   title_es: string | null;
   summary: string | null;
+  content: string | null;
+  content_es: string | null;
   url: string;
   source: string;
   topic: string;
@@ -28,7 +30,7 @@ export const getTechNews = createServerFn({ method: "GET" })
     async function read(): Promise<TechNewsPayload> {
       const { data, error } = await supabase
         .from("tech_news")
-        .select("id, title, title_es, summary, url, source, topic, published_at, fetched_at")
+        .select("id, title, title_es, summary, content, content_es, url, source, topic, published_at, fetched_at")
         .order("published_at", { ascending: false })
         .limit(40);
       if (error) throw new Error(error.message);

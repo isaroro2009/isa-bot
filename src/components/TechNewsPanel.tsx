@@ -13,7 +13,8 @@ export function TechNewsPanel({
 }) {
   const load = useServerFn(getTechNews);
   const { lang: contextLang } = useI18n();
-  const lang = forcedLang ?? contextLang;
+  const [newsLang, setNewsLang] = useState<Lang>(forcedLang ?? contextLang);
+  const lang = newsLang;
   const t = (key: string) => translate(key, lang);
   const [items, setItems] = useState<TechNewsItem[]>([]);
   const [digest, setDigest] = useState("");
@@ -71,8 +72,30 @@ export function TechNewsPanel({
         <button className="rewards-close" onClick={onClose} aria-label={t("news.close")}>
           ✕
         </button>
-        <h3 style={{ margin: "0 0 4px", color: "#7a3fbf" }}>{t("news.title")}</h3>
-        <p style={{ margin: "0 0 14px", color: "#a06b8a", fontSize: 14 }}>{t("news.sub")}</p>
+        <div className="news-head">
+          <div>
+            <h3>{t("news.title")}</h3>
+            <p>{t("news.sub")}</p>
+          </div>
+          <div className="news-language" role="group" aria-label="Idioma de las noticias">
+            <button
+              type="button"
+              className={newsLang === "en" ? "active" : ""}
+              aria-pressed={newsLang === "en"}
+              onClick={() => setNewsLang("en")}
+            >
+              Inglés
+            </button>
+            <button
+              type="button"
+              className={newsLang === "es" ? "active" : ""}
+              aria-pressed={newsLang === "es"}
+              onClick={() => setNewsLang("es")}
+            >
+              Español
+            </button>
+          </div>
+        </div>
 
         {digest && lang === "es" && <div className="news-digest">{digest}</div>}
 
@@ -107,10 +130,13 @@ export function TechNewsPanel({
               <a className="news-title" href={n.url} target="_blank" rel="noopener noreferrer">
                 {lang === "en" ? n.title : n.title_es || n.title}
               </a>
-              {n.summary && lang === "es" && (
-                <p className="news-summary">
-                  <span className="news-by">IsaBot</span> {n.summary}
+              {(lang === "es" ? n.content_es || n.summary || n.content : n.content || n.summary) && (
+                <p className="news-content">
+                  {lang === "es" ? n.content_es || n.summary || n.content : n.content || n.summary}
                 </p>
+              )}
+              {n.summary && lang === "es" && n.summary !== n.content_es && (
+                <p className="news-summary"><span className="news-by">IsaBot</span> {n.summary}</p>
               )}
             </article>
           ))}
