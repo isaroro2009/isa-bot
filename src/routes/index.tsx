@@ -1750,7 +1750,7 @@ ${rows}
           }});
           updateCurrentChat((msgs) => [
             ...msgs.filter((m) => !m.thinking),
-            { sender: "bot", text: `¡Listo! Te lo recuerdo por correo 💌\n\n${reminderSummary(parsed)}\n\nPuedes verlo o pausarlo en **Herramientas → ⏰ Recordatorios por correo**.` },
+            { sender: "bot", text: `¡Listo! Te lo recuerdo por correo 💌\n\n${reminderSummary(parsed)}\n\nPuedes verlo o pausarlo en **Ajustes y Preferencias**.` },
           ]);
           return;
         } catch (e) {
