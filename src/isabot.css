@@ -6675,6 +6675,12 @@ html[data-vibe="zen"] .intro-hero {
 }
 
 @media (max-width: 768px) {
+  .sidebar {
+    left: min(-100vw, -380px);
+  }
+  .sidebar.open {
+    left: 0;
+  }
   .header {
     top: 0;
     right: 0;
