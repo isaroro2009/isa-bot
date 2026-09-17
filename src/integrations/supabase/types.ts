@@ -1600,6 +1600,8 @@ export type Database = {
       }
       tech_news: {
         Row: {
+          content: string | null
+          content_es: string | null
           created_at: string
           fetched_at: string
           id: string
@@ -1612,6 +1614,8 @@ export type Database = {
           url: string
         }
         Insert: {
+          content?: string | null
+          content_es?: string | null
           created_at?: string
           fetched_at?: string
           id?: string
@@ -1624,6 +1628,8 @@ export type Database = {
           url: string
         }
         Update: {
+          content?: string | null
+          content_es?: string | null
           created_at?: string
           fetched_at?: string
           id?: string

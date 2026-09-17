@@ -1,0 +1,3 @@
+ALTER TABLE public.tech_news
+  ADD COLUMN IF NOT EXISTS content TEXT,
+  ADD COLUMN IF NOT EXISTS content_es TEXT;
