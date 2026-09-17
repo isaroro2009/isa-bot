@@ -13,6 +13,10 @@ import {
   type LessonMeta,
   type SubmitResult,
 } from "@/lib/academy.functions";
+import {
+  generateCustomCourse,
+  type GeneratedCourse,
+} from "@/lib/creative-ai.functions";
 
 const TRACK_HUES = ["#f472b6", "#a78bfa", "#38bdf8", "#fbbf24", "#34d399", "#fb7185"];
 
@@ -29,6 +33,7 @@ export function AcademyPanel({
   const openLesson = useServerFn(getLesson);
   const send = useServerFn(submitLesson);
   const askTutor = useServerFn(explainLesson);
+  const createCourse = useServerFn(generateCustomCourse);
 
   const [state, setState] = useState<AcademyState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +46,13 @@ export function AcademyPanel({
   const [tutor, setTutor] = useState<string | null>(null);
   const [tutorLoading, setTutorLoading] = useState(false);
   const [showCert, setShowCert] = useState(false);
+  const [courseTopic, setCourseTopic] = useState("");
+  const [customCourse, setCustomCourse] = useState<GeneratedCourse | null>(null);
+  const [customAnswers, setCustomAnswers] = useState<number[]>([]);
+  const [customChecked, setCustomChecked] = useState(false);
+  const [customPassed, setCustomPassed] = useState(false);
+  const [courseLoading, setCourseLoading] = useState(false);
+  const [courseError, setCourseError] = useState<string | null>(null);
 
   async function refresh() {
     try {
@@ -99,6 +111,30 @@ export function AcademyPanel({
     } finally {
       setTutorLoading(false);
     }
+  }
+
+  async function buildCourse() {
+    const topic = courseTopic.trim();
+    if (topic.length < 5 || courseLoading) return;
+    setCourseLoading(true);
+    setCourseError(null);
+    setCustomChecked(false);
+    setCustomPassed(false);
+    setCustomAnswers([]);
+    try {
+      setCustomCourse(await createCourse({ data: { topic } }));
+    } catch (e) {
+      setCourseError(e instanceof Error ? e.message : "No pude crear el curso ahora mismo.");
+    } finally {
+      setCourseLoading(false);
+    }
+  }
+
+  function checkCustomQuiz() {
+    if (!customCourse || customAnswers.length < customCourse.questions.length) return;
+    const correct = customCourse.questions.filter((q, index) => customAnswers[index] === q.answer).length;
+    setCustomPassed(correct / customCourse.questions.length >= 0.6);
+    setCustomChecked(true);
   }
 
   const totalLessons = (state?.tracks ?? []).reduce((a, t) => a + t.lessons.length, 0);
@@ -173,6 +209,32 @@ export function AcademyPanel({
                 </button>
               </div>
             )}
+
+            <section className="acad-custom-course">
+              <div className="acad-custom-head">
+                <div>
+                  <span>✨ Curso a tu medida</span>
+                  <h4>¿Qué quieres aprender hoy?</h4>
+                </div>
+                <b>{customPassed ? "100%" : "0%"}</b>
+              </div>
+              <textarea
+                value={courseTopic}
+                maxLength={500}
+                rows={3}
+                placeholder="Ej: Quiero aprender a crear mi primera tienda online, desde la idea hasta publicar productos"
+                onChange={(event) => setCourseTopic(event.target.value)}
+              />
+              <button
+                type="button"
+                className="acad-custom-create"
+                onClick={buildCourse}
+                disabled={courseLoading || courseTopic.trim().length < 5}
+              >
+                {courseLoading ? "Creando tu curso…" : "Crear curso personalizado"}
+              </button>
+              {courseError && <p className="acad-custom-error">{courseError}</p>}
+            </section>
 
             {state.tracks.map((t, ti) => {
               const hue = TRACK_HUES[ti % TRACK_HUES.length]!;
@@ -404,6 +466,87 @@ export function AcademyPanel({
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {customCourse && !lesson && (
+          <div className="acad-lesson acad-custom-module">
+            <button type="button" className="acad-back" onClick={() => setCustomCourse(null)}>
+              ← Volver al mapa
+            </button>
+            <div className="acad3-lesson-head">
+              <span className="acad3-node big"><span className="acad3-node-emoji">{customCourse.emoji}</span></span>
+              <h4 className="acad-lesson-title">{customCourse.title}</h4>
+            </div>
+            <div className="acad-custom-progress" aria-label={`Progreso ${customPassed ? 100 : 0}%`}>
+              <span style={{ width: customPassed ? "100%" : "0%" }} />
+            </div>
+            <div className="acad-lesson-body">
+              {customCourse.body.map((paragraph, index) => (
+                <p key={index} className="acad-lesson-p">
+                  <span className="acad-bullet" aria-hidden="true">{["✨", "💡", "🌸", "🚀", "🎯"][index % 5]}</span>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <div className="acad-quiz">
+              <h5>🧪 Quiz final</h5>
+              {customCourse.questions.map((question, questionIndex) => (
+                <div key={questionIndex} className="acad-q">
+                  <p className="acad-q-text">{questionIndex + 1}. {question.q}</p>
+                  {question.options.map((option, optionIndex) => {
+                    const chosen = customAnswers[questionIndex] === optionIndex;
+                    const right = customChecked && question.answer === optionIndex;
+                    return (
+                      <button
+                        key={optionIndex}
+                        type="button"
+                        className={`acad-opt ${chosen ? "chosen" : ""} ${right ? "right" : customChecked && chosen ? "wrong" : ""}`}
+                        disabled={customChecked}
+                        onClick={() => {
+                          const next = [...customAnswers];
+                          next[questionIndex] = optionIndex;
+                          setCustomAnswers(next);
+                        }}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                  {customChecked && <p className="acad-explain">💡 {question.explain}</p>}
+                </div>
+              ))}
+              {!customChecked && (
+                <button
+                  type="button"
+                  className="acad-send"
+                  onClick={checkCustomQuiz}
+                  disabled={customAnswers.filter((answer) => answer >= 0).length < customCourse.questions.length}
+                >
+                  Terminar módulo
+                </button>
+              )}
+              {customChecked && !customPassed && (
+                <div className="acad-result fail">
+                  Repasa las explicaciones e inténtalo otra vez.
+                  <button type="button" className="acad-send" onClick={() => { setCustomChecked(false); setCustomAnswers([]); }}>
+                    Reintentar quiz
+                  </button>
+                </div>
+              )}
+            </div>
+            {customPassed && (
+              <div className="acad-inline-certificate">
+                <p className="acad-cert-kicker">IsaRoRo Studio · IsaAcademy</p>
+                <h2>Certificado de Finalización</h2>
+                <p className="acad-cert-name">{displayName || "Estudiante de IsaAcademy"}</p>
+                <p className="acad-cert-text">completó satisfactoriamente el curso personalizado</p>
+                <strong>{customCourse.title}</strong>
+                <p className="acad-cert-sign">Isabella Rodríguez Roque · Fundadora de IsaRoRo Studio</p>
+                <p className="acad-cert-date">{new Date().toLocaleDateString("es-ES")}</p>
+                <button type="button" className="acad-send" onClick={() => window.print()}>🖨️ Guardar como PDF</button>
+              </div>
+            )}
           </div>
         )}
 

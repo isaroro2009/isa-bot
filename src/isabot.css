@@ -4203,6 +4203,12 @@ html[data-vibe="custom"] .input-area button {
 
 /* ── Noticias Tech del Día ─────────────────────────────────── */
 .news-modal { max-width: 620px; text-align: left; }
+.news-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; padding-right: 34px; }
+.news-head h3 { margin: 0 0 4px; color: #7a3fbf; }
+.news-head p { margin: 0; color: #a06b8a; font-size: 14px; }
+.news-language { display: flex; flex: 0 0 auto; gap: 6px; }
+.news-language button { border: 1px solid var(--theme-border); background: var(--input-bg); color: var(--text); border-radius: 8px; padding: 8px 10px; font-weight: 800; cursor: pointer; transition: color .18s ease, background .18s ease, transform .18s ease; }
+.news-language button:hover, .news-language button.active { background: #7a3fbf; color: #fff; transform: translateY(-1px); }
 .news-digest {
   background: linear-gradient(135deg, rgba(216,240,255,.9), rgba(230,224,255,.9));
   border: 1px solid rgba(122, 63, 191, .18);
@@ -4246,6 +4252,7 @@ html[data-vibe="custom"] .input-area button {
   line-height: 1.4; text-decoration: none;
 }
 .news-title:hover { text-decoration: underline; }
+.news-content { margin: 9px 0 0; color: #4f4b56; font-size: 13.5px; line-height: 1.58; white-space: pre-line; }
 .news-ask {
   margin-top: 9px; border: none; cursor: pointer;
   background: linear-gradient(90deg, #ffd6ec, #d8c8ff);
@@ -4547,6 +4554,20 @@ html[data-vibe="custom"] .input-area button {
 .acad3-chip.xp { box-shadow: 0 4px 0 #ffe08a; border-color: #ffefb8; }
 .acad3-chip.done { box-shadow: 0 4px 0 #a8e6c1; border-color: #cdf3dc; }
 .acad3-chip.hearts { box-shadow: 0 4px 0 #f3b8dd; border-color: #fbd8ee; }
+.acad-custom-course { margin: 0 0 18px; padding: 16px; background: #fff; border: 2px solid #e6d8f5; border-radius: 18px; box-shadow: 0 5px 0 #e8dcf3; }
+.acad-custom-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.acad-custom-head span { color: #7a3fbf; font-size: 12px; font-weight: 900; text-transform: uppercase; }
+.acad-custom-head h4 { margin: 2px 0 0; color: #3f3350; }
+.acad-custom-head b { color: #5c3d87; background: #f1e9ff; border-radius: 999px; padding: 6px 10px; }
+.acad-custom-course textarea { display: block; width: 100%; resize: vertical; border: 1px solid #ded4e8; border-radius: 10px; padding: 11px 12px; font: inherit; color: #333; background: #fff; }
+.acad-custom-create { width: 100%; margin-top: 9px; border: none; border-radius: 10px; padding: 11px; color: #3f2f55; background: #c9a7ff; font-weight: 900; cursor: pointer; }
+.acad-custom-create:disabled { opacity: .55; cursor: not-allowed; }
+.acad-custom-error, .ai-theme-error { color: #a33f5b; font-size: 12px; margin: 8px 0 0; }
+.acad-custom-progress { height: 9px; overflow: hidden; border-radius: 999px; background: #ece5f3; margin: 0 0 14px; }
+.acad-custom-progress span { display: block; height: 100%; background: #70bf8b; transition: width .45s ease; }
+.acad-inline-certificate { margin-top: 18px; border: 5px double #a984cc; padding: 26px 20px; text-align: center; background: #fffdf8; box-shadow: inset 0 0 0 5px #f3e9cb; }
+.acad-inline-certificate h2 { margin: 7px 0 12px; color: #5a3a9a; }
+.acad-inline-certificate strong { display: block; margin: 8px 0 18px; color: #65438e; font-size: 18px; }
 
 /* ── Islas de ruta ───────────────────────────────────────── */
 .acad3-island { --track: #f472b6; position: relative; background: #fff; border: 2px solid color-mix(in oklab, var(--track) 24%, #fff); border-radius: 26px; padding: 14px 14px 6px; margin-bottom: 18px; box-shadow: 0 8px 0 color-mix(in oklab, var(--track) 22%, #fff), 0 18px 34px rgba(150,90,170,.14); }
@@ -6440,6 +6461,12 @@ h1, h2, h3, h4, h5, h6,
 .chat-toolbar-custom .custom-personality-box {
   margin: 0;
 }
+.ai-theme-toggle { flex: 0 0 auto; min-height: 42px; border: 1px solid var(--theme-border); border-radius: 10px; padding: 8px 12px; color: var(--text); background: var(--input-bg); font-weight: 800; cursor: pointer; transition: background .18s ease, color .18s ease; }
+.ai-theme-toggle:hover { color: var(--panel); background: var(--accent); }
+.ai-theme-builder { flex: 1 0 100%; display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--theme-border); border-radius: 10px; background: var(--input-bg); }
+.ai-theme-builder input { flex: 1 1 auto; min-width: 160px; border: 0; outline: 0; padding: 8px; color: var(--text); background: transparent; }
+.ai-theme-builder button { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 9px 13px; color: var(--panel); background: var(--accent); font-weight: 900; cursor: pointer; }
+.ai-theme-builder button:disabled { opacity: .55; cursor: not-allowed; }
 
 .sidebar {
   width: 292px;
@@ -6907,6 +6934,9 @@ html[data-vibe="custom"] .messages .b {
 }
 
 @media (max-width: 640px) {
+  .news-head { display: block; padding-right: 28px; }
+  .news-language { margin-top: 10px; }
+  .news-language button { flex: 1; }
   .chat-toolbar {
     gap: 8px;
   }
@@ -6914,6 +6944,8 @@ html[data-vibe="custom"] .messages .b {
     flex: 1 0 72%;
     min-width: 210px;
   }
+  .ai-theme-toggle { flex: 1 0 72%; min-width: 210px; }
+  .ai-theme-builder { min-width: 100%; }
   .input-area input[type="text"] {
     min-width: 0;
   }

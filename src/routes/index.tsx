@@ -171,7 +171,8 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { PromoCarousel } from "@/components/PromoCarousel";
 import PdfGallery from "@/components/PdfGallery";
 import { openPdfGallery } from "@/lib/pdf-gallery";
-import { ISA_THEMES, activeTheme, applyTheme, ownTheme, ownedThemes } from "@/lib/themes";
+import { ISA_THEMES, activeTheme, applyCustomTheme, applyTheme, ownTheme, ownedThemes, restoreCustomTheme } from "@/lib/themes";
+import { generateCustomTheme } from "@/lib/creative-ai.functions";
 import { useI18n } from "@/lib/i18n";
 import "@/lib/themes.css";
 
@@ -987,6 +988,11 @@ function IsaBot() {
   const [customVibe, setCustomVibe] = useState<CustomVibe>(DEFAULT_CUSTOM_VIBE);
   const [interfaceTheme, setInterfaceTheme] = useState("default");
   const [ownedInterfaceThemes, setOwnedInterfaceThemes] = useState<string[]>(["default"]);
+  const [showAiTheme, setShowAiTheme] = useState(false);
+  const [aiThemePrompt, setAiThemePrompt] = useState("");
+  const [aiThemeLoading, setAiThemeLoading] = useState(false);
+  const [aiThemeError, setAiThemeError] = useState<string | null>(null);
+  const createAiTheme = useServerFn(generateCustomTheme);
 
   // Notas rápidas (gratis)
   const [notes, setNotes] = useState<Note[]>([]);
@@ -1057,7 +1063,7 @@ function IsaBot() {
     const savedTheme = activeTheme();
     setInterfaceTheme(savedTheme);
     setOwnedInterfaceThemes(ownedThemes());
-    applyTheme(savedTheme);
+    if (savedTheme !== "ai-custom" || !restoreCustomTheme()) applyTheme(savedTheme);
   }, []);
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
   const [recordingVoice, setRecordingVoice] = useState(false);
@@ -2154,6 +2160,22 @@ ${rows}
     setInterfaceTheme(id);
   }
 
+  async function buildAiTheme() {
+    const description = aiThemePrompt.trim();
+    if (description.length < 3 || aiThemeLoading) return;
+    setAiThemeLoading(true);
+    setAiThemeError(null);
+    try {
+      const colors = await createAiTheme({ data: { description } });
+      applyCustomTheme(colors);
+      setInterfaceTheme("ai-custom");
+    } catch (e) {
+      setAiThemeError(e instanceof Error ? e.message : "No pude crear el tema ahora mismo.");
+    } finally {
+      setAiThemeLoading(false);
+    }
+  }
+
   const customVibeEditor = vibe === "custom" && (
     <div className="custom-vibe-editor">
       <label>✨ Nombre de tu estilo:</label>
@@ -2420,8 +2442,27 @@ ${rows}
               </option>
             );
           })}
+          {interfaceTheme === "ai-custom" && <option value="ai-custom">✨ Mi tema IA</option>}
         </select>
       </label>
+      <button type="button" className="ai-theme-toggle" onClick={() => setShowAiTheme((visible) => !visible)}>
+        ✨ Crear Tema con IA
+      </button>
+      {showAiTheme && (
+        <div className="ai-theme-builder">
+          <input
+            type="text"
+            value={aiThemePrompt}
+            maxLength={160}
+            placeholder="Ej: Bosque místico neón"
+            onChange={(event) => setAiThemePrompt(event.target.value)}
+          />
+          <button type="button" onClick={buildAiTheme} disabled={aiThemeLoading || aiThemePrompt.trim().length < 3}>
+            {aiThemeLoading ? "Creando…" : "Generar"}
+          </button>
+          {aiThemeError && <span className="ai-theme-error">{aiThemeError}</span>}
+        </div>
+      )}
     </div>
   );
 
