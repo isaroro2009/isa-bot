@@ -6722,6 +6722,7 @@ html[data-vibe="zen"] .intro-hero {
 .menu-btn:hover,
 .menu-btn:focus-visible {
   color: #1f2937 !important;
+  z-index: 1501 !important;
 }
 
 .footer {
