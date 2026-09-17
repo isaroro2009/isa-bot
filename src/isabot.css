@@ -6757,7 +6757,7 @@ html[data-vibe="zen"] .intro-hero {
   .bot, .user { max-width: 90%; }
   .footer {
     padding: 6px 10px calc(9px + var(--safe-bottom));
-    background: var(--clean-surface);
+    background: var(--panel);
   }
   .footer .input-area { margin: 0; }
   .footer .quick-actions { padding: 2px 0 6px; }
@@ -6769,7 +6769,7 @@ html[data-vibe="zen"] .intro-hero {
   .bnav-btn { color: var(--clean-muted); }
   .bnav-btn:active,
   .bnav-btn.premium-active { color: #5e427f; background: var(--clean-active); }
-  .sidebar { background: var(--clean-surface) !important; }
+  .sidebar { background: var(--panel) !important; }
   .intro-hero.chatting { padding: 0 !important; }
 }
 

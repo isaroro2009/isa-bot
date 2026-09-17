@@ -85,8 +85,52 @@ html[data-vibe="ocean-mint"] {
 }
 
 html[data-isa-theme] body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-isa-theme] .chat-container,
+html[data-isa-theme] .main {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-isa-theme] .user {
+  background: var(--u-bg) !important;
+  color: var(--u-txt) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-isa-theme] .bot-row .bot {
+  background: var(--b-bg) !important;
+  color: var(--b-txt) !important;
+  border: 1px solid var(--accent) !important;
+}
+
+html[data-isa-theme] .sidebar,
+html[data-isa-theme] .footer {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-isa-theme] .chat-toolbar,
+html[data-isa-theme] .chat-tool-field,
+html[data-isa-theme] .chat-tool-field select,
+html[data-isa-theme] .input-area {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-isa-theme] .input-area input[type="text"] {
+  color: var(--text) !important;
+}
+
+html[data-isa-theme="neon"] .input-area input[type="text"]::placeholder,
+html[data-isa-theme="golden"] .input-area input[type="text"]::placeholder,
+html[data-isa-theme="ocean"] .input-area input[type="text"]::placeholder {
+  color: color-mix(in srgb, var(--text) 68%, transparent) !important;
 }
 
 /* Tienda de temas */
