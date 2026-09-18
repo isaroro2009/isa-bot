@@ -592,7 +592,11 @@ export function AcademyPanel({
 
         {customCourse && !lesson && (
           <div className="acad-lesson acad-custom-module">
-            <button type="button" className="acad-back" onClick={() => setCustomCourse(null)}>
+            <button
+              type="button"
+              className="acad-back"
+              onClick={() => { setCustomCourse(null); setActiveCourseId(null); }}
+            >
               ← Volver al mapa
             </button>
             <div className="acad3-lesson-head">
