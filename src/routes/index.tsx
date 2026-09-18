@@ -2629,7 +2629,6 @@ ${rows}
               >
                 🚪 Cerrar sesión
               </button>
-              <a href="https://www.buymeacoffee.com/isabot" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2 px-4 mb-4 bg-[#FFDD00] hover:bg-[#e6c700] text-black font-semibold rounded-xl transition-all shadow-sm"><span>☕</span><span>Invítame un café</span></a>
               <footer className="sidebar-footer">👤 {authUser.email ?? currentUser ?? "Cuenta"}</footer>
             </>
           ) : (
@@ -2637,7 +2636,6 @@ ${rows}
               <Link to="/auth" className="kawaii-sidebar-btn" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
                 🔐 Iniciar sesión
               </Link>
-              <a href="https://www.buymeacoffee.com/isabot" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2 px-4 mb-4 bg-[#FFDD00] hover:bg-[#e6c700] text-black font-semibold rounded-xl transition-all shadow-sm"><span>☕</span><span>Invítame un café</span></a>
               <footer className="sidebar-footer">👤 {currentUser ?? "Invitado"}</footer>
             </>
           )}
