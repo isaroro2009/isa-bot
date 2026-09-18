@@ -6943,14 +6943,18 @@ html[data-vibe="custom"] .messages .b {
   .news-language { margin-top: 10px; }
   .news-language button { flex: 1; }
   .chat-toolbar {
-    gap: 6px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 12px;
   }
   .chat-tool-field {
-    flex: 1 1 140px;
-    min-width: 140px;
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
     padding: 7px 8px;
   }
-  .ai-theme-toggle { flex: 1 1 140px; min-width: 140px; }
+  .ai-theme-toggle { width: 100%; min-width: 0; }
   .ai-theme-builder { min-width: 100%; }
   .input-area input[type="text"] {
     min-width: 0;
