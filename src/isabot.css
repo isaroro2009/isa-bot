@@ -7148,3 +7148,40 @@ html[data-vibe="custom"] .messages .b {
     height: 38px;
   }
 }
+
+/* ── Botón de ajustes (⚙️) en el header + menú flotante de controles ── */
+.header-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--theme-border);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 0;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.header-settings-btn:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel));
+}
+.header-settings-btn:active {
+  transform: scale(0.94);
+}
+
+.settings-pop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.settings-pop-body .chat-tool-field {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+.settings-pop-body .ai-theme-toggle {
+  width: 100%;
+}

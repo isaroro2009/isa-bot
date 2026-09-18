@@ -174,6 +174,8 @@ import { openPdfGallery } from "@/lib/pdf-gallery";
 import { ISA_THEMES, activeTheme, applyCustomTheme, applyTheme, ownTheme, ownedThemes, restoreCustomTheme } from "@/lib/themes";
 import { generateCustomTheme } from "@/lib/creative-ai.functions";
 import { useI18n } from "@/lib/i18n";
+import { Settings } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import "@/lib/themes.css";
 
 
@@ -2413,9 +2415,9 @@ ${rows}
     </div>
   );
 
-  const chatToolbar = (
-    <div className="chat-toolbar flex flex-col sm:flex-row gap-3 w-full" role="toolbar" aria-label="Opciones del chat">
-      <label className="chat-tool-field w-full sm:w-auto flex-1">
+  const chatSettingsContent = (
+    <div className="settings-pop-body">
+      <label className="chat-tool-field">
         <span>🎭 Personalidad</span>
         <select value={personality} onChange={(e) => pickPersonality(e.target.value as Personality)}>
           {PERSONALITY_OPTIONS.map((p) => {
@@ -2428,7 +2430,7 @@ ${rows}
           })}
         </select>
       </label>
-      <label className="chat-tool-field w-full sm:w-auto flex-1">
+      <label className="chat-tool-field">
         <span>🧠 Cerebro IA</span>
         <select value={brain} onChange={(e) => pickBrain(e.target.value)}>
           {BRAINS.map((b) => (
@@ -2438,7 +2440,7 @@ ${rows}
           ))}
         </select>
       </label>
-      <label className="chat-tool-field chat-theme-field w-full sm:w-auto flex-1">
+      <label className="chat-tool-field chat-theme-field">
         <span>🎨 Tema</span>
         <select value={interfaceTheme} onChange={(e) => void pickInterfaceTheme(e.target.value)}>
           {ISA_THEMES.map((theme) => {
@@ -2452,7 +2454,7 @@ ${rows}
           {interfaceTheme === "ai-custom" && <option value="ai-custom">✨ Mi tema IA</option>}
         </select>
       </label>
-      <button type="button" className="ai-theme-toggle w-full sm:w-auto flex-1" onClick={() => setShowAiTheme((visible) => !visible)}>
+      <button type="button" className="ai-theme-toggle" onClick={() => setShowAiTheme((visible) => !visible)}>
         ✨ Crear Tema con IA
       </button>
       {showAiTheme && (
@@ -2470,6 +2472,7 @@ ${rows}
           {aiThemeError && <span className="ai-theme-error">{aiThemeError}</span>}
         </div>
       )}
+      {personality === "custom" && isPremium && customPersonalityEditor}
     </div>
   );
 
@@ -2657,6 +2660,16 @@ ${rows}
         <span className="motor-badge" title={homeCopy.modelTitle}>⚙️ {ISABOT_MODEL_LABEL}</span>
         <LanguageToggle compact lang={lang} onChange={setLang} />
         <IbcHud />
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className="header-settings-btn" aria-label="Ajustes del chat" title="Ajustes del chat">
+              <Settings size={18} strokeWidth={2} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" sideOffset={8} className="w-64 p-3">
+            {chatSettingsContent}
+          </PopoverContent>
+        </Popover>
       </header>
 
 
@@ -2831,8 +2844,6 @@ ${rows}
             </button>
           )}
         </div>
-        {chatToolbar}
-        {personality === "custom" && isPremium && <div className="chat-toolbar-custom">{customPersonalityEditor}</div>}
         <div className="input-area">
           <label htmlFor="fileInput" className="attach-btn" title="Adjuntar foto">📎</label>
 
