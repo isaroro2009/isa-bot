@@ -2381,7 +2381,7 @@ html, body {
     bottom: var(--safe-bottom);
     z-index: 980;
     flex-shrink: 0;
-    padding: 8px 10px 10px !important;
+    padding: 8px 16px 10px !important;
     background: linear-gradient(180deg, transparent, rgba(255, 214, 235, 0.62) 24%, rgba(255, 214, 235, 0.94));
   }
 
