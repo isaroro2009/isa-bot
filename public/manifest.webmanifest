@@ -12,7 +12,7 @@
   "dir": "ltr",
   "categories": ["productivity", "education", "utilities"],
   "background_color": "#f6ecff",
-  "theme_color": "#c9a7ff",
+  "theme_color": "#FADADD",
   "icons": [
     {
       "src": "/icons/isabot-icon-192.png",
