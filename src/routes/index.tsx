@@ -2660,6 +2660,16 @@ ${rows}
         <span className="motor-badge" title={homeCopy.modelTitle}>⚙️ {ISABOT_MODEL_LABEL}</span>
         <LanguageToggle compact lang={lang} onChange={setLang} />
         <IbcHud />
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className="header-settings-btn" aria-label="Ajustes del chat" title="Ajustes del chat">
+              <Settings size={18} strokeWidth={2} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" sideOffset={8} className="w-64 p-3">
+            {chatSettingsContent}
+          </PopoverContent>
+        </Popover>
       </header>
 
 
@@ -2834,8 +2844,6 @@ ${rows}
             </button>
           )}
         </div>
-        {chatToolbar}
-        {personality === "custom" && isPremium && <div className="chat-toolbar-custom">{customPersonalityEditor}</div>}
         <div className="input-area">
           <label htmlFor="fileInput" className="attach-btn" title="Adjuntar foto">📎</label>
 
