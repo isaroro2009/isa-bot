@@ -6414,18 +6414,23 @@ h1, h2, h3, h4, h5, h6,
 
 .chat-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
   width: 100%;
+  max-width: 100%;
   margin: 0 auto 8px;
-  overflow-x: auto;
+  overflow-x: visible;
   padding-bottom: 2px;
   scrollbar-width: none;
 }
 .chat-toolbar::-webkit-scrollbar { display: none; }
 .chat-tool-field {
-  flex: 1 1 180px;
-  min-width: 158px;
+  flex: 1 1 150px;
+  min-width: 140px;
+  max-width: 100%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -6938,13 +6943,14 @@ html[data-vibe="custom"] .messages .b {
   .news-language { margin-top: 10px; }
   .news-language button { flex: 1; }
   .chat-toolbar {
-    gap: 8px;
+    gap: 6px;
   }
   .chat-tool-field {
-    flex: 1 0 72%;
-    min-width: 210px;
+    flex: 1 1 140px;
+    min-width: 140px;
+    padding: 7px 8px;
   }
-  .ai-theme-toggle { flex: 1 0 72%; min-width: 210px; }
+  .ai-theme-toggle { flex: 1 1 140px; min-width: 140px; }
   .ai-theme-builder { min-width: 100%; }
   .input-area input[type="text"] {
     min-width: 0;
