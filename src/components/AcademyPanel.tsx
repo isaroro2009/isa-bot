@@ -303,6 +303,60 @@ export function AcademyPanel({
               {courseError && <p className="acad-custom-error">{courseError}</p>}
             </section>
 
+            {myCourses.length > 0 && (
+              <section className="acad3-island acad-mycourses" style={{ ["--track" as string]: "#a78bfa" }}>
+                <header className="acad3-island-head">
+                  <div>
+                    <h4>🌟 Mis cursos con IA</h4>
+                    <p>Los cursos que creaste se quedan aquí para seguir avanzando.</p>
+                  </div>
+                  <span className="acad3-island-count">
+                    {myCourses.filter((c) => c.done).length}/{myCourses.length}
+                  </span>
+                </header>
+                <div className="acad3-progress">
+                  <span
+                    style={{
+                      width: `${Math.round((myCourses.filter((c) => c.done).length / myCourses.length) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <div className="acad3-path">
+                  {myCourses.map((item, index) => {
+                    const offsets = [0, 1, 2, 1, 0, -1, -2, -1];
+                    const off = offsets[index % offsets.length]!;
+                    return (
+                      <div
+                        key={item.id}
+                        className="acad3-step"
+                        style={{ transform: `translateX(${off * 24}px)` }}
+                      >
+                        <button
+                          type="button"
+                          className={`acad3-node ${item.done ? "done" : ""}`}
+                          onClick={() => openSavedCourse(item)}
+                          title={item.course.title}
+                        >
+                          <span className="acad3-node-emoji">{item.done ? "✅" : item.course.emoji}</span>
+                        </button>
+                        <span className="acad3-step-label">{item.course.title}</span>
+                        <button
+                          type="button"
+                          className="acad-link acad-mycourse-del"
+                          onClick={() => saveMyCourses(myCourses.filter((c) => c.id !== item.id))}
+                          aria-label={`Eliminar ${item.course.title}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+
+
             {state.tracks.map((t, ti) => {
               const hue = TRACK_HUES[ti % TRACK_HUES.length]!;
               const pct = t.lessons.length
