@@ -2414,8 +2414,8 @@ ${rows}
   );
 
   const chatToolbar = (
-    <div className="chat-toolbar" role="toolbar" aria-label="Opciones del chat">
-      <label className="chat-tool-field">
+    <div className="chat-toolbar flex flex-col sm:flex-row gap-3 w-full" role="toolbar" aria-label="Opciones del chat">
+      <label className="chat-tool-field w-full sm:w-auto flex-1">
         <span>🎭 Personalidad</span>
         <select value={personality} onChange={(e) => pickPersonality(e.target.value as Personality)}>
           {PERSONALITY_OPTIONS.map((p) => {
@@ -2428,7 +2428,7 @@ ${rows}
           })}
         </select>
       </label>
-      <label className="chat-tool-field">
+      <label className="chat-tool-field w-full sm:w-auto flex-1">
         <span>🧠 Cerebro IA</span>
         <select value={brain} onChange={(e) => pickBrain(e.target.value)}>
           {BRAINS.map((b) => (
@@ -2438,7 +2438,7 @@ ${rows}
           ))}
         </select>
       </label>
-      <label className="chat-tool-field chat-theme-field">
+      <label className="chat-tool-field chat-theme-field w-full sm:w-auto flex-1">
         <span>🎨 Tema</span>
         <select value={interfaceTheme} onChange={(e) => void pickInterfaceTheme(e.target.value)}>
           {ISA_THEMES.map((theme) => {
@@ -2452,7 +2452,7 @@ ${rows}
           {interfaceTheme === "ai-custom" && <option value="ai-custom">✨ Mi tema IA</option>}
         </select>
       </label>
-      <button type="button" className="ai-theme-toggle" onClick={() => setShowAiTheme((visible) => !visible)}>
+      <button type="button" className="ai-theme-toggle w-full sm:w-auto flex-1" onClick={() => setShowAiTheme((visible) => !visible)}>
         ✨ Crear Tema con IA
       </button>
       {showAiTheme && (
