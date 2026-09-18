@@ -21,14 +21,39 @@ import { supabase } from "@/integrations/supabase/client";
 
 const TRACK_HUES = ["#f472b6", "#a78bfa", "#38bdf8", "#fbbf24", "#34d399", "#fb7185"];
 
+const MY_COURSES_KEY = "isabot.academy.myCourses";
+
+type SavedCourse = { id: string; course: GeneratedCourse; done: boolean };
+
+function readMyCourses(): SavedCourse[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(MY_COURSES_KEY);
+    const parsed = raw ? (JSON.parse(raw) as SavedCourse[]) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeMyCourses(list: SavedCourse[]) {
+  try {
+    window.localStorage.setItem(MY_COURSES_KEY, JSON.stringify(list.slice(0, 30)));
+  } catch {
+    /* storage bloqueado */
+  }
+}
+
 export function AcademyPanel({
   onClose,
   onUpgrade,
   displayName,
+  fullPage = false,
 }: {
   onClose: () => void;
   onUpgrade?: () => void;
   displayName?: string;
+  fullPage?: boolean;
 }) {
   const load = useServerFn(getAcademy);
   const openLesson = useServerFn(getLesson);
@@ -54,6 +79,25 @@ export function AcademyPanel({
   const [customPassed, setCustomPassed] = useState(false);
   const [courseLoading, setCourseLoading] = useState(false);
   const [courseError, setCourseError] = useState<string | null>(null);
+  const [myCourses, setMyCourses] = useState<SavedCourse[]>([]);
+  const [activeCourseId, setActiveCourseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMyCourses(readMyCourses());
+  }, []);
+
+  function saveMyCourses(list: SavedCourse[]) {
+    setMyCourses(list);
+    writeMyCourses(list);
+  }
+
+  function openSavedCourse(item: SavedCourse) {
+    setActiveCourseId(item.id);
+    setCustomCourse(item.course);
+    setCustomAnswers([]);
+    setCustomChecked(false);
+    setCustomPassed(item.done);
+  }
 
   async function refresh() {
     try {
@@ -133,7 +177,12 @@ export function AcademyPanel({
     setCustomPassed(false);
     setCustomAnswers([]);
     try {
-      setCustomCourse(await createCourse({ data: { topic } }));
+      const course = await createCourse({ data: { topic } });
+      const item: SavedCourse = { id: `c${Date.now()}`, course, done: false };
+      saveMyCourses([item, ...myCourses]);
+      setActiveCourseId(item.id);
+      setCustomCourse(course);
+      setCourseTopic("");
     } catch (e) {
       setCourseError(e instanceof Error ? e.message : "No pude crear el curso ahora mismo.");
     } finally {
@@ -144,8 +193,12 @@ export function AcademyPanel({
   function checkCustomQuiz() {
     if (!customCourse || customAnswers.length < customCourse.questions.length) return;
     const correct = customCourse.questions.filter((q, index) => customAnswers[index] === q.answer).length;
-    setCustomPassed(correct / customCourse.questions.length >= 0.6);
+    const passed = correct / customCourse.questions.length >= 0.6;
+    setCustomPassed(passed);
     setCustomChecked(true);
+    if (passed && activeCourseId) {
+      saveMyCourses(myCourses.map((c) => (c.id === activeCourseId ? { ...c, done: true } : c)));
+    }
   }
 
   const totalLessons = (state?.tracks ?? []).reduce((a, t) => a + t.lessons.length, 0);
@@ -153,7 +206,10 @@ export function AcademyPanel({
   const allDone = totalLessons > 0 && totalDone === totalLessons;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className={`modal-overlay${fullPage ? " acad-fullpage" : ""}`}
+      onClick={fullPage ? undefined : onClose}
+    >
       <div className="settings-card academy-modal acad3" onClick={(e) => e.stopPropagation()}>
         <button className="rewards-close" onClick={onClose} aria-label="Cerrar">
           ✕
@@ -246,6 +302,60 @@ export function AcademyPanel({
               </button>
               {courseError && <p className="acad-custom-error">{courseError}</p>}
             </section>
+
+            {myCourses.length > 0 && (
+              <section className="acad3-island acad-mycourses" style={{ ["--track" as string]: "#a78bfa" }}>
+                <header className="acad3-island-head">
+                  <div>
+                    <h4>🌟 Mis cursos con IA</h4>
+                    <p>Los cursos que creaste se quedan aquí para seguir avanzando.</p>
+                  </div>
+                  <span className="acad3-island-count">
+                    {myCourses.filter((c) => c.done).length}/{myCourses.length}
+                  </span>
+                </header>
+                <div className="acad3-progress">
+                  <span
+                    style={{
+                      width: `${Math.round((myCourses.filter((c) => c.done).length / myCourses.length) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <div className="acad3-path">
+                  {myCourses.map((item, index) => {
+                    const offsets = [0, 1, 2, 1, 0, -1, -2, -1];
+                    const off = offsets[index % offsets.length]!;
+                    return (
+                      <div
+                        key={item.id}
+                        className="acad3-step"
+                        style={{ transform: `translateX(${off * 24}px)` }}
+                      >
+                        <button
+                          type="button"
+                          className={`acad3-node ${item.done ? "done" : ""}`}
+                          onClick={() => openSavedCourse(item)}
+                          title={item.course.title}
+                        >
+                          <span className="acad3-node-emoji">{item.done ? "✅" : item.course.emoji}</span>
+                        </button>
+                        <span className="acad3-step-label">{item.course.title}</span>
+                        <button
+                          type="button"
+                          className="acad-link acad-mycourse-del"
+                          onClick={() => saveMyCourses(myCourses.filter((c) => c.id !== item.id))}
+                          aria-label={`Eliminar ${item.course.title}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+
 
             {state.tracks.map((t, ti) => {
               const hue = TRACK_HUES[ti % TRACK_HUES.length]!;
@@ -482,7 +592,11 @@ export function AcademyPanel({
 
         {customCourse && !lesson && (
           <div className="acad-lesson acad-custom-module">
-            <button type="button" className="acad-back" onClick={() => setCustomCourse(null)}>
+            <button
+              type="button"
+              className="acad-back"
+              onClick={() => { setCustomCourse(null); setActiveCourseId(null); }}
+            >
               ← Volver al mapa
             </button>
             <div className="acad3-lesson-head">

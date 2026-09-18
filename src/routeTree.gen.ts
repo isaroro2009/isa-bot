@@ -22,6 +22,7 @@ import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
 import { Route as ApiVoiceVisionRouteImport } from './routes/api/voice/vision'
 import { Route as ApiVoiceTranscribeRouteImport } from './routes/api/voice/transcribe'
@@ -107,6 +108,11 @@ const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedStudioIndexRoute =
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/empresas': typeof EmpresasRoute
   '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/academy': typeof AuthenticatedAcademyRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -271,6 +278,7 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasRoute
   '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/academy': typeof AuthenticatedAcademyRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/empresas': typeof EmpresasRoute
   '/pitch': typeof PitchRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/academy': typeof AuthenticatedAcademyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/pitch'
     | '/reset-password'
+    | '/academy'
     | '/admin'
     | '/isaspace'
     | '/profile'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/pitch'
     | '/reset-password'
+    | '/academy'
     | '/admin'
     | '/isaspace'
     | '/profile'
@@ -418,6 +429,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/pitch'
     | '/reset-password'
+    | '/_authenticated/academy'
     | '/_authenticated/admin'
     | '/_authenticated/isaspace'
     | '/_authenticated/profile'
@@ -568,6 +580,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/academy': {
+      id: '/_authenticated/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AuthenticatedAcademyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/studio/': {
@@ -746,6 +765,7 @@ const AuthenticatedESlugRouteRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedIsaspaceRoute: typeof AuthenticatedIsaspaceRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -756,6 +776,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAcademyRoute: AuthenticatedAcademyRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedIsaspaceRoute: AuthenticatedIsaspaceRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
