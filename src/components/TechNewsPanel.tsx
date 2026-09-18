@@ -17,7 +17,6 @@ export function TechNewsPanel({
   const lang = newsLang;
   const t = (key: string) => translate(key, lang);
   const [items, setItems] = useState<TechNewsItem[]>([]);
-  const [digest, setDigest] = useState("");
   const [topic, setTopic] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +47,6 @@ export function TechNewsPanel({
         const res = await load();
         if (!alive) return;
         setItems(res.items);
-        setDigest(res.digest);
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : t("news.error"));
       } finally {
@@ -97,7 +95,6 @@ export function TechNewsPanel({
           </div>
         </div>
 
-        {digest && lang === "es" && <div className="news-digest">{digest}</div>}
 
         <div className="news-topics">
           {TOPICS.map((tp) => (
@@ -130,13 +127,8 @@ export function TechNewsPanel({
               <a className="news-title" href={n.url} target="_blank" rel="noopener noreferrer">
                 {lang === "en" ? n.title : n.title_es || n.title}
               </a>
-              {(lang === "es" ? n.content_es || n.summary || n.content : n.content || n.summary) && (
-                <p className="news-content">
-                  {lang === "es" ? n.content_es || n.summary || n.content : n.content || n.summary}
-                </p>
-              )}
-              {n.summary && lang === "es" && n.summary !== n.content_es && (
-                <p className="news-summary"><span className="news-by">IsaBot</span> {n.summary}</p>
+              {(lang === "es" ? n.content_es || n.content : n.content) && (
+                <p className="news-content">{lang === "es" ? n.content_es || n.content : n.content}</p>
               )}
             </article>
           ))}

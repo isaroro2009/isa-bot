@@ -54,7 +54,7 @@ export const getTechNews = createServerFn({ method: "GET" })
     const stale =
       payload.items.length === 0 ||
       !payload.updatedAt ||
-      payload.items.every((i) => !i.title_es) ||
+      payload.items.every((i) => !i.content) ||
       Date.now() - new Date(payload.updatedAt).getTime() > STALE_MS;
 
     if (stale) {
