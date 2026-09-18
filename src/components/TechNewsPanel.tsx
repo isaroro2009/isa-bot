@@ -97,7 +97,6 @@ export function TechNewsPanel({
           </div>
         </div>
 
-        {digest && lang === "es" && <div className="news-digest">{digest}</div>}
 
         <div className="news-topics">
           {TOPICS.map((tp) => (
