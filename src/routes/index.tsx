@@ -852,6 +852,13 @@ function IsaBotPage() {
 
 type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "myday" | "invite" | "feedback" | "technews" | "academy" | "ibcagent";
 
+function openApp(path: string, name: string) {
+  const url = `${window.location.origin}${path}`;
+  const win = window.open(url, name, "width=1280,height=900,noopener");
+  if (!win) window.location.href = url;
+}
+
+
 const VIBES: Array<{ id: Vibe; label: string; hint: string }> = [
   { id: "kawaii", label: "🌸 Kawaii", hint: "Tierno, animado y motivador" },
   { id: "cyberpunk", label: "⚡ Cyberpunk", hint: "Directo, tech y disruptivo" },
