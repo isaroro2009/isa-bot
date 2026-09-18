@@ -17,6 +17,7 @@ import {
   generateCustomCourse,
   type GeneratedCourse,
 } from "@/lib/creative-ai.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 const TRACK_HUES = ["#f472b6", "#a78bfa", "#38bdf8", "#fbbf24", "#34d399", "#fb7185"];
 
@@ -56,10 +57,20 @@ export function AcademyPanel({
 
   async function refresh() {
     try {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        setError("Inicia sesión para entrar a IsaAcademy ✨");
+        return;
+      }
       const s = await load();
       setState(s);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No pude abrir la academia");
+      const msg = e instanceof Error ? e.message : "";
+      setError(
+        /unauthor/i.test(msg)
+          ? "Inicia sesión para entrar a IsaAcademy ✨"
+          : msg || "No pude abrir la academia",
+      );
     } finally {
       setLoading(false);
     }
