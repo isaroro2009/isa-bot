@@ -177,7 +177,12 @@ export function AcademyPanel({
     setCustomPassed(false);
     setCustomAnswers([]);
     try {
-      setCustomCourse(await createCourse({ data: { topic } }));
+      const course = await createCourse({ data: { topic } });
+      const item: SavedCourse = { id: `c${Date.now()}`, course, done: false };
+      saveMyCourses([item, ...myCourses]);
+      setActiveCourseId(item.id);
+      setCustomCourse(course);
+      setCourseTopic("");
     } catch (e) {
       setCourseError(e instanceof Error ? e.message : "No pude crear el curso ahora mismo.");
     } finally {
@@ -188,8 +193,12 @@ export function AcademyPanel({
   function checkCustomQuiz() {
     if (!customCourse || customAnswers.length < customCourse.questions.length) return;
     const correct = customCourse.questions.filter((q, index) => customAnswers[index] === q.answer).length;
-    setCustomPassed(correct / customCourse.questions.length >= 0.6);
+    const passed = correct / customCourse.questions.length >= 0.6;
+    setCustomPassed(passed);
     setCustomChecked(true);
+    if (passed && activeCourseId) {
+      saveMyCourses(myCourses.map((c) => (c.id === activeCourseId ? { ...c, done: true } : c)));
+    }
   }
 
   const totalLessons = (state?.tracks ?? []).reduce((a, t) => a + t.lessons.length, 0);
@@ -197,7 +206,10 @@ export function AcademyPanel({
   const allDone = totalLessons > 0 && totalDone === totalLessons;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className={`modal-overlay${fullPage ? " acad-fullpage" : ""}`}
+      onClick={fullPage ? undefined : onClose}
+    >
       <div className="settings-card academy-modal acad3" onClick={(e) => e.stopPropagation()}>
         <button className="rewards-close" onClick={onClose} aria-label="Cerrar">
           ✕
