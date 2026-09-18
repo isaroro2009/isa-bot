@@ -17,7 +17,6 @@ export function TechNewsPanel({
   const lang = newsLang;
   const t = (key: string) => translate(key, lang);
   const [items, setItems] = useState<TechNewsItem[]>([]);
-  const [digest, setDigest] = useState("");
   const [topic, setTopic] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +47,6 @@ export function TechNewsPanel({
         const res = await load();
         if (!alive) return;
         setItems(res.items);
-        setDigest(res.digest);
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : t("news.error"));
       } finally {
