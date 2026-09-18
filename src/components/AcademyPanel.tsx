@@ -17,6 +17,7 @@ import {
   generateCustomCourse,
   type GeneratedCourse,
 } from "@/lib/creative-ai.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 const TRACK_HUES = ["#f472b6", "#a78bfa", "#38bdf8", "#fbbf24", "#34d399", "#fb7185"];
 
