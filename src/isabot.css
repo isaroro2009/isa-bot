@@ -7025,6 +7025,11 @@ html[data-vibe="custom"] .messages .b {
 
   .header .logo {
     margin: 0;
+    font-size: 0;
+  }
+
+  .header .logo::after {
+    content: "IsaBot";
     font-size: 1rem;
   }
 
@@ -7044,14 +7049,17 @@ html[data-vibe="custom"] .messages .b {
     height: 34px;
     border: 0;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--accent) 28%, var(--panel)) !important;
+    background-color: color-mix(in srgb, var(--accent) 28%, var(--panel)) !important;
+    background-image: url("/icons/isabot-icon-192.png") !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 27px 27px !important;
     box-shadow: none;
     font-size: 0;
   }
 
   .menu-btn::before {
-    content: "🤖";
-    font-size: 17px;
+    content: "";
   }
 
   .main {
@@ -7059,7 +7067,7 @@ html[data-vibe="custom"] .messages .b {
     min-height: 0;
     padding: 0 14px;
     overflow: hidden;
-    background: color-mix(in srgb, var(--accent) 25%, var(--bg));
+    background: color-mix(in srgb, var(--accent) 25%, var(--bg)) !important;
   }
 
   .intro-hero {
@@ -7082,7 +7090,7 @@ html[data-vibe="custom"] .messages .b {
     max-width: 250px;
     padding: 11px 13px;
     color: var(--b-txt);
-    background: var(--b-bg);
+    background: color-mix(in srgb, var(--accent) 58%, var(--panel));
     border: 1px solid var(--accent);
     border-radius: 14px 14px 14px 4px;
     font-size: .88rem;
