@@ -2595,7 +2595,7 @@ ${rows}
           )}
           {authUser && (
             <>
-              <button className="kawaii-sidebar-btn" onClick={() => { setPanel("academy"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#d8f0ff,#e0d5ff)", color: "#4a2b8a", fontWeight: 800 }}>🎓 IsaAcademy (clases de IA y Tech)</button>
+              <button className="kawaii-sidebar-btn" onClick={() => { openApp("/academy", "IsaAcademy"); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#d8f0ff,#e0d5ff)", color: "#4a2b8a", fontWeight: 800 }}>🎓 IsaAcademy (clases de IA y Tech)</button>
               
 
               <button className="kawaii-sidebar-btn" onClick={() => { ibc.openVault(); setSidebarOpen(false); }} style={{ background: "linear-gradient(90deg,#ffd6ec,#e0d5ff)", color: "#6b3fa0", fontWeight: 800 }}>🪙 Mi bóveda de IsaBot Coins</button>
@@ -2719,13 +2719,13 @@ ${rows}
                   </span>
                 </button>
                 <div className="hub-quick">
-                  <button onClick={() => setPanel("isaspace")}>{homeCopy.feed}</button>
-                  <button onClick={() => { window.location.href = "/isaspace?compose=1"; }}>{homeCopy.post}</button>
+                  <button onClick={() => openApp("/isaspace", "IsaSpace")}>{homeCopy.feed}</button>
+                  <button onClick={() => { openApp("/isaspace?compose=1", "IsaSpace"); }}>{homeCopy.post}</button>
                 </div>
               </article>
 
               <article className="hub-card hub-academy">
-                <button className="hub-main" onClick={() => setPanel("academy")}>
+                <button className="hub-main" onClick={() => openApp("/academy", "IsaAcademy")}>
                   <span className="hub-preview" aria-hidden="true">
                     <i className="hub-bar w1" /><i className="hub-bar w2" /><i className="hub-bar w3" />
                     <em>🎓</em>
@@ -2736,13 +2736,13 @@ ${rows}
                   </span>
                 </button>
                 <div className="hub-quick">
-                  <button onClick={() => setPanel("academy")}>{homeCopy.classes}</button>
+                  <button onClick={() => openApp("/academy", "IsaAcademy")}>{homeCopy.classes}</button>
                   <button onClick={() => setPanel("technews")}>{homeCopy.news}</button>
                 </div>
               </article>
 
               <article className="hub-card hub-studio">
-                <button className="hub-main" onClick={() => { window.location.href = "/studio"; }}>
+                <button className="hub-main" onClick={() => openApp("/studio", "IsaStudio")}>
                   <span className="hub-preview" aria-hidden="true">
                     <i className="hub-shape sq" /><i className="hub-shape ci" /><i className="hub-shape tx" />
                     <em>🎨</em>
@@ -2753,7 +2753,7 @@ ${rows}
                   </span>
                 </button>
                 <div className="hub-quick">
-                  <button onClick={() => { window.location.href = "/studio?new=design"; }}>{homeCopy.design}</button>
+                  <button onClick={() => openApp("/studio?new=design", "IsaStudio")}>{homeCopy.design}</button>
                   <button onClick={openPdfGallery}>{homeCopy.pdfs}</button>
                 </div>
               </article>
