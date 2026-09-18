@@ -7002,3 +7002,149 @@ html[data-vibe="custom"] .messages .b {
     text-align: center;
   }
 }
+
+/* ── MÓVIL: experiencia de chat limpia como la referencia ── */
+@media (max-width: 640px) {
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .header {
+    position: relative;
+    inset: auto;
+    min-height: 56px;
+    height: 56px;
+    padding: 0 16px 0 54px;
+    justify-content: flex-start;
+    background: var(--panel);
+    border-bottom: 1px solid var(--theme-border);
+  }
+
+  .header .logo {
+    margin: 0;
+    font-size: 0;
+  }
+
+  .header .logo::after {
+    content: "IsaBot";
+    font-size: 1rem;
+  }
+
+  .header .motor-badge,
+  .header .lang-toggle,
+  .header .ibc-hud,
+  .promo-carousel,
+  .offline-banner {
+    display: none !important;
+  }
+
+  .menu-btn {
+    position: absolute;
+    top: 11px;
+    left: 14px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background-color: color-mix(in srgb, var(--accent) 28%, var(--panel)) !important;
+    background-image: url("/icons/isabot-icon-192.png") !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 27px 27px !important;
+    box-shadow: none;
+    font-size: 0;
+  }
+
+  .menu-btn::before {
+    content: "";
+  }
+
+  .main {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 14px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--accent) 25%, var(--bg)) !important;
+  }
+
+  .intro-hero {
+    display: flex;
+    align-items: center;
+    width: min(100%, 320px);
+    min-height: 50%;
+    margin: 0 auto;
+    padding: 20px 0 0;
+  }
+
+  .intro-hero .hub-grid,
+  .intro-hero .intro-actions {
+    display: none !important;
+  }
+
+  .intro-hero::before {
+    content: "¡Hola! Estoy aquí para ayudarte. ¿Qué te gustaría hacer hoy?";
+    display: block;
+    max-width: 250px;
+    padding: 11px 13px;
+    color: var(--b-txt);
+    background: color-mix(in srgb, var(--accent) 58%, var(--panel));
+    border: 1px solid var(--accent);
+    border-radius: 14px 14px 14px 4px;
+    font-size: .88rem;
+    line-height: 1.35;
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--text) 10%, transparent);
+  }
+
+  .messages {
+    width: min(100%, 340px);
+    padding: 20px 0 16px;
+    gap: 12px;
+  }
+
+  .messages .bot,
+  .messages .user {
+    max-width: 82%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: .88rem;
+    line-height: 1.4;
+  }
+
+  .footer {
+    position: relative !important;
+    flex: 0 0 auto;
+    padding: 10px 14px calc(10px + var(--safe-bottom)) !important;
+    background: var(--panel) !important;
+    border-top: 1px solid var(--theme-border) !important;
+  }
+
+  .footer .quick-actions,
+  .footer .chat-toolbar,
+  .footer .chat-toolbar-custom,
+  .footer .legal-line,
+  .footer .attach-btn,
+  .footer .mic-btn {
+    display: none !important;
+  }
+
+  .footer .input-area {
+    min-height: 48px;
+    margin: 0;
+    padding: 5px 5px 5px 14px;
+    border-radius: 24px;
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--text) 12%, transparent);
+  }
+
+  .footer .input-area input[type="text"] {
+    width: auto;
+    font-size: .94rem;
+  }
+
+  .footer .input-area > button:last-child {
+    width: 38px;
+    height: 38px;
+  }
+}
