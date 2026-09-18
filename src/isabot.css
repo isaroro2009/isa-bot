@@ -6964,3 +6964,37 @@ html[data-vibe="custom"] .messages .b {
 .acad-mycourses .acad3-step > span:not(.acad3-node) { font-size: 12px; text-align: center; max-width: 180px; }
 .acad-mycourse-del { font-size: 11px; opacity: .55; background: none; border: none; cursor: pointer; }
 .acad-mycourse-del:hover { opacity: 1; color: #d64545; }
+
+/* ── FIX MÓVIL: evitar desbordes en pantallas pequeñas ── */
+@media (max-width: 768px) {
+  /* Márgenes seguros a los lados del input (px-4) */
+  .footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .footer .input-area {
+    margin: 0;
+    width: 100%;
+  }
+}
+@media (max-width: 640px) {
+  /* Tarjetas del hub: más compactas y botones apilados en 2 columnas */
+  .hub-main { min-height: 64px; padding: 8px; gap: 10px; }
+  .hub-preview { flex: 0 0 60px; height: 54px; }
+  .hub-preview em { font-size: 24px; }
+  .hub-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 4px 4px;
+  }
+  .hub-quick button {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+    padding: 7px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+}
