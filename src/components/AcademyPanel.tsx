@@ -79,6 +79,25 @@ export function AcademyPanel({
   const [customPassed, setCustomPassed] = useState(false);
   const [courseLoading, setCourseLoading] = useState(false);
   const [courseError, setCourseError] = useState<string | null>(null);
+  const [myCourses, setMyCourses] = useState<SavedCourse[]>([]);
+  const [activeCourseId, setActiveCourseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMyCourses(readMyCourses());
+  }, []);
+
+  function saveMyCourses(list: SavedCourse[]) {
+    setMyCourses(list);
+    writeMyCourses(list);
+  }
+
+  function openSavedCourse(item: SavedCourse) {
+    setActiveCourseId(item.id);
+    setCustomCourse(item.course);
+    setCustomAnswers([]);
+    setCustomChecked(false);
+    setCustomPassed(item.done);
+  }
 
   async function refresh() {
     try {
