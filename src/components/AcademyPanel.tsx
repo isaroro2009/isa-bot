@@ -21,14 +21,39 @@ import { supabase } from "@/integrations/supabase/client";
 
 const TRACK_HUES = ["#f472b6", "#a78bfa", "#38bdf8", "#fbbf24", "#34d399", "#fb7185"];
 
+const MY_COURSES_KEY = "isabot.academy.myCourses";
+
+type SavedCourse = { id: string; course: GeneratedCourse; done: boolean };
+
+function readMyCourses(): SavedCourse[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(MY_COURSES_KEY);
+    const parsed = raw ? (JSON.parse(raw) as SavedCourse[]) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeMyCourses(list: SavedCourse[]) {
+  try {
+    window.localStorage.setItem(MY_COURSES_KEY, JSON.stringify(list.slice(0, 30)));
+  } catch {
+    /* storage bloqueado */
+  }
+}
+
 export function AcademyPanel({
   onClose,
   onUpgrade,
   displayName,
+  fullPage = false,
 }: {
   onClose: () => void;
   onUpgrade?: () => void;
   displayName?: string;
+  fullPage?: boolean;
 }) {
   const load = useServerFn(getAcademy);
   const openLesson = useServerFn(getLesson);
