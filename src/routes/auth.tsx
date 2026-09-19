@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
+import { ensureGuestVip } from "@/lib/guest.functions";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
@@ -106,6 +107,26 @@ function AuthPage() {
             : raw || fallback;
     setError(friendly);
     toast.error(friendly, { duration: 7000 });
+  };
+
+  const handleGuestVip = async () => {
+    setError(null);
+    setInfo(null);
+    setLoading(true);
+    try {
+      const creds = await ensureGuestVip();
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (err) throw err;
+      toast.success("¡Bienvenido, Andrés Bilbao! 👑");
+      navigate({ to: "/" });
+    } catch (err) {
+      failWith(err, t("auth.genericError"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
@@ -225,6 +246,20 @@ function AuthPage() {
             {loading ? "..." : mode === "signin" ? t("auth.signin") : t("auth.signup")}
           </button>
         </form>
+
+        <button
+          type="button"
+          onClick={handleGuestVip}
+          disabled={loading}
+          className="auth-submit-btn"
+          style={{
+            marginTop: 10,
+            background: "linear-gradient(135deg, #ffd980, #ffb3d1)",
+            color: "#4a2f5c",
+          }}
+        >
+          👑 Probar como invitado VIP
+        </button>
 
         {mode === "signin" && (
           <p className="auth-switch">
