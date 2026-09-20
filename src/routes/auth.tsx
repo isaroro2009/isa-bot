@@ -112,27 +112,16 @@ function AuthPage() {
     setInfo(null);
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error: err } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              display_name: displayName || email.split("@")[0],
-              phone,
-            },
-          },
-        });
-        if (err) throw err;
-        toast.success(t("auth.created"));
-        setInfo(t("auth.created"));
-        setMode("signin");
-      } else {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-        if (err) throw err;
-        navigate({ to: "/" });
-      }
+      const { tokenHash } = await quickAccess({
+        data: { email: email.trim(), name: displayName.trim() },
+      });
+      const { error: err } = await supabase.auth.verifyOtp({
+        type: "magiclink",
+        token_hash: tokenHash,
+      });
+      if (err) throw err;
+      toast.success(`¡Hola${displayName ? `, ${displayName}` : ""}! ✨`);
+      navigate({ to: "/" });
     } catch (err) {
       failWith(err, t("auth.genericError"));
     } finally {
