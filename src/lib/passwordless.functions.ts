@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 
 /**
  * Acceso simplificado: sólo correo + nombre.
- * Crea la cuenta si no existe y devuelve un token de un solo uso
- * para que el cliente abra la sesión al instante (sin contraseña).
+ * Crea la cuenta si no existe y devuelve las credenciales internas
+ * para que el cliente abra la sesión al instante (sin contraseña visible).
  */
 export const quickAccess = createServerFn({ method: "POST" })
   .inputValidator((input: { email: string; name?: string }) => {
@@ -18,38 +18,35 @@ export const quickAccess = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const displayName = data.name || data.email.split("@")[0];
 
-    const makeLink = async () =>
-      await supabaseAdmin.auth.admin.generateLink({
-        type: "magiclink",
-        email: data.email,
-      });
+    // Contraseña interna determinista (la usuaria nunca la escribe).
+    const salt = process.env["QUICK_ACCESS_SALT"] ?? "isabot-quick-access-2026";
+    const bytes = new TextEncoder().encode(`${salt}:${data.email}`);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    const password = `Isa!${Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+      .slice(0, 32)}`;
 
-    let { data: link, error } = await makeLink();
+    const { data: existing } = await supabaseAdmin
+      .from("profiles")
+      .select("id, display_name")
+      .eq("email", data.email)
+      .maybeSingle();
 
-    if (error) {
-      // La cuenta todavía no existe: la creamos ya confirmada.
-      const { error: createErr } = await supabaseAdmin.auth.admin.createUser({
+    if (!existing) {
+      const { error } = await supabaseAdmin.auth.admin.createUser({
         email: data.email,
+        password,
         email_confirm: true,
         user_metadata: { display_name: displayName },
       });
-      if (createErr && !/already/i.test(createErr.message)) throw createErr;
-      const retry = await makeLink();
-      if (retry.error) throw retry.error;
-      link = retry.data;
-    }
-
-    const tokenHash = link?.properties?.hashed_token;
-    if (!tokenHash) throw new Error("No pudimos generar el acceso, intenta de nuevo");
-
-    const userId = link?.user?.id;
-    if (userId) {
+      if (error && !/already/i.test(error.message)) throw error;
+    } else if (!existing.display_name && data.name) {
       await supabaseAdmin
         .from("profiles")
         .update({ display_name: displayName })
-        .eq("id", userId)
-        .is("display_name", null);
+        .eq("id", existing.id);
     }
 
-    return { tokenHash, email: data.email, isNew: false };
+    return { email: data.email, password, isNew: !existing };
   });
