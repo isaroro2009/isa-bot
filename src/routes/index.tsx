@@ -1025,6 +1025,7 @@ function IsaBot() {
   }, [sidebarOpen]);
 
   const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
 
   const [isAdmin, setIsAdmin] = useState(false);
