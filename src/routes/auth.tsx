@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
 import { ensureGuestVip } from "@/lib/guest.functions";
+import { quickAccess } from "@/lib/passwordless.functions";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
@@ -25,11 +26,8 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -53,26 +51,6 @@ function AuthPage() {
     setShowIntro(false);
   };
 
-  const handleForgot = async () => {
-    if (!email) {
-      setError(t("auth.forgotNeedEmail"));
-      return;
-    }
-    setError(null);
-    setLoading(true);
-    try {
-      const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      if (err) throw err;
-      setInfo(t("auth.forgotSent"));
-      toast.success(t("auth.forgotSent"));
-    } catch (err) {
-      failWith(err, t("auth.genericError"));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
@@ -135,27 +113,16 @@ function AuthPage() {
     setInfo(null);
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error: err } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              display_name: displayName || email.split("@")[0],
-              phone,
-            },
-          },
-        });
-        if (err) throw err;
-        toast.success(t("auth.created"));
-        setInfo(t("auth.created"));
-        setMode("signin");
-      } else {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-        if (err) throw err;
-        navigate({ to: "/" });
-      }
+      const creds = await quickAccess({
+        data: { email: email.trim(), name: displayName.trim() },
+      });
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (err) throw err;
+      toast.success(`¡Hola${displayName ? `, ${displayName}` : ""}! ✨`);
+      navigate({ to: "/" });
     } catch (err) {
       failWith(err, t("auth.genericError"));
     } finally {
@@ -184,12 +151,8 @@ function AuthPage() {
           <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#9b7ec9", textTransform: "uppercase", marginBottom: 6 }}>
             IsaRoRo Studio
           </div>
-          <h1 className="auth-title">
-            {mode === "signin" ? t("auth.welcomeBack") : t("auth.createAccount")}
-          </h1>
-          <p className="auth-sub">
-            {mode === "signin" ? t("auth.subSignin") : t("auth.subSignup")}
-          </p>
+          <h1 className="auth-title">{t("auth.welcomeBack")}</h1>
+          <p className="auth-sub">Solo tu correo y tu nombre. Sin contraseñas ✨</p>
           <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap", marginTop: 10 }}>
             {[t("auth.chip1"), t("auth.chip2"), t("auth.chip3")].map((chip) => (
               <span key={chip} style={{
@@ -201,24 +164,15 @@ function AuthPage() {
         </div>
 
         <form onSubmit={handleEmailAuth} className="auth-form">
-          {mode === "signup" && (
-            <>
-              <input
-                type="text"
-                placeholder={t("auth.displayName")}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="auth-input"
-              />
-              <input
-                type="tel"
-                placeholder={t("auth.phone")}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="auth-input"
-              />
-            </>
-          )}
+          <input
+            type="text"
+            placeholder={t("auth.displayName")}
+            required
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            className="auth-input"
+            autoComplete="name"
+          />
           <input
             type="email"
             placeholder={t("auth.email")}
@@ -228,22 +182,12 @@ function AuthPage() {
             className="auth-input"
             autoComplete="email"
           />
-          <input
-            type="password"
-            placeholder={t("auth.password")}
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="auth-input"
-            autoComplete={mode === "signin" ? "current-password" : "new-password"}
-          />
 
           {error && <div className="auth-alert auth-alert-error">{error}</div>}
           {info && <div className="auth-alert auth-alert-info">{info}</div>}
 
           <button type="submit" disabled={loading} className="auth-submit-btn">
-            {loading ? "..." : mode === "signin" ? t("auth.signin") : t("auth.signup")}
+            {loading ? "..." : "Entrar / Crear mi cuenta ✨"}
           </button>
         </form>
 
@@ -260,29 +204,6 @@ function AuthPage() {
         >
           👑 Probar como invitado VIP
         </button>
-
-        {mode === "signin" && (
-          <p className="auth-switch">
-            <button type="button" onClick={handleForgot} className="auth-switch-btn" disabled={loading}>
-              {t("auth.forgot")}
-            </button>
-          </p>
-        )}
-
-        <p className="auth-switch">
-          {mode === "signin" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
-              setError(null);
-              setInfo(null);
-            }}
-            className="auth-switch-btn"
-          >
-            {mode === "signin" ? t("auth.register") : t("auth.signin")}
-          </button>
-        </p>
 
         <p className="auth-back">
           <Link to="/">{t("auth.back")}</Link>

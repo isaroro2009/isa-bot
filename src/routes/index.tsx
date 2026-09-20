@@ -166,6 +166,7 @@ import accGlasses from "@/assets/acc-glasses.png.asset.json";
 import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
 import WelcomeModal from "@/components/WelcomeModal";
+import LandingModal from "@/components/LandingModal";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
 import { PromoCarousel } from "@/components/PromoCarousel";
@@ -1025,6 +1026,7 @@ function IsaBot() {
   }, [sidebarOpen]);
 
   const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -1037,9 +1039,11 @@ function IsaBot() {
       if (!data.user) {
         setAuthUser(null);
         setIsAdmin(false);
+        setAuthChecked(true);
         return;
       }
       setAuthUser({ id: data.user.id, email: data.user.email ?? null });
+      setAuthChecked(true);
       try {
         const pending = window.localStorage.getItem("isabot_referral_code");
         if (pending) {
@@ -2478,6 +2482,11 @@ ${rows}
 
 
 
+
+  // Sin sesión: la primera pantalla es la bienvenida con Iniciar sesión / Crear cuenta.
+  if (authChecked && !authUser) {
+    return <LandingModal />;
+  }
 
   return (
     <div className="chat-container">
