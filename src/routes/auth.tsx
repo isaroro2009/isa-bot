@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
 import { ensureGuestVip } from "@/lib/guest.functions";
+import { quickAccess } from "@/lib/passwordless.functions";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
