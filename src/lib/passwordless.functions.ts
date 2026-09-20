@@ -41,6 +41,12 @@ export const quickAccess = createServerFn({ method: "POST" })
         user_metadata: { display_name: displayName },
       });
       if (error && !/already/i.test(error.message)) throw error;
+      if (data.name) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ display_name: displayName })
+          .eq("email", data.email);
+      }
     } else {
       // Cuenta existente: sincronizamos la clave interna para el acceso directo.
       await supabaseAdmin.auth.admin.updateUserById(existing.id, {
