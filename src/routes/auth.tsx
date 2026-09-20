@@ -113,12 +113,12 @@ function AuthPage() {
     setInfo(null);
     setLoading(true);
     try {
-      const { tokenHash } = await quickAccess({
+      const creds = await quickAccess({
         data: { email: email.trim(), name: displayName.trim() },
       });
-      const { error: err } = await supabase.auth.verifyOtp({
-        type: "magiclink",
-        token_hash: tokenHash,
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
       });
       if (err) throw err;
       toast.success(`¡Hola${displayName ? `, ${displayName}` : ""}! ✨`);
