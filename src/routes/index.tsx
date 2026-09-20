@@ -2482,6 +2482,11 @@ ${rows}
 
 
 
+  // Sin sesión: la primera pantalla es la bienvenida con Iniciar sesión / Crear cuenta.
+  if (authChecked && !authUser) {
+    return <LandingModal />;
+  }
+
   return (
     <div className="chat-container">
       <button
