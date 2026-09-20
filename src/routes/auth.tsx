@@ -50,26 +50,6 @@ function AuthPage() {
     setShowIntro(false);
   };
 
-  const handleForgot = async () => {
-    if (!email) {
-      setError(t("auth.forgotNeedEmail"));
-      return;
-    }
-    setError(null);
-    setLoading(true);
-    try {
-      const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      if (err) throw err;
-      setInfo(t("auth.forgotSent"));
-      toast.success(t("auth.forgotSent"));
-    } catch (err) {
-      failWith(err, t("auth.genericError"));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
