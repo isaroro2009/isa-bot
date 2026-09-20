@@ -163,24 +163,15 @@ function AuthPage() {
         </div>
 
         <form onSubmit={handleEmailAuth} className="auth-form">
-          {mode === "signup" && (
-            <>
-              <input
-                type="text"
-                placeholder={t("auth.displayName")}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="auth-input"
-              />
-              <input
-                type="tel"
-                placeholder={t("auth.phone")}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="auth-input"
-              />
-            </>
-          )}
+          <input
+            type="text"
+            placeholder={t("auth.displayName")}
+            required
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            className="auth-input"
+            autoComplete="name"
+          />
           <input
             type="email"
             placeholder={t("auth.email")}
@@ -190,22 +181,12 @@ function AuthPage() {
             className="auth-input"
             autoComplete="email"
           />
-          <input
-            type="password"
-            placeholder={t("auth.password")}
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="auth-input"
-            autoComplete={mode === "signin" ? "current-password" : "new-password"}
-          />
 
           {error && <div className="auth-alert auth-alert-error">{error}</div>}
           {info && <div className="auth-alert auth-alert-info">{info}</div>}
 
           <button type="submit" disabled={loading} className="auth-submit-btn">
-            {loading ? "..." : mode === "signin" ? t("auth.signin") : t("auth.signup")}
+            {loading ? "..." : "Entrar / Crear mi cuenta ✨"}
           </button>
         </form>
 
@@ -222,29 +203,6 @@ function AuthPage() {
         >
           👑 Probar como invitado VIP
         </button>
-
-        {mode === "signin" && (
-          <p className="auth-switch">
-            <button type="button" onClick={handleForgot} className="auth-switch-btn" disabled={loading}>
-              {t("auth.forgot")}
-            </button>
-          </p>
-        )}
-
-        <p className="auth-switch">
-          {mode === "signin" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
-              setError(null);
-              setInfo(null);
-            }}
-            className="auth-switch-btn"
-          >
-            {mode === "signin" ? t("auth.register") : t("auth.signin")}
-          </button>
-        </p>
 
         <p className="auth-back">
           <Link to="/">{t("auth.back")}</Link>
