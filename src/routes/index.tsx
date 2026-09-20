@@ -1038,9 +1038,11 @@ function IsaBot() {
       if (!data.user) {
         setAuthUser(null);
         setIsAdmin(false);
+        setAuthChecked(true);
         return;
       }
       setAuthUser({ id: data.user.id, email: data.user.email ?? null });
+      setAuthChecked(true);
       try {
         const pending = window.localStorage.getItem("isabot_referral_code");
         if (pending) {
