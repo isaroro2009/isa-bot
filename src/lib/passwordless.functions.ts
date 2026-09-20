@@ -41,11 +41,18 @@ export const quickAccess = createServerFn({ method: "POST" })
         user_metadata: { display_name: displayName },
       });
       if (error && !/already/i.test(error.message)) throw error;
-    } else if (!existing.display_name && data.name) {
-      await supabaseAdmin
-        .from("profiles")
-        .update({ display_name: displayName })
-        .eq("id", existing.id);
+    } else {
+      // Cuenta existente: sincronizamos la clave interna para el acceso directo.
+      await supabaseAdmin.auth.admin.updateUserById(existing.id, {
+        password,
+        email_confirm: true,
+      });
+      if (!existing.display_name && data.name) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ display_name: displayName })
+          .eq("id", existing.id);
+      }
     }
 
     return { email: data.email, password, isNew: !existing };
