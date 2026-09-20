@@ -150,12 +150,8 @@ function AuthPage() {
           <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#9b7ec9", textTransform: "uppercase", marginBottom: 6 }}>
             IsaRoRo Studio
           </div>
-          <h1 className="auth-title">
-            {mode === "signin" ? t("auth.welcomeBack") : t("auth.createAccount")}
-          </h1>
-          <p className="auth-sub">
-            {mode === "signin" ? t("auth.subSignin") : t("auth.subSignup")}
-          </p>
+          <h1 className="auth-title">{t("auth.welcomeBack")}</h1>
+          <p className="auth-sub">Solo tu correo y tu nombre. Sin contraseñas ✨</p>
           <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap", marginTop: 10 }}>
             {[t("auth.chip1"), t("auth.chip2"), t("auth.chip3")].map((chip) => (
               <span key={chip} style={{
