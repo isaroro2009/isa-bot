@@ -8,6 +8,13 @@
       "when": 1789687844404,
       "tag": "0000_add_full_tech_news_content",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790228378820,
+      "tag": "0001_access_keys_emotional_feedback_notifications",
+      "breakpoints": true
     }
   ]
 }

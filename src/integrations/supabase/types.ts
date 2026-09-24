@@ -180,6 +180,27 @@ export type Database = {
         }
         Relationships: []
       }
+      access_keys: {
+        Row: {
+          created_at: string
+          key_hash: string
+          last_used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          key_hash: string
+          last_used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          key_hash?: string
+          last_used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
@@ -318,6 +339,30 @@ export type Database = {
         }
         Relationships: []
       }
+      emotional_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          mood: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          mood: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          mood?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       feedback: {
         Row: {
           created_at: string
@@ -446,6 +491,30 @@ export type Database = {
           unlimited_coins?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      in_app_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string
         }
         Relationships: []
       }
