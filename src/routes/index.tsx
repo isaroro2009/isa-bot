@@ -2637,6 +2637,7 @@ ${rows}
               <button
                 className="kawaii-sidebar-btn"
                 onClick={async () => {
+                  try { window.localStorage.removeItem("isabot.accessKey"); } catch { /* noop */ }
                   await supabase.auth.signOut();
                 }}
               >
