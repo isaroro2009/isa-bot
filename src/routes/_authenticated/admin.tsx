@@ -18,6 +18,8 @@ import {
 
 
 import { getAiConfig } from "@/lib/memory.functions";
+import { listEmotional, sendLiveNotification, type EmotionalRow } from "@/lib/emotional.functions";
+import { getPresence } from "@/lib/presence.functions";
 import { AdminMetrics } from "@/components/AdminMetrics";
 import { IntegrationStatusPanel } from "@/components/IntegrationStatusPanel";
 import { BotWeeklyReport } from "@/components/BotWeeklyReport";
@@ -348,6 +350,10 @@ function AdminPage() {
         {!error && <BotWeeklyReport />}
 
         {/* Sección de correos desactivada por ahora (sin proveedor de envío). */}
+
+        {!error && <LiveNotifySection />}
+
+        {!error && <EmotionalAdminSection />}
 
         {!error && <FeedbackAdminSection />}
 
@@ -1206,5 +1212,81 @@ function BrainsSection() {
         </table>
       </div>
     </div>
+  );
+}
+
+const MOOD_EMOJI: Record<string, string> = { feliz: "🥰", bien: "🙂", normal: "😐", confundida: "😕", frustrada: "😣" };
+
+function LiveNotifySection() {
+  const send = useServerFn(sendLiveNotification);
+  const presence = useServerFn(getPresence);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [online, setOnline] = useState<number | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  useEffect(() => {
+    const load = () => presence().then((r) => setOnline(r.online)).catch(() => undefined);
+    load();
+    const t = setInterval(load, 30000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const submit = async () => {
+    setStatus(null);
+    try {
+      await send({ data: { title, body } });
+      setTitle(""); setBody("");
+      setStatus("✅ Aviso enviado a quienes están en línea");
+    } catch (e) {
+      setStatus(`💔 ${e instanceof Error ? e.message : "No se pudo enviar"}`);
+    }
+  };
+  return (
+    <section className="settings-card" style={{ marginTop: 20 }}>
+      <h3 style={{ marginTop: 0 }}>📣 Aviso en tiempo real</h3>
+      <p style={{ fontSize: 13, opacity: 0.75, marginTop: 0 }}>
+        Aparece al instante en la pantalla de quienes están usando IsaBot ahora mismo
+        {online !== null ? ` · 🟢 ${online} en línea` : ""}.
+      </p>
+      <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} placeholder="Título"
+        style={{ width: "100%", padding: 8, borderRadius: 10, border: "1px solid #ddd", marginBottom: 8 }} />
+      <textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={500} rows={3} placeholder="Mensaje"
+        style={{ width: "100%", padding: 8, borderRadius: 10, border: "1px solid #ddd" }} />
+      <button className="kawaii-sidebar-btn" onClick={submit} disabled={title.trim().length < 2 || body.trim().length < 2}
+        style={{ marginTop: 8 }}>Enviar aviso 🚀</button>
+      {status && <p style={{ fontSize: 13 }}>{status}</p>}
+    </section>
+  );
+}
+
+function EmotionalAdminSection() {
+  const list = useServerFn(listEmotional);
+  const [rows, setRows] = useState<EmotionalRow[]>([]);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => {
+    list().then(setRows).catch((e) => setErr(e instanceof Error ? e.message : "Error"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const counts = rows.reduce<Record<string, number>>((a, r) => ((a[r.mood] = (a[r.mood] ?? 0) + 1), a), {});
+  return (
+    <section className="settings-card" style={{ marginTop: 20 }}>
+      <h3 style={{ marginTop: 0 }}>💗 Cómo se sienten las usuarias</h3>
+      {err && <p>💔 {err}</p>}
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+        {Object.entries(MOOD_EMOJI).map(([k, e]) => (
+          <span key={k} style={{ fontSize: 14 }}>{e} {k}: <b>{counts[k] ?? 0}</b></span>
+        ))}
+      </div>
+      {rows.length === 0 && !err && <p style={{ opacity: 0.7 }}>Aún no hay respuestas.</p>}
+      <div style={{ maxHeight: 360, overflowY: "auto" }}>
+        {rows.map((r) => (
+          <div key={r.id} style={{ borderTop: "1px solid #eee", padding: "8px 0", fontSize: 14 }}>
+            <b>{MOOD_EMOJI[r.mood] ?? "💬"} {r.author_name || r.author_email || "Usuaria"}</b>
+            <span style={{ opacity: 0.6 }}> · {new Date(r.created_at).toLocaleString()}</span>
+            {r.message && <p style={{ margin: "4px 0 0" }}>{r.message}</p>}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

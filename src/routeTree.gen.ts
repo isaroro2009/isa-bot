@@ -21,6 +21,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
+import { Route as AuthenticatedBienvenidaRouteImport } from './routes/_authenticated/bienvenida'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
@@ -103,6 +104,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
 const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
   id: '/isaspace',
   path: '/isaspace',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBienvenidaRoute = AuthenticatedBienvenidaRouteImport.update({
+  id: '/bienvenida',
+  path: '/bienvenida',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/academy': typeof AuthenticatedAcademyRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
@@ -280,6 +287,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/academy': typeof AuthenticatedAcademyRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
@@ -318,6 +326,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/academy': typeof AuthenticatedAcademyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/agent': typeof ApiAgentRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/academy'
     | '/admin'
+    | '/bienvenida'
     | '/isaspace'
     | '/profile'
     | '/api/agent'
@@ -394,6 +404,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/academy'
     | '/admin'
+    | '/bienvenida'
     | '/isaspace'
     | '/profile'
     | '/api/agent'
@@ -431,6 +442,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/academy'
     | '/_authenticated/admin'
+    | '/_authenticated/bienvenida'
     | '/_authenticated/isaspace'
     | '/_authenticated/profile'
     | '/api/agent'
@@ -573,6 +585,13 @@ declare module '@tanstack/react-router' {
       path: '/isaspace'
       fullPath: '/isaspace'
       preLoaderRoute: typeof AuthenticatedIsaspaceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bienvenida': {
+      id: '/_authenticated/bienvenida'
+      path: '/bienvenida'
+      fullPath: '/bienvenida'
+      preLoaderRoute: typeof AuthenticatedBienvenidaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
@@ -767,6 +786,7 @@ const AuthenticatedESlugRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBienvenidaRoute: typeof AuthenticatedBienvenidaRoute
   AuthenticatedIsaspaceRoute: typeof AuthenticatedIsaspaceRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedESlugRouteRoute: typeof AuthenticatedESlugRouteRouteWithChildren
@@ -778,6 +798,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcademyRoute: AuthenticatedAcademyRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBienvenidaRoute: AuthenticatedBienvenidaRoute,
   AuthenticatedIsaspaceRoute: AuthenticatedIsaspaceRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedESlugRouteRoute: AuthenticatedESlugRouteRouteWithChildren,

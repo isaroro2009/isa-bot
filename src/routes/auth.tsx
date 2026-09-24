@@ -6,16 +6,17 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
 import { ensureGuestVip } from "@/lib/guest.functions";
-import { quickAccess } from "@/lib/passwordless.functions";
+import { registerWithKey, loginWithKey } from "@/lib/passwordless.functions";
+import { getStoredKey, storeKey, clearStoredKey } from "@/lib/access-key";
 import "../isabot.css";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "IsaBot — Co-piloto de IA Creativa para Estudiantes y Emprendedores" },
-      { name: "description", content: "IsaBot es tu co-piloto de IA creativa: estudia mejor, emprende con foco y crea sin bloqueo. Un espacio hecho en IsaRoRo Studio." },
-      { property: "og:title", content: "IsaBot — Inicia sesión" },
-      { property: "og:description", content: "Entra a IsaBot con tu correo o explora como invitada: PDFs agénticos, rachas diarias, IsaBot Coins y noticias tech." },
+      { title: "IsaBot — Entra con tu llave personal" },
+      { name: "description", content: "Crea tu cuenta de IsaBot con tu nombre y correo y entra siempre con tu llave personal, sin contraseñas." },
+      { property: "og:title", content: "IsaBot — Entra con tu llave personal" },
+      { property: "og:description", content: "Tu co-piloto de IA creativa. Sin contraseñas: una llave personal ISA-XXXX te da acceso." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -23,23 +24,54 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+type Mode = "signup" | "key";
+
 function AuthPage() {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const [mode, setMode] = useState<Mode>("signup");
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [keyInput, setKeyInput] = useState("");
+  const [newKey, setNewKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [autoLogin, setAutoLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  // Primero contamos qué es IsaBot; el formulario aparece al pulsar el CTA.
   const [showIntro, setShowIntro] = useState(true);
+
+  const goWelcome = () => navigate({ to: "/bienvenida" });
 
   useEffect(() => {
     try {
       if (window.sessionStorage.getItem("isabot_intro_seen")) setShowIntro(false);
     } catch {
-      /* almacenamiento bloqueado */
+      /* noop */
     }
+    (async () => {
+      const { data } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
+      if (data.user) {
+        navigate({ to: "/" });
+        return;
+      }
+      const stored = getStoredKey();
+      if (!stored) return;
+      setAutoLogin(true);
+      try {
+        const creds = await loginWithKey({ data: { key: stored } });
+        const { error: err } = await supabase.auth.signInWithPassword({
+          email: creds.email,
+          password: creds.password,
+        });
+        if (err) throw err;
+        goWelcome();
+      } catch {
+        clearStoredKey();
+        setAutoLogin(false);
+        setShowIntro(false);
+        setMode("key");
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const startAuth = () => {
@@ -51,90 +83,115 @@ function AuthPage() {
     setShowIntro(false);
   };
 
+  const fail = (err: unknown) => {
+    const msg = err instanceof Error ? err.message : t("auth.genericError");
+    setError(msg);
+    toast.error(msg, { duration: 7000 });
+  };
 
-  useEffect(() => {
-    // iOS Safari con "Prevenir rastreo entre sitios" puede bloquear el
-    // almacenamiento: avisamos en vez de dejar el login congelado.
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
-      const k = "__isabot_storage_test__";
-      window.localStorage.setItem(k, "1");
-      window.localStorage.removeItem(k);
-    } catch {
-      toast.error(t("auth.storageBlocked"), { duration: 9000 });
+      const creds = await registerWithKey({ data: { email: email.trim(), name: displayName.trim() } });
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (err) throw err;
+      storeKey(creds.accessKey);
+      setNewKey(creds.accessKey);
+    } catch (err) {
+      fail(err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    supabase.auth
-      .getUser()
-      .then(({ data }) => {
-        if (data.user) navigate({ to: "/" });
-      })
-      .catch(() => undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate]);
-
-  const failWith = (err: unknown, fallback: string) => {
-    const raw = err instanceof Error ? err.message : String(err ?? fallback);
-    const friendly = /invalid login credentials/i.test(raw)
-      ? t("auth.badCreds")
-      : /email not confirmed/i.test(raw)
-        ? t("auth.notConfirmed")
-        : /storage|localStorage|quota|cookie/i.test(raw)
-          ? t("auth.storageBlocked")
-          : /network|fetch|timeout/i.test(raw)
-            ? t("auth.network")
-            : raw || fallback;
-    setError(friendly);
-    toast.error(friendly, { duration: 7000 });
+  const handleKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const creds = await loginWithKey({ data: { key: keyInput } });
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (err) throw err;
+      storeKey(creds.key);
+      goWelcome();
+    } catch (err) {
+      fail(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGuestVip = async () => {
     setError(null);
-    setInfo(null);
     setLoading(true);
     try {
       const creds = await ensureGuestVip();
-      const { error: err } = await supabase.auth.signInWithPassword({
-        email: creds.email,
-        password: creds.password,
-      });
+      const { error: err } = await supabase.auth.signInWithPassword(creds);
       if (err) throw err;
-      toast.success("¡Bienvenido, Andrés Bilbao! 👑");
-      navigate({ to: "/" });
+      goWelcome();
     } catch (err) {
-      failWith(err, t("auth.genericError"));
+      fail(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setInfo(null);
-    setLoading(true);
-    try {
-      const creds = await quickAccess({
-        data: { email: email.trim(), name: displayName.trim() },
-      });
-      const { error: err } = await supabase.auth.signInWithPassword({
-        email: creds.email,
-        password: creds.password,
-      });
-      if (err) throw err;
-      toast.success(`¡Hola${displayName ? `, ${displayName}` : ""}! ✨`);
-      navigate({ to: "/" });
-    } catch (err) {
-      failWith(err, t("auth.genericError"));
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (autoLogin) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: "center" }}>
+          <div className="auth-emoji">🔑</div>
+          <p className="auth-sub">Abriendo tu espacio con tu llave personal…</p>
+        </div>
+      </div>
+    );
+  }
 
+  if (showIntro && !newKey) return <LandingModal onStart={startAuth} />;
 
-
-
-  if (showIntro) {
-    return <LandingModal onStart={startAuth} />;
+  if (newKey) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: "center" }}>
+          <div className="auth-emoji">🔑</div>
+          <h1 className="auth-title">Esta es tu llave personal</h1>
+          <div
+            style={{
+              fontFamily: "monospace", fontSize: 26, fontWeight: 800, letterSpacing: 2,
+              padding: "14px 10px", margin: "14px 0", borderRadius: 14,
+              background: "rgba(201, 182, 255, 0.22)", color: "#4a2f5c",
+            }}
+          >
+            {newKey}
+          </div>
+          <p className="auth-sub">
+            Ya quedó guardada en este dispositivo: no tendrás que escribir nada en tus próximas visitas.
+            Guárdala para entrar desde otro celular o computador.
+          </p>
+          <button
+            type="button"
+            className="auth-submit-btn"
+            style={{ marginTop: 10 }}
+            onClick={() => {
+              navigator.clipboard?.writeText(newKey).then(() => toast.success("Llave copiada 📋"));
+            }}
+          >
+            📋 Copiar llave
+          </button>
+          <button type="button" className="auth-submit-btn" style={{ marginTop: 10 }} onClick={goWelcome}>
+            Continuar ✨
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -147,61 +204,54 @@ function AuthPage() {
           <LanguageToggle />
         </div>
         <div className="auth-header">
-          <div className="auth-emoji">✨</div>
-          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#9b7ec9", textTransform: "uppercase", marginBottom: 6 }}>
-            IsaRoRo Studio
-          </div>
-          <h1 className="auth-title">{t("auth.welcomeBack")}</h1>
-          <p className="auth-sub">Solo tu correo y tu nombre. Sin contraseñas ✨</p>
-          <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap", marginTop: 10 }}>
-            {[t("auth.chip1"), t("auth.chip2"), t("auth.chip3")].map((chip) => (
-              <span key={chip} style={{
-                fontSize: 11, fontWeight: 700, padding: "5px 10px", borderRadius: 999,
-                background: "rgba(201, 182, 255, 0.22)", color: "#5b4270",
-              }}>{chip}</span>
-            ))}
-          </div>
+          <div className="auth-emoji">{mode === "signup" ? "✨" : "🔑"}</div>
+          <h1 className="auth-title">{mode === "signup" ? "Crea tu cuenta" : "Entra con tu llave"}</h1>
+          <p className="auth-sub">
+            {mode === "signup"
+              ? "Solo tu nombre y tu correo. Te daremos una llave personal, sin contraseñas."
+              : "Escribe tu llave personal (ISA-XXXX-XXXX) una sola vez en este dispositivo."}
+          </p>
         </div>
 
-        <form onSubmit={handleEmailAuth} className="auth-form">
-          <input
-            type="text"
-            placeholder={t("auth.displayName")}
-            required
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="auth-input"
-            autoComplete="name"
-          />
-          <input
-            type="email"
-            placeholder={t("auth.email")}
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="auth-input"
-            autoComplete="email"
-          />
+        <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+          {(["signup", "key"] as Mode[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => { setMode(m); setError(null); }}
+              className="auth-submit-btn"
+              style={{ flex: 1, opacity: mode === m ? 1 : 0.55, padding: "8px 10px" }}
+            >
+              {m === "signup" ? "Crear cuenta" : "Tengo mi llave"}
+            </button>
+          ))}
+        </div>
 
-          {error && <div className="auth-alert auth-alert-error">{error}</div>}
-          {info && <div className="auth-alert auth-alert-info">{info}</div>}
+        {mode === "signup" ? (
+          <form onSubmit={handleSignup} className="auth-form">
+            <input type="text" placeholder={t("auth.displayName")} required value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)} className="auth-input" autoComplete="name" />
+            <input type="email" placeholder={t("auth.email")} required value={email}
+              onChange={(e) => setEmail(e.target.value)} className="auth-input" autoComplete="email" />
+            {error && <div className="auth-alert auth-alert-error">{error}</div>}
+            <button type="submit" disabled={loading} className="auth-submit-btn">
+              {loading ? "..." : "Crear mi cuenta y mi llave ✨"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleKey} className="auth-form">
+            <input type="text" placeholder="ISA-XXXX-XXXX" required value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value.toUpperCase())} className="auth-input"
+              autoComplete="off" style={{ fontFamily: "monospace", letterSpacing: 2, textAlign: "center" }} />
+            {error && <div className="auth-alert auth-alert-error">{error}</div>}
+            <button type="submit" disabled={loading} className="auth-submit-btn">
+              {loading ? "..." : "Entrar 🔑"}
+            </button>
+          </form>
+        )}
 
-          <button type="submit" disabled={loading} className="auth-submit-btn">
-            {loading ? "..." : "Entrar / Crear mi cuenta ✨"}
-          </button>
-        </form>
-
-        <button
-          type="button"
-          onClick={handleGuestVip}
-          disabled={loading}
-          className="auth-submit-btn"
-          style={{
-            marginTop: 10,
-            background: "linear-gradient(135deg, #ffd980, #ffb3d1)",
-            color: "#4a2f5c",
-          }}
-        >
+        <button type="button" onClick={handleGuestVip} disabled={loading} className="auth-submit-btn"
+          style={{ marginTop: 10, background: "linear-gradient(135deg, #ffd980, #ffb3d1)", color: "#4a2f5c" }}>
           👑 Probar como invitado VIP
         </button>
 

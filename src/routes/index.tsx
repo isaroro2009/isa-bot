@@ -7,7 +7,8 @@ import { BRAINS } from "@/lib/brains";
 import { getMyProfile, acknowledgePremiumGift } from "@/lib/profile.functions";
 import { sendWelcomeEmail } from "@/lib/welcome.functions";
 import { sendLoginAlert } from "@/lib/login-alert.functions";
-import { OnboardingTour } from "@/components/OnboardingTour";
+import { EmotionalCheckin } from "@/components/EmotionalCheckin";
+import { LiveNotifications } from "@/components/LiveNotifications";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
 import { parseEmailIntent, parseDocIntent } from "@/lib/chat-intents";
 import { ChatActionCardView, type ChatAction } from "@/components/ChatActionCards";
@@ -165,7 +166,6 @@ import isabotMascot from "@/assets/isabot-mascot.png.asset.json";
 import accGlasses from "@/assets/acc-glasses.png.asset.json";
 import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
-import WelcomeModal from "@/components/WelcomeModal";
 import LandingModal from "@/components/LandingModal";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
@@ -847,7 +847,8 @@ function IsaBotPage() {
     <IbcProvider userId={ibcUserId}>
       <IsaBot />
       <IbcOverlays />
-      <OnboardingTour active={Boolean(ibcUserId)} />
+      {ibcUserId && <EmotionalCheckin />}
+      {ibcUserId && <LiveNotifications />}
       <PdfGallery />
     </IbcProvider>
   );
@@ -2636,6 +2637,7 @@ ${rows}
               <button
                 className="kawaii-sidebar-btn"
                 onClick={async () => {
+                  try { window.localStorage.removeItem("isabot.accessKey"); } catch { /* noop */ }
                   await supabase.auth.signOut();
                 }}
               >
@@ -2657,9 +2659,6 @@ ${rows}
       </aside>
 
 
-      {authUser && (
-        <WelcomeModal userId={authUser.id} name={authUser.email?.split("@")[0] ?? null} />
-      )}
 
       
 
