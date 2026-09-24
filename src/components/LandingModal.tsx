@@ -1,9 +1,18 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { getStoredKey } from "@/lib/access-key";
 
 export function LandingModal({ onStart }: { onStart?: () => void } = {}) {
   const { t } = useI18n();
+  const navigate = useNavigate();
+
+  // Si este dispositivo ya tiene la llave guardada, entramos solos.
+  useEffect(() => {
+    if (!onStart && getStoredKey()) navigate({ to: "/auth" });
+  }, [onStart, navigate]);
+
 
 
   const features = [
