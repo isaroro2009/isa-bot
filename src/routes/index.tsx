@@ -856,11 +856,20 @@ function IsaBotPage() {
 }
 
 type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "myday" | "invite" | "feedback" | "technews" | "academy" | "ibcagent" | "aiguide";
+type ToolKey = "myday" | "tasks" | "planner" | "pomodoro" | "outlines" | "palette" | "notes" | "ibcagent" | "weekly" | "aiguide";
+
+const TOOL_KEYS = new Set<ToolKey>([
+  "myday", "tasks", "planner", "pomodoro", "outlines", "palette", "notes", "ibcagent", "weekly", "aiguide",
+]);
 
 function openApp(path: string, name: string) {
   const url = `${window.location.origin}${path}`;
   const win = window.open(url, name, "width=1280,height=900,noopener");
   if (!win) window.location.href = url;
+}
+
+function openTool(key: ToolKey) {
+  openApp(`/?tool=${key}`, `isabot-tool-${key}`);
 }
 
 
@@ -1097,6 +1106,29 @@ function IsaBot() {
   const [premiumExpiresAt, setPremiumExpiresAt] = useState<string | null>(null);
   const [premiumGift, setPremiumGift] = useState<{ days: number | null; expiresAt: string | null } | null>(null);
   const [panel, setPanel] = useState<PanelKey>(null);
+  const [dedicatedTool, setDedicatedTool] = useState<ToolKey | null>(null);
+
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("tool");
+    if (!requested || !TOOL_KEYS.has(requested as ToolKey)) return;
+    const tool = requested as ToolKey;
+    setDedicatedTool(tool);
+    setPanel(tool);
+    if (tool === "palette") setPalette(generatePalette());
+    document.body.classList.add("tool-workspace-active");
+    return () => document.body.classList.remove("tool-workspace-active");
+  }, []);
+
+  function closeTool() {
+    if (!dedicatedTool) {
+      setPanel(null);
+      return;
+    }
+    window.close();
+    window.setTimeout(() => {
+      window.location.href = "/";
+    }, 120);
+  }
 
   // 🔒 Política de datos + ⚡ tema Cyberpunk Neón (se desbloquea con 2 invitadas)
   const [privacyOpen, setPrivacyOpen] = useState(false);
@@ -2093,7 +2125,8 @@ ${rows}
   const [processing, setProcessing] = useState(false);
 
   function tryOpenPremium(key: PanelKey) {
-    if (isPremium) setPanel(key);
+    if (isPremium && key && TOOL_KEYS.has(key as ToolKey)) openTool(key as ToolKey);
+    else if (isPremium) setPanel(key);
     else setPanel("subscribe");
   }
   function startCheckout(plan: "monthly" | "yearly") {
@@ -2491,7 +2524,7 @@ ${rows}
   }
 
   return (
-    <div className="chat-container">
+    <div className={`chat-container ${dedicatedTool ? "tool-workspace-mode" : ""}`} data-tool={dedicatedTool ?? undefined}>
       <button
         type="button"
         className="menu-btn text-gray-800"
@@ -2564,18 +2597,18 @@ ${rows}
 
             <h3>🛠️ Herramientas</h3>
             <div className="tool-block-title">⚡ Productividad y Enfoque</div>
-            <button className="tool-btn free" onClick={() => setPanel("myday")}>🚀 Mi Día con IsaBot</button>
-            <button className="tool-btn free" onClick={() => setPanel("tasks")}>📋 Gestor de Tareas</button>
+            <button className="tool-btn free" onClick={() => openTool("myday")}>🚀 Mi Día con IsaBot</button>
+            <button className="tool-btn free" onClick={() => openTool("tasks")}>📋 Gestor de Tareas</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>{isPremium ? "📅" : "🔒"} Planeador Mensual</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>{isPremium ? "⏱️" : "🔒"} Pomodoro 25/5</button>
             <div className="tool-block-title">🎨 Creatividad y Estudio</div>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>{isPremium ? "✏️" : "🔒"} Outlines para Procreate</button>
-            <button className="tool-btn free" onClick={() => { setPalette(generatePalette()); setPanel("palette"); }}>🎨 Paletas de Colores</button>
-            <button className="tool-btn free" onClick={() => setPanel("notes")}>📝 Notas Rápidas</button>
+            <button className="tool-btn free" onClick={() => openTool("palette")}>🎨 Paletas de Colores</button>
+            <button className="tool-btn free" onClick={() => openTool("notes")}>📝 Notas Rápidas</button>
             <div className="tool-block-title">🧠 Inteligencia y Sorpresas</div>
-            <button className="tool-btn free" onClick={() => setPanel("ibcagent")}>🤖 Agente autónomo (PDF)</button>
-            <button className="tool-btn premium" onClick={() => { if (isPremium) { setPanel("weekly"); } else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
-            <button className="tool-btn free" onClick={() => setPanel("aiguide")}>🌱 Guía de IA Responsable</button>
+            <button className="tool-btn free" onClick={() => openTool("ibcagent")}>🤖 Agente autónomo (PDF)</button>
+            <button className="tool-btn premium" onClick={() => { if (isPremium) openTool("weekly"); else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
+            <button className="tool-btn free" onClick={() => openTool("aiguide")}>🌱 Guía de IA Responsable</button>
             <button className="tool-btn free" onClick={() => openApp("/padres", "isabot-padres")}>👨‍👩‍👧 Portal de Padres</button>
 
           </div>
@@ -2781,7 +2814,7 @@ ${rows}
             </div>
 
             <div className="intro-actions">
-              <button className="intro-cta primary" onClick={() => setPanel("myday")}>
+              <button className="intro-cta primary" onClick={() => openTool("myday")}>
                 {homeCopy.planDay}
               </button>
             </div>
@@ -2906,7 +2939,7 @@ ${rows}
       {panel === "notes" && (
         <div className="modal-overlay" onClick={() => setPanel(null)}>
           <div className="settings-card tasks-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setPanel(null)}>✕</button>
+            <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>📝 Notas Rápidas</h3>
             <p style={{ fontSize: "0.85rem", color: "#a06090", marginTop: "-6px", marginBottom: "10px" }}>
               Anota ideas, recordatorios o pensamientos kawaii ✨
@@ -2987,7 +3020,7 @@ ${rows}
       {panel === "tasks" && (
         <div className="modal-overlay" onClick={() => setPanel(null)}>
           <div className="settings-card tasks-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setPanel(null)}>✕</button>
+            <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>📋 Gestor de Tareas</h3>
 
             {/* Barra de progreso */}
@@ -3058,7 +3091,7 @@ ${rows}
       {panel === "palette" && (
         <div className="modal-overlay" onClick={() => setPanel(null)}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setPanel(null)}>✕</button>
+            <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>🎨 Paleta Estética</h3>
             <label>Describe tu paleta ideal</label>
             <div className="reminder-row">
@@ -3091,7 +3124,7 @@ ${rows}
       {panel === "outlines" && isPremium && (
         <div className="modal-overlay" onClick={() => setPanel(null)}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setPanel(null)}>✕</button>
+            <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>✏️ Outlines para Colorear</h3>
             <label>¿Qué quieres colorear?</label>
             <div className="reminder-row">
@@ -3304,7 +3337,7 @@ ${rows}
       {panel === "pomodoro" && isPremium && (
         <div className="modal-overlay" onClick={() => setPanel(null)}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setPanel(null)}>✕</button>
+            <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>⏱️ Pomodoro {pomoMode === "work" ? "🌸 Estudio" : "🍵 Descanso"}</h3>
             <div className="pomo-timer">{fmtTime(pomoSeconds)}</div>
             <div className="pomo-actions">
@@ -3350,7 +3383,7 @@ ${rows}
         return (
           <div className="modal-overlay" onClick={() => setPanel(null)}>
             <div className="settings-card weekly-card" onClick={(e) => e.stopPropagation()}>
-              <button className="close-btn" onClick={() => setPanel(null)}>✕</button>
+              <button className="close-btn" onClick={closeTool}>✕</button>
               <h3>🎁 Regalo Sorpresa Semanal</h3>
               <div className="weekly-info">
                 <span className="weekly-week">Semana {wk}</span>
@@ -3387,7 +3420,7 @@ ${rows}
       {panel === "planner" && isPremium && (
         <div className="modal-overlay" onClick={() => setPanel(null)}>
           <div className="settings-card planner-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => { setPanel(null); setPlannerSelectedDay(null); }}>✕</button>
+            <button className="close-btn" onClick={() => { closeTool(); setPlannerSelectedDay(null); }}>✕</button>
             <h3>📅 Planeador Mensual</h3>
 
             <div className="planner-tabs">
@@ -3627,7 +3660,7 @@ ${rows}
         </div>
       )}
 
-      {panel === "aiguide" && <ResponsibleAiGuide onClose={() => setPanel(null)} />}
+      {panel === "aiguide" && <ResponsibleAiGuide onClose={closeTool} />}
 
       {/* Mobile Tools sheet */}
       {panel === ("tools-menu" as PanelKey) && (
@@ -3636,18 +3669,18 @@ ${rows}
             <div className="sheet-handle" />
             <h3>🛠️ Herramientas</h3>
             <div className="tool-block-title">⚡ Productividad y Enfoque</div>
-            <button className="tool-btn free" onClick={() => setPanel("myday")}>🚀 Mi Día con IsaBot</button>
-            <button className="tool-btn free" onClick={() => setPanel("tasks")}>📋 Gestor de Tareas</button>
+            <button className="tool-btn free" onClick={() => openTool("myday")}>🚀 Mi Día con IsaBot</button>
+            <button className="tool-btn free" onClick={() => openTool("tasks")}>📋 Gestor de Tareas</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>{isPremium ? "📅" : "🔒"} Planeador Mensual</button>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>{isPremium ? "⏱️" : "🔒"} Pomodoro 25/5</button>
             <div className="tool-block-title">🎨 Creatividad y Estudio</div>
             <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>{isPremium ? "✏️" : "🔒"} Outlines para Procreate</button>
-            <button className="tool-btn free" onClick={() => { setPalette(generatePalette()); setPanel("palette"); }}>🎨 Paletas de Colores</button>
-            <button className="tool-btn free" onClick={() => setPanel("notes")}>📝 Notas Rápidas</button>
+            <button className="tool-btn free" onClick={() => openTool("palette")}>🎨 Paletas de Colores</button>
+            <button className="tool-btn free" onClick={() => openTool("notes")}>📝 Notas Rápidas</button>
             <div className="tool-block-title">🧠 Inteligencia y Sorpresas</div>
-            <button className="tool-btn free" onClick={() => setPanel("ibcagent")}>🤖 Agente autónomo (PDF)</button>
-            <button className="tool-btn premium" onClick={() => { if (isPremium) { setPanel("weekly"); } else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
-            <button className="tool-btn free" onClick={() => setPanel("aiguide")}>🌱 Guía de IA Responsable</button>
+            <button className="tool-btn free" onClick={() => openTool("ibcagent")}>🤖 Agente autónomo (PDF)</button>
+            <button className="tool-btn premium" onClick={() => { if (isPremium) openTool("weekly"); else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
+            <button className="tool-btn free" onClick={() => openTool("aiguide")}>🌱 Guía de IA Responsable</button>
             <button className="tool-btn free" onClick={() => openApp("/padres", "isabot-padres")}>👨‍👩‍👧 Portal de Padres</button>
           </div>
         </div>
@@ -3722,7 +3755,7 @@ ${rows}
         </div>
       )}
 
-      {panel === "myday" && <DailyPlanPanel onClose={() => setPanel(null)} />}
+      {panel === "myday" && <DailyPlanPanel onClose={closeTool} />}
 
       {panel === "invite" && <InvitePanel onClose={() => setPanel(null)} />}
 
@@ -3751,7 +3784,7 @@ ${rows}
 
       {panel === "cowork" && <DesktopCowork onClose={() => setPanel(null)} />}
 
-      {panel === "ibcagent" && <AgentPdfPanel onClose={() => setPanel(null)} />}
+      {panel === "ibcagent" && <AgentPdfPanel onClose={closeTool} />}
 
 
     </div>
