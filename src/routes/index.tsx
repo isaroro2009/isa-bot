@@ -864,7 +864,8 @@ const TOOL_KEYS = new Set<ToolKey>([
 
 function openApp(path: string, name: string) {
   const url = `${window.location.origin}${path}`;
-  const win = window.open(url, name, "width=1280,height=900,noopener");
+  const win = window.open(url, name, "width=1280,height=900");
+  if (win) win.opener = null;
   if (!win) window.location.href = url;
 }
 
@@ -2937,7 +2938,7 @@ ${rows}
 
       {/* Panel: Notas Rápidas (gratis) */}
       {panel === "notes" && (
-        <div className="modal-overlay" onClick={() => setPanel(null)}>
+        <div className="modal-overlay" onClick={closeTool}>
           <div className="settings-card tasks-card" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>📝 Notas Rápidas</h3>
@@ -3018,7 +3019,7 @@ ${rows}
 
       {/* Panel: Tareas */}
       {panel === "tasks" && (
-        <div className="modal-overlay" onClick={() => setPanel(null)}>
+        <div className="modal-overlay" onClick={closeTool}>
           <div className="settings-card tasks-card" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>📋 Gestor de Tareas</h3>
@@ -3089,7 +3090,7 @@ ${rows}
 
       {/* Panel: Paleta */}
       {panel === "palette" && (
-        <div className="modal-overlay" onClick={() => setPanel(null)}>
+        <div className="modal-overlay" onClick={closeTool}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>🎨 Paleta Estética</h3>
@@ -3122,7 +3123,7 @@ ${rows}
 
       {/* Panel: Outlines */}
       {panel === "outlines" && isPremium && (
-        <div className="modal-overlay" onClick={() => setPanel(null)}>
+        <div className="modal-overlay" onClick={closeTool}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>✏️ Outlines para Colorear</h3>
@@ -3335,7 +3336,7 @@ ${rows}
 
       {/* Panel: Pomodoro */}
       {panel === "pomodoro" && isPremium && (
-        <div className="modal-overlay" onClick={() => setPanel(null)}>
+        <div className="modal-overlay" onClick={closeTool}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={closeTool}>✕</button>
             <h3>⏱️ Pomodoro {pomoMode === "work" ? "🌸 Estudio" : "🍵 Descanso"}</h3>
@@ -3381,7 +3382,7 @@ ${rows}
         const requestKey = `isabot_weekly_req_${wk}`;
         const alreadySent = typeof window !== "undefined" && localStorage.getItem(requestKey) === "1";
         return (
-          <div className="modal-overlay" onClick={() => setPanel(null)}>
+          <div className="modal-overlay" onClick={closeTool}>
             <div className="settings-card weekly-card" onClick={(e) => e.stopPropagation()}>
               <button className="close-btn" onClick={closeTool}>✕</button>
               <h3>🎁 Regalo Sorpresa Semanal</h3>
@@ -3403,7 +3404,7 @@ ${rows}
                   className="reminder-btn"
                   onClick={() => {
                     try { localStorage.setItem(requestKey, "1"); } catch {}
-                    setPanel(null);
+                    closeTool();
                     setTimeout(() => alert("💌 ¡Ya se envió la solicitud de tu regalito sorpresa!\n\nIsabella lo preparará con mucho cariño y te llegará pronto 💕"), 50);
                   }}
                 >
@@ -3418,7 +3419,7 @@ ${rows}
 
       {/* Panel: Planeador Mensual (premium) */}
       {panel === "planner" && isPremium && (
-        <div className="modal-overlay" onClick={() => setPanel(null)}>
+        <div className="modal-overlay" onClick={closeTool}>
           <div className="settings-card planner-card" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={() => { closeTool(); setPlannerSelectedDay(null); }}>✕</button>
             <h3>📅 Planeador Mensual</h3>
