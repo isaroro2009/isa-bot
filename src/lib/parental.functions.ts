@@ -99,9 +99,9 @@ export const getParentReport = createServerFn({ method: "POST" })
     const [{ data: events }, { data: feelings }, academyRes] = await Promise.all([
       db.from("analytics_events").select("event_type, created_at, metadata").eq("user_id", context.userId).gte("created_at", since).limit(5000),
       db.from("emotional_feedback").select("mood, created_at, message").eq("user_id", context.userId).gte("created_at", since).order("created_at", { ascending: false }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (db as any).from("academy_progress").select("*").eq("user_id", context.userId).maybeSingle().then((r: any) => r).catch(() => ({ data: null })),
+      db.from("academy_streaks").select("streak, total_xp").eq("user_id", context.userId).maybeSingle(),
     ]);
+    const { count: lessonsCount } = await db.from("academy_progress").select("id", { count: "exact", head: true }).eq("user_id", context.userId);
 
     const areaMap = new Map<string, number>();
     const topicMap = new Map<string, number>();
@@ -132,13 +132,9 @@ export const getParentReport = createServerFn({ method: "POST" })
       .slice(0, 10)
       .map((f) => ({ mood: f.mood, date: f.created_at, hasNote: !!f.message }));
 
-    const a = academyRes?.data as Record<string, unknown> | null;
-    const academy = a
-      ? {
-          xp: Number(a.xp ?? 0),
-          streak: Number(a.streak ?? 0),
-          lessons: Array.isArray(a.completed_lessons) ? a.completed_lessons.length : Number(a.lessons_completed ?? 0),
-        }
+    const a = academyRes.data;
+    const academy = a || lessonsCount
+      ? { xp: a?.total_xp ?? 0, streak: a?.streak ?? 0, lessons: lessonsCount ?? 0 }
       : null;
 
     const sortMap = (m: Map<string, number>, n: number) =>
