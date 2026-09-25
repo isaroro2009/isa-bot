@@ -8,6 +8,7 @@ import { getMyProfile, acknowledgePremiumGift } from "@/lib/profile.functions";
 import { sendWelcomeEmail } from "@/lib/welcome.functions";
 import { sendLoginAlert } from "@/lib/login-alert.functions";
 import { EmotionalCheckin } from "@/components/EmotionalCheckin";
+import { ResponsibleAiGuide } from "@/components/ResponsibleAiGuide";
 import { LiveNotifications } from "@/components/LiveNotifications";
 import { parseReminder, reminderSummary } from "@/lib/reminder-parse";
 import { parseEmailIntent, parseDocIntent } from "@/lib/chat-intents";
@@ -854,7 +855,7 @@ function IsaBotPage() {
   );
 }
 
-type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "myday" | "invite" | "feedback" | "technews" | "academy" | "ibcagent";
+type PanelKey = null | "tasks" | "palette" | "outlines" | "habits" | "pomodoro" | "subscribe" | "weekly" | "planner" | "notes" | "cowork" | "isaspace" | "myday" | "invite" | "feedback" | "technews" | "academy" | "ibcagent" | "aiguide";
 
 function openApp(path: string, name: string) {
   const url = `${window.location.origin}${path}`;
@@ -2562,23 +2563,20 @@ ${rows}
           <div className="tools-section">
 
             <h3>🛠️ Herramientas</h3>
+            <div className="tool-block-title">⚡ Productividad y Enfoque</div>
             <button className="tool-btn free" onClick={() => setPanel("myday")}>🚀 Mi Día con IsaBot</button>
             <button className="tool-btn free" onClick={() => setPanel("tasks")}>📋 Gestor de Tareas</button>
+            <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>{isPremium ? "📅" : "🔒"} Planeador Mensual</button>
+            <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>{isPremium ? "⏱️" : "🔒"} Pomodoro 25/5</button>
+            <div className="tool-block-title">🎨 Creatividad y Estudio</div>
+            <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>{isPremium ? "✏️" : "🔒"} Outlines para Procreate</button>
             <button className="tool-btn free" onClick={() => { setPalette(generatePalette()); setPanel("palette"); }}>🎨 Paletas de Colores</button>
             <button className="tool-btn free" onClick={() => setPanel("notes")}>📝 Notas Rápidas</button>
+            <div className="tool-block-title">🧠 Inteligencia y Sorpresas</div>
             <button className="tool-btn free" onClick={() => setPanel("ibcagent")}>🤖 Agente autónomo (PDF)</button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>
-              {isPremium ? "✏️" : "🔒"} Outlines para Procreate
-            </button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>
-              {isPremium ? "⏱️" : "🔒"} Pomodoro 25/5
-            </button>
-            <button className="tool-btn premium" onClick={() => { if (isPremium) { setPanel("weekly"); } else setPanel("subscribe"); }}>
-              {isPremium ? "🎁" : "🔒"} Regalo Semanal
-            </button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>
-              {isPremium ? "📅" : "🔒"} Planeador Mensual
-            </button>
+            <button className="tool-btn premium" onClick={() => { if (isPremium) { setPanel("weekly"); } else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
+            <button className="tool-btn free" onClick={() => setPanel("aiguide")}>🌱 Guía de IA Responsable</button>
+            <button className="tool-btn free" onClick={() => openApp("/padres", "isabot-padres")}>👨‍👩‍👧 Portal de Padres</button>
 
           </div>
 
@@ -3629,21 +3627,28 @@ ${rows}
         </div>
       )}
 
+      {panel === "aiguide" && <ResponsibleAiGuide onClose={() => setPanel(null)} />}
+
       {/* Mobile Tools sheet */}
       {panel === ("tools-menu" as PanelKey) && (
         <div className="modal-overlay sheet-overlay" onClick={() => setPanel(null)}>
           <div className="mobile-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-handle" />
             <h3>🛠️ Herramientas</h3>
+            <div className="tool-block-title">⚡ Productividad y Enfoque</div>
             <button className="tool-btn free" onClick={() => setPanel("myday")}>🚀 Mi Día con IsaBot</button>
             <button className="tool-btn free" onClick={() => setPanel("tasks")}>📋 Gestor de Tareas</button>
+            <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>{isPremium ? "📅" : "🔒"} Planeador Mensual</button>
+            <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>{isPremium ? "⏱️" : "🔒"} Pomodoro 25/5</button>
+            <div className="tool-block-title">🎨 Creatividad y Estudio</div>
+            <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>{isPremium ? "✏️" : "🔒"} Outlines para Procreate</button>
             <button className="tool-btn free" onClick={() => { setPalette(generatePalette()); setPanel("palette"); }}>🎨 Paletas de Colores</button>
             <button className="tool-btn free" onClick={() => setPanel("notes")}>📝 Notas Rápidas</button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("outlines")}>{isPremium ? "✏️" : "🔒"} Outlines para Procreate</button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("habits")}>{isPremium ? "✨" : "🔒"} Coach de Hábitos IA</button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("pomodoro")}>{isPremium ? "⏱️" : "🔒"} Pomodoro 25/5</button>
+            <div className="tool-block-title">🧠 Inteligencia y Sorpresas</div>
+            <button className="tool-btn free" onClick={() => setPanel("ibcagent")}>🤖 Agente autónomo (PDF)</button>
             <button className="tool-btn premium" onClick={() => { if (isPremium) { setPanel("weekly"); } else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
-            <button className="tool-btn premium" onClick={() => tryOpenPremium("planner")}>{isPremium ? "📅" : "🔒"} Planeador Mensual</button>
+            <button className="tool-btn free" onClick={() => setPanel("aiguide")}>🌱 Guía de IA Responsable</button>
+            <button className="tool-btn free" onClick={() => openApp("/padres", "isabot-padres")}>👨‍👩‍👧 Portal de Padres</button>
           </div>
         </div>
       )}
