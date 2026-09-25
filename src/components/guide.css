@@ -1,0 +1,45 @@
+.guide-modal { max-width: 560px; width: 94vw; max-height: 88vh; overflow-y: auto; text-align: left; }
+.guide-head { display: flex; justify-content: space-between; align-items: center; }
+.guide-head h3 { margin: 0; }
+.guide-x { background: none; border: 0; font-size: 1.1rem; cursor: pointer; color: inherit; }
+.guide-sub { opacity: .75; font-size: .88rem; margin: 6px 0 12px; }
+.guide-dots { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.guide-dot { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--theme-border, #e5e5e5); background: var(--panel, #fff); cursor: pointer; font-size: 1rem; }
+.guide-dot.done { opacity: .6; }
+.guide-dot.on { border-color: var(--accent, #c9a7ff); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #c9a7ff) 30%, transparent); }
+.guide-card { background: color-mix(in srgb, var(--accent, #c9a7ff) 8%, var(--panel, #fff)); border: 1px solid var(--theme-border, #eee); border-radius: 14px; padding: 14px 16px; }
+.guide-card h4 { margin: 0 0 8px; }
+.guide-card ul { margin: 0; padding-left: 18px; line-height: 1.6; font-size: .92rem; }
+.guide-q { margin: 10px 0; }
+.guide-q p { margin: 0 0 6px; font-weight: 600; font-size: .9rem; }
+.guide-opt { display: block; width: 100%; text-align: left; margin: 4px 0; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--theme-border, #e5e5e5); background: var(--panel, #fff); color: inherit; cursor: pointer; font-size: .86rem; }
+.guide-opt.ok { border-color: #3aa76d; background: #e8f7ee; color: #1d5e3b; }
+.guide-opt.bad { border-color: #d64545; background: #fdecec; color: #8a2222; }
+.guide-result { font-weight: 700; margin-top: 10px; }
+.guide-nav { display: flex; justify-content: space-between; margin-top: 12px; }
+.guide-btn { padding: 8px 14px; border-radius: 10px; border: 0; background: var(--accent, #c9a7ff); color: #222; font-weight: 700; cursor: pointer; }
+.guide-btn.ghost { background: transparent; border: 1px solid var(--theme-border, #ddd); color: inherit; }
+.guide-btn:disabled { opacity: .4; cursor: default; }
+
+/* Bloques de herramientas */
+.tool-block { margin: 10px 0 4px; }
+.tool-block-title { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; opacity: .6; margin: 12px 2px 6px; }
+
+/* Portal de padres */
+.parent-page { min-height: 100vh; background: var(--bg, #fafafa); color: var(--text, #333); padding: 24px 16px 60px; }
+.parent-wrap { max-width: 860px; margin: 0 auto; }
+.parent-card { background: var(--panel, #fff); border: 1px solid var(--theme-border, #eee); border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.parent-card h2, .parent-card h3 { margin: 0 0 10px; }
+.parent-input { width: 100%; max-width: 260px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--theme-border, #ddd); font-size: 1rem; letter-spacing: .3em; background: var(--input-bg, #fff); color: inherit; }
+.parent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.parent-kpi { border-radius: 12px; padding: 12px; background: color-mix(in srgb, var(--accent, #c9a7ff) 10%, var(--panel, #fff)); }
+.parent-kpi b { display: block; font-size: 1.5rem; }
+.parent-bar { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: .88rem; }
+.parent-bar span:first-child { flex: 0 0 45%; }
+.parent-bar i { display: block; height: 10px; border-radius: 6px; background: var(--accent, #c9a7ff); }
+.parent-modes { display: flex; gap: 10px; flex-wrap: wrap; }
+.parent-mode { flex: 1 1 220px; text-align: left; padding: 14px; border-radius: 12px; border: 2px solid var(--theme-border, #e5e5e5); background: var(--panel, #fff); color: inherit; cursor: pointer; }
+.parent-mode.on { border-color: var(--accent, #c9a7ff); background: color-mix(in srgb, var(--accent, #c9a7ff) 12%, var(--panel, #fff)); }
+.parent-alert { padding: 8px 10px; border-radius: 10px; background: #fff4e5; color: #7a4a00; margin: 6px 0; font-size: .88rem; }
+.parent-err { color: #d64545; font-size: .88rem; }
+.parent-note { font-size: .8rem; opacity: .7; }
