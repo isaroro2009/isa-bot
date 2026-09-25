@@ -695,6 +695,24 @@ export const Route = createFileRoute("/api/chat")({
             baseSystem += VIBE_INSTRUCTIONS[vibe];
           }
 
+          // Control parental: Modo Académico / Guiado
+          {
+            const { data: pc } = await supaAuthed
+              .from("parental_controls")
+              .select("guide_mode")
+              .eq("user_id", userId)
+              .maybeSingle();
+            if (pc?.guide_mode === "academico") {
+              baseSystem +=
+                "\n\nMODO ACADÉMICO / GUIADO (activado por sus padres): la persona es estudiante menor de edad. " +
+                "No hagas tareas, ensayos ni ejercicios completos por ella: guíala con preguntas, pistas y pasos para que piense y lo resuelva por sí misma (método socrático). " +
+                "Explica conceptos con ejemplos simples, fomenta el pensamiento crítico y recuérdale verificar fuentes. " +
+                "Mantén un lenguaje apropiado para su edad, evita temas no aptos para menores y redirige con amabilidad hacia el aprendizaje.";
+            }
+          }
+
+
+
 
           let taskContext = "";
           if (Array.isArray(body.tareas) && body.tareas.length > 0) {
