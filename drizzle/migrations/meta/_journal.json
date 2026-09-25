@@ -15,6 +15,13 @@
       "when": 1790228378820,
       "tag": "0001_access_keys_emotional_feedback_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790300086410,
+      "tag": "0002_parental_controls",
+      "breakpoints": true
     }
   ]
 }
