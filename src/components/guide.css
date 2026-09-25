@@ -26,20 +26,42 @@
 .tool-block-title { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; opacity: .6; margin: 12px 2px 6px; }
 
 /* Portal de padres */
-.parent-page { min-height: 100vh; background: var(--bg, #fafafa); color: var(--text, #333); padding: 24px 16px 60px; }
+.parent-page {
+  --parent-space: oklch(0.1 0.035 292);
+  --parent-panel: oklch(0.19 0.045 292 / 88%);
+  --parent-text: oklch(0.96 0.012 295);
+  --parent-muted: oklch(0.76 0.035 292);
+  --parent-purple: oklch(0.7 0.19 303);
+  --parent-gold: oklch(0.82 0.14 82);
+  --parent-border: oklch(0.76 0.11 303 / 24%);
+  min-height: 100vh;
+  color: var(--parent-text);
+  padding: 36px 16px 60px;
+  background: radial-gradient(circle at 15% 12%, oklch(0.34 0.14 303 / 28%), transparent 30%), radial-gradient(circle at 86% 78%, oklch(0.3 0.1 276 / 20%), transparent 34%), var(--parent-space);
+}
 .parent-wrap { max-width: 860px; margin: 0 auto; }
-.parent-card { background: var(--panel, #fff); border: 1px solid var(--theme-border, #eee); border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.parent-card { background: var(--parent-panel); border: 1px solid var(--parent-border); border-radius: 24px; padding: 22px; margin-bottom: 16px; box-shadow: 0 24px 65px oklch(0.03 0.02 292 / 42%), inset 0 1px 0 oklch(1 0 0 / 7%); backdrop-filter: blur(22px); }
 .parent-card h2, .parent-card h3 { margin: 0 0 10px; }
-.parent-input { width: 100%; max-width: 260px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--theme-border, #ddd); font-size: 1rem; letter-spacing: .3em; background: var(--input-bg, #fff); color: inherit; }
+.parent-card a { color: var(--parent-gold); }
+.parent-input { width: 100%; max-width: 260px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--parent-border); font-size: 1rem; letter-spacing: .3em; background: oklch(0.12 0.03 292 / 80%); color: inherit; }
 .parent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
-.parent-kpi { border-radius: 12px; padding: 12px; background: color-mix(in srgb, var(--accent, #c9a7ff) 10%, var(--panel, #fff)); }
+.parent-kpi { border-radius: 18px; padding: 14px; background: oklch(0.26 0.06 294 / 62%); border: 1px solid var(--parent-border); }
 .parent-kpi b { display: block; font-size: 1.5rem; }
 .parent-bar { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: .88rem; }
 .parent-bar span:first-child { flex: 0 0 45%; }
-.parent-bar i { display: block; height: 10px; border-radius: 6px; background: var(--accent, #c9a7ff); }
+.parent-bar i { display: block; height: 10px; border-radius: 6px; background: linear-gradient(90deg, var(--parent-purple), var(--parent-gold)); }
 .parent-modes { display: flex; gap: 10px; flex-wrap: wrap; }
-.parent-mode { flex: 1 1 220px; text-align: left; padding: 14px; border-radius: 12px; border: 2px solid var(--theme-border, #e5e5e5); background: var(--panel, #fff); color: inherit; cursor: pointer; }
-.parent-mode.on { border-color: var(--accent, #c9a7ff); background: color-mix(in srgb, var(--accent, #c9a7ff) 12%, var(--panel, #fff)); }
-.parent-alert { padding: 8px 10px; border-radius: 10px; background: #fff4e5; color: #7a4a00; margin: 6px 0; font-size: .88rem; }
-.parent-err { color: #d64545; font-size: .88rem; }
-.parent-note { font-size: .8rem; opacity: .7; }
+.parent-mode { flex: 1 1 220px; text-align: left; padding: 16px; border-radius: 18px; border: 1px solid var(--parent-border); background: oklch(0.23 0.05 292 / 62%); color: inherit; cursor: pointer; }
+.parent-mode.on { border-color: var(--parent-purple); background: oklch(0.42 0.13 302 / 38%); box-shadow: 0 0 0 3px oklch(0.7 0.19 303 / 12%); }
+.parent-alert { padding: 10px 12px; border-radius: 14px; background: oklch(0.29 0.07 79 / 54%); border: 1px solid oklch(0.82 0.14 82 / 35%); color: oklch(0.9 0.1 86); margin: 6px 0; font-size: .88rem; }
+.parent-err { color: oklch(0.78 0.16 24); font-size: .88rem; }
+.parent-note { font-size: .8rem; color: var(--parent-muted); }
+.parent-page .guide-btn { background: linear-gradient(135deg, var(--parent-purple), oklch(0.57 0.2 292)); color: var(--parent-text); border-radius: 14px; padding: 11px 18px; }
+.parent-page .guide-btn.ghost { border-color: var(--parent-border); background: oklch(0.2 0.04 292 / 72%); }
+
+@media (max-width: 640px) {
+  .parent-page { padding: 12px 12px 36px; }
+  .parent-card { border-radius: 20px; padding: 18px 16px; }
+  .parent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .parent-bar span:first-child { flex-basis: 52%; }
+}

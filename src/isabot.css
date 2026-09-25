@@ -6969,6 +6969,160 @@ html[data-vibe="custom"] .messages .b {
 .acad-mycourse-del { font-size: 11px; opacity: .55; background: none; border: none; cursor: pointer; }
 .acad-mycourse-del:hover { opacity: 1; color: #d64545; }
 
+/* ═══════════════ Herramientas: espacio de trabajo dedicado ═══════════════ */
+body.tool-workspace-active {
+  --tool-space: oklch(0.12 0.035 292);
+  --tool-space-deep: oklch(0.075 0.025 290);
+  --tool-panel: oklch(0.18 0.04 292 / 86%);
+  --tool-panel-strong: oklch(0.22 0.05 292 / 94%);
+  --tool-text: oklch(0.96 0.012 295);
+  --tool-muted: oklch(0.75 0.035 292);
+  --tool-purple: oklch(0.7 0.19 303);
+  --tool-gold: oklch(0.82 0.14 82);
+  --tool-border: oklch(0.76 0.11 303 / 24%);
+  --tool-border-gold: oklch(0.82 0.14 82 / 34%);
+  margin: 0;
+  overflow: hidden;
+  color: var(--tool-text);
+  background: var(--tool-space-deep);
+}
+.tool-workspace-mode {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 16% 18%, oklch(0.32 0.13 305 / 28%), transparent 30%),
+    radial-gradient(circle at 84% 82%, oklch(0.3 0.1 275 / 20%), transparent 34%),
+    linear-gradient(145deg, var(--tool-space-deep), var(--tool-space));
+  isolation: isolate;
+}
+.tool-workspace-mode::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .45;
+  background-image:
+    radial-gradient(circle, oklch(0.96 0.02 290 / 70%) 0 1px, transparent 1.5px),
+    radial-gradient(circle, oklch(0.82 0.14 82 / 62%) 0 1px, transparent 1.5px);
+  background-position: 0 0, 42px 58px;
+  background-size: 92px 92px, 137px 137px;
+}
+.tool-workspace-mode > :not(.modal-overlay):not(.ibc-root) { display: none !important; }
+.tool-workspace-active .emo-card,
+.tool-workspace-active .pts-toast-host,
+.tool-workspace-active .ibc-streak-toast { display: none !important; }
+.tool-workspace-mode > .modal-overlay,
+.tool-workspace-mode > .ibc-overlay,
+.tool-workspace-mode .focus-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+  padding: clamp(18px, 4vw, 56px) !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+.tool-workspace-mode .settings-card,
+.tool-workspace-mode .guide-modal,
+.tool-workspace-mode .focus-card,
+.tool-workspace-mode .ibc-panel {
+  width: min(920px, 100%) !important;
+  max-width: 920px !important;
+  max-height: calc(100dvh - 72px) !important;
+  overflow-y: auto !important;
+  box-sizing: border-box;
+  color: var(--tool-text) !important;
+  background: linear-gradient(145deg, var(--tool-panel-strong), var(--tool-panel)) !important;
+  border: 1px solid var(--tool-border) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 30px 90px oklch(0.02 0.02 290 / 72%), inset 0 1px 0 oklch(1 0 0 / 8%) !important;
+  backdrop-filter: blur(24px) saturate(130%);
+  padding: clamp(22px, 4vw, 42px) !important;
+}
+.tool-workspace-mode .settings-card h3,
+.tool-workspace-mode .guide-head h3,
+.tool-workspace-mode .ibc-head h3,
+.tool-workspace-mode .focus-title {
+  color: var(--tool-text) !important;
+  font-family: "Sora", "Manrope", sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2.15rem);
+  letter-spacing: 0;
+}
+.tool-workspace-mode .close-btn,
+.tool-workspace-mode .guide-x,
+.tool-workspace-mode .ibc-x {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border-radius: 50% !important;
+  border: 1px solid var(--tool-border) !important;
+  color: var(--tool-text) !important;
+  background: oklch(0.28 0.05 292 / 80%) !important;
+  box-shadow: none !important;
+}
+.tool-workspace-mode :is(input, textarea, select) {
+  color: var(--tool-text) !important;
+  background: oklch(0.12 0.03 292 / 82%) !important;
+  border: 1px solid var(--tool-border) !important;
+  border-radius: 14px !important;
+}
+.tool-workspace-mode :is(input, textarea)::placeholder { color: var(--tool-muted) !important; }
+.tool-workspace-mode :is(input, textarea, select):focus { outline: 2px solid var(--tool-purple) !important; outline-offset: 2px; }
+.tool-workspace-mode :is(.reminder-btn, .myday-go, .pomo-actions button, .planner-tab.active, .focus-btn.main, .guide-btn, .ibc-btn.neon) {
+  color: var(--tool-text) !important;
+  background: linear-gradient(135deg, var(--tool-purple), oklch(0.57 0.2 292)) !important;
+  border: 1px solid oklch(0.82 0.15 304 / 38%) !important;
+  box-shadow: 0 12px 28px oklch(0.52 0.2 300 / 25%) !important;
+}
+.tool-workspace-mode :is(.myday-chip.active, .planner-cell.selected, .task-filters button.active, .guide-dot.on) {
+  color: var(--tool-text) !important;
+  background: oklch(0.62 0.17 302 / 42%) !important;
+  border-color: var(--tool-purple) !important;
+}
+.tool-workspace-mode :is(.task-item, .task-hint, .weekly-info, .weekly-hint, .myday-block, .myday-recap, .guide-card, .guide-opt, .planner-grid, .planner-cell, .ibc-agent-step) {
+  color: var(--tool-text) !important;
+  background: oklch(0.25 0.045 292 / 60%) !important;
+  border: 1px solid var(--tool-border) !important;
+  border-radius: 18px !important;
+}
+.tool-workspace-mode :is(.habits-sub, .myday-lbl, .myday-meta, .myday-block-sub, .task-due, .task-hint, .weekly-status, .weekly-hint, .guide-sub, .ibc-empty-note, .pomo-cycles) { color: var(--tool-muted) !important; }
+.tool-workspace-mode :is(.myday-goal-txt, .myday-block-title, .task-text, .planner-dow) { color: var(--tool-text) !important; }
+.tool-workspace-mode :is(.task-progress-bar, .myday-progress) { background: oklch(0.3 0.06 294 / 70%) !important; }
+.tool-workspace-mode :is(.task-progress-bar > div, .myday-progress > div) { background: linear-gradient(90deg, var(--tool-purple), var(--tool-gold)) !important; }
+.tool-workspace-mode .pomo-timer { color: var(--tool-gold) !important; text-shadow: 0 0 36px oklch(0.82 0.14 82 / 30%); }
+.tool-workspace-mode .palette-grid { gap: 14px; }
+.tool-workspace-mode .palette-swatch { border: 1px solid var(--tool-border-gold); border-radius: 20px; min-height: 150px; }
+.tool-workspace-mode .guide-dot { background: oklch(0.22 0.04 292); border-color: var(--tool-border); }
+.tool-workspace-mode .guide-opt.ok { border-color: oklch(0.72 0.16 155) !important; }
+.tool-workspace-mode .guide-opt.bad { border-color: oklch(0.66 0.2 25) !important; }
+
+@media (max-width: 640px) {
+  .tool-workspace-mode > .modal-overlay,
+  .tool-workspace-mode > .ibc-overlay,
+  .tool-workspace-mode .focus-overlay { padding: 12px !important; align-items: stretch !important; }
+  .tool-workspace-mode .settings-card,
+  .tool-workspace-mode .guide-modal,
+  .tool-workspace-mode .focus-card,
+  .tool-workspace-mode .ibc-panel {
+    min-height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px) !important;
+    border-radius: 22px !important;
+    padding: 20px 16px !important;
+  }
+  .tool-workspace-mode .task-form-row,
+  .tool-workspace-mode .pomo-actions,
+  .tool-workspace-mode .planner-month-picker { flex-wrap: wrap; }
+  .tool-workspace-mode .task-form-row > * { flex: 1 1 140px; min-width: 0; }
+  .tool-workspace-mode .palette-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tool-workspace-mode .palette-swatch { min-height: 112px; }
+}
+
 /* ── FIX MÓVIL: evitar desbordes en pantallas pequeñas ── */
 @media (max-width: 768px) {
   /* Márgenes seguros a los lados del input (px-4) */
