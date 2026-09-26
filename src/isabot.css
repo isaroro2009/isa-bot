@@ -7378,6 +7378,7 @@ body.tool-workspace-active .chat-container.tool-workspace-mode {
   background:
     linear-gradient(180deg, color-mix(in oklab, var(--haven-purple-deep) 18%, transparent), transparent 32rem),
     var(--haven-night) !important;
+  color-scheme: dark;
 }
 
 .haven-dashboard-active > .menu-btn { display: none !important; }
@@ -7387,7 +7388,8 @@ body.tool-workspace-active .chat-container.tool-workspace-mode {
   min-height: auto;
   padding: 0 !important;
   overflow: visible;
-  background: transparent !important;
+  color: var(--haven-text) !important;
+  background: var(--haven-night) !important;
 }
 
 .haven-stream-header {
@@ -7442,7 +7444,12 @@ body.tool-workspace-active .chat-container.tool-workspace-mode {
 }
 .haven-header-icon:hover { color: var(--haven-text) !important; border-color: var(--haven-line); background: var(--haven-surface) !important; }
 
-.haven-stream-dashboard { min-height: calc(100dvh - 72px); padding-bottom: 72px; }
+.haven-stream-dashboard {
+  min-height: calc(100dvh - 72px);
+  padding-bottom: 72px;
+  color: var(--haven-text) !important;
+  background: var(--haven-night) !important;
+}
 .haven-stream-hero {
   position: relative;
   isolation: isolate;
@@ -7504,15 +7511,16 @@ body.tool-workspace-active .chat-container.tool-workspace-mode {
   right: clamp(2%, 7vw, 10%);
   bottom: 22px;
   z-index: 1;
-  width: min(35vw, 430px);
+  width: min(30vw, 330px);
   max-height: 88%;
   object-fit: contain;
+  border-radius: 50%;
   filter: saturate(.78) contrast(1.04) drop-shadow(0 24px 44px color-mix(in oklab, var(--haven-purple) 28%, transparent));
   mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
 }
 
-.haven-stream-catalog { position: relative; z-index: 4; margin-top: -68px; display: grid; gap: 42px; }
-.haven-stream-row { min-width: 0; }
+.haven-stream-catalog { position: relative; z-index: 4; margin-top: -68px; display: grid; gap: 42px; background: var(--haven-night) !important; }
+.haven-stream-row { min-width: 0; color: var(--haven-text) !important; background: var(--haven-night) !important; }
 .haven-row-heading { padding: 0 clamp(22px, 4vw, 64px) 13px; display: flex; align-items: end; justify-content: space-between; gap: 16px; }
 .haven-row-heading div > span { color: var(--haven-purple); font-size: .62rem; font-weight: 900; text-transform: uppercase; }
 .haven-row-heading h2 { margin: 3px 0 0; color: var(--haven-text); font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.2; }

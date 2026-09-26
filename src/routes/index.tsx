@@ -816,14 +816,16 @@ function generatePalette(): string[] {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IsaBot — Co-piloto de IA Creativa para Estudiantes y Emprendedores" },
-      { name: "description", content: "IsaBot: tu co-piloto de IA creativa. Estudia mejor, emprende con foco y crea sin bloqueo. Hecho por IsaRoRo Studio." },
+      { title: "IsaHaven — El mundo de Isa" },
+      { name: "description", content: "Explora herramientas de estudio, creatividad, productividad y recompensas junto a IsaBot en IsaHaven." },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "theme-color", content: "#e8d8ff" },
-      { property: "og:title", content: "IsaBot — Co-piloto de IA Creativa" },
-      { property: "og:description", content: "Tu co-piloto de IA para estudiantes y emprendedores. Hecho por IsaRoRo Studio." },
+      { property: "og:title", content: "IsaHaven — El mundo de Isa" },
+      { property: "og:description", content: "Tu mundo de estudio, creatividad, productividad y recompensas junto a IsaBot." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [
       {
@@ -2869,7 +2871,7 @@ ${rows}
                   </Button>
                 </div>
               </div>
-              <img className="haven-stream-mascot" src={isabotMascot.url} alt="IsaBot, tu copiloto dentro de IsaHaven" />
+              <img className="haven-stream-mascot" src="/icons/isabot-icon-192.png" alt="IsaBot, tu copiloto dentro de IsaHaven" />
             </section>
 
             <div className="haven-stream-catalog" aria-label="Catálogo de herramientas">
