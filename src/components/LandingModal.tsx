@@ -26,7 +26,7 @@ export function LandingModal({ onStart }: { onStart?: () => void } = {}) {
     <div className="modal-overlay landing-overlay">
       <div className="settings-card landing-card" onClick={(e) => e.stopPropagation()}>
         <div className="landing-top">
-          <span className="landing-brand">IsaRoRo Studio</span>
+          <span className="landing-brand">🏡 IsaHaven · IsaRoRo Studio</span>
           <LanguageToggle compact />
         </div>
 
