@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "IsaBot — tu co-piloto de IA creativa",
-  "short_name": "IsaBot",
-  "description": "IsaBot de IsaRoRo Studio: chat de IA, imágenes, IsaAcademy, IsaStudio y modo sin conexión.",
+  "name": "IsaHaven — hogar de IsaBot",
+  "short_name": "IsaHaven",
+  "description": "IsaHaven de IsaRoRo Studio, hogar de IsaBot: chat de IA, imágenes, IsaAcademy, IsaStudio y modo sin conexión.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { listMuseum, uploadCertificate, deleteCertificate } from "@/lib/haven.functions";
-import "@/components/guide.css";
 
 export const Route = createFileRoute("/_authenticated/museo")({
   head: () => ({

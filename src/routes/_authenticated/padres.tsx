@@ -7,9 +7,9 @@ import "@/components/guide.css";
 export const Route = createFileRoute("/_authenticated/padres")({
   head: () => ({
     meta: [
-      { title: "Portal de Padres — IsaBot" },
+      { title: "Portal de Padres — IsaHaven" },
       { name: "description", content: "Control parental de IsaBot: resúmenes de actividad, modos de guía y bienestar emocional, respetando la privacidad de los chats." },
-      { property: "og:title", content: "Portal de Padres — IsaBot" },
+      { property: "og:title", content: "Portal de Padres — IsaHaven" },
       { property: "og:description", content: "Tranquilidad para familias: actividad, modo académico y bienestar de tus hijos en IsaBot." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -72,7 +72,7 @@ function ParentsPortal() {
         <div className="parent-card">
           <h2>👨‍👩‍👧 Portal de Padres</h2>
           <p className="parent-note">Visibilidad y tranquilidad sobre el uso de IsaBot. Por privacidad, <b>nunca</b> se muestran los chats individuales: solo resúmenes.</p>
-          <Link to="/" className="parent-note">← Volver a IsaBot</Link>
+          <Link to="/" className="parent-note">← Volver a IsaHaven</Link>
         </div>
 
         {configured === null && !err && <div className="parent-card">Cargando…</div>}
