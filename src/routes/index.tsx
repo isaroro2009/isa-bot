@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient as useHavenQC } from "@tanstack/react-query";
+import { toast as havenToast } from "sonner";
+import { rewardTask } from "@/lib/haven.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { BRAINS } from "@/lib/brains";
 
@@ -137,6 +140,9 @@ type Task = {
   priority: TaskPriority;
   due?: string | null; // ISO date (YYYY-MM-DD)
   createdAt: number;
+  category?: string;
+  minutes?: number;
+  rewarded?: boolean;
 };
 type Pet = { name: string; hunger: number; happy: number; energy: number; xp: number; stage: number };
 
@@ -1200,6 +1206,10 @@ function IsaBot() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskInput, setTaskInput] = useState("");
   const [taskPriority, setTaskPriority] = useState<TaskPriority>("med");
+  const [taskCategory, setTaskCategory] = useState("Estudio");
+  const [taskMinutes, setTaskMinutes] = useState(25);
+  const rewardTaskFn = useServerFn(rewardTask);
+  const havenQC = useHavenQC();
   const [taskDue, setTaskDue] = useState("");
   const [taskFilter, setTaskFilter] = useState<"all" | "pending" | "done">("all");
 
@@ -1937,13 +1947,25 @@ ${rows}
     if (!t) return;
     setTasks((prev) => [
       ...prev,
-      { id: Date.now(), text: t, done: false, priority: taskPriority, due: taskDue || null, createdAt: Date.now() },
+      { id: Date.now(), text: t, done: false, priority: taskPriority, due: taskDue || null, createdAt: Date.now(), category: taskCategory, minutes: taskMinutes },
     ]);
     setTaskInput("");
     setTaskDue("");
     setTaskPriority("med");
   }
-  function toggleTask(id: number) { setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))); }
+  function toggleTask(id: number) {
+    const task = tasks.find((t) => t.id === id);
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+    if (task && !task.done && !task.rewarded) {
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, rewarded: true } : t)));
+      rewardTaskFn({ data: { ref: String(id), priority: task.priority } })
+        .then((r) => {
+          if (r.delta > 0) havenToast.success(`🪙 +${r.delta} IsaBot Coins · ¡tarea completada!`);
+          void havenQC.invalidateQueries({ queryKey: ["ibc-wallet"] });
+        })
+        .catch(() => undefined);
+    }
+  }
   function removeTask(id: number) { setTasks((prev) => prev.filter((t) => t.id !== id)); }
   function clearDoneTasks() { setTasks((prev) => prev.filter((t) => !t.done)); }
   const PRIO_META: Record<TaskPriority, { label: string; emoji: string; order: number }> = {
@@ -2611,6 +2633,8 @@ ${rows}
             <button className="tool-btn premium" onClick={() => { if (isPremium) openTool("weekly"); else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
             <button className="tool-btn free" onClick={() => openTool("aiguide")}>🌱 Guía de IA Responsable</button>
             <button className="tool-btn free" onClick={() => openApp("/padres", "isabot-padres")}>👨‍👩‍👧 Portal de Padres</button>
+            <button className="tool-btn free" onClick={() => openApp("/museo", "isahaven-museo")}>🏛️ IsaMuseum</button>
+            <button className="tool-btn free" onClick={() => openApp("/recompensas", "isahaven-tienda")}>🎁 Tienda de Recompensas</button>
 
           </div>
 
@@ -3049,6 +3073,12 @@ ${rows}
                   <option value="med">🟡 Media</option>
                   <option value="low">🟢 Baja</option>
                 </select>
+                <select value={taskCategory} onChange={(e) => setTaskCategory(e.target.value)}>
+                  {["Estudio", "Trabajo", "Creatividad", "Personal", "Salud"].map((c) => <option key={c}>{c}</option>)}
+                </select>
+                <select value={taskMinutes} onChange={(e) => setTaskMinutes(Number(e.target.value))}>
+                  {[15, 25, 45, 60, 90].map((m) => <option key={m} value={m}>⏱ {m} min</option>)}
+                </select>
                 <input type="date" value={taskDue} onChange={(e) => setTaskDue(e.target.value)} />
                 <button className="reminder-btn task-add-btn" onClick={addTask}>➕</button>
               </div>
@@ -3074,6 +3104,11 @@ ${rows}
                         <span className="task-prio-dot">{PRIO_META[t.priority].emoji}</span>
                         {t.text}
                       </span>
+                      <span className="task-meta">
+                        <span className="task-chip">🏷 {t.category ?? "General"}</span>
+                        {t.minutes ? <span className="task-chip">⏱ {t.minutes} min</span> : null}
+                        <span className="task-chip coin">{t.rewarded ? "✓ " : "+"}{t.priority === "high" ? 50 : t.priority === "med" ? 30 : 20} 🪙</span>
+                      </span>
                       {t.due && (
                         <span className={`task-due ${overdue ? "overdue" : ""}`}>📅 {t.due}{overdue ? " ¡vencida!" : ""}</span>
                       )}
@@ -3083,7 +3118,7 @@ ${rows}
                 );
               })}
             </div>
-            <p className="task-hint">💡 IsaBot conoce tus tareas — pídele que te ayude a organizarlas 💕</p>
+            <p className="task-hint">🪙 Cada tarea completada suma IsaBot Coins (hasta 200 al día). 💡 IsaBot conoce tus tareas — pídele que te ayude a organizarlas 💕</p>
           </div>
         </div>
       )}
@@ -3683,6 +3718,8 @@ ${rows}
             <button className="tool-btn premium" onClick={() => { if (isPremium) openTool("weekly"); else setPanel("subscribe"); }}>{isPremium ? "🎁" : "🔒"} Regalo Semanal</button>
             <button className="tool-btn free" onClick={() => openTool("aiguide")}>🌱 Guía de IA Responsable</button>
             <button className="tool-btn free" onClick={() => openApp("/padres", "isabot-padres")}>👨‍👩‍👧 Portal de Padres</button>
+            <button className="tool-btn free" onClick={() => openApp("/museo", "isahaven-museo")}>🏛️ IsaMuseum</button>
+            <button className="tool-btn free" onClick={() => openApp("/recompensas", "isahaven-tienda")}>🎁 Tienda de Recompensas</button>
           </div>
         </div>
       )}

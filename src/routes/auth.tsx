@@ -13,9 +13,9 @@ import "../isabot.css";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "IsaBot — Entra con tu llave personal" },
-      { name: "description", content: "Crea tu cuenta de IsaBot con tu nombre y correo y entra siempre con tu llave personal, sin contraseñas." },
-      { property: "og:title", content: "IsaBot — Entra con tu llave personal" },
+      { title: "IsaHaven — Entra con tu llave personal" },
+      { name: "description", content: "Crea tu cuenta de IsaHaven con tu nombre y correo y entra siempre con tu llave personal, sin contraseñas." },
+      { property: "og:title", content: "IsaHaven — Entra con tu llave personal" },
       { property: "og:description", content: "Tu co-piloto de IA creativa. Sin contraseñas: una llave personal ISA-XXXX te da acceso." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

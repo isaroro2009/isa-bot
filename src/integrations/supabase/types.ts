@@ -872,6 +872,42 @@ export type Database = {
         }
         Relationships: []
       }
+      museum_certificates: {
+        Row: {
+          ai_verdict: string
+          created_at: string
+          id: string
+          image_data: string
+          issuer: string
+          reward: number
+          title: string
+          user_id: string
+          valid: boolean
+        }
+        Insert: {
+          ai_verdict?: string
+          created_at?: string
+          id?: string
+          image_data: string
+          issuer?: string
+          reward?: number
+          title: string
+          user_id: string
+          valid?: boolean
+        }
+        Update: {
+          ai_verdict?: string
+          created_at?: string
+          id?: string
+          image_data?: string
+          issuer?: string
+          reward?: number
+          title?: string
+          user_id?: string
+          valid?: boolean
+        }
+        Relationships: []
+      }
       organization_invites: {
         Row: {
           accepted_at: string | null
@@ -1441,6 +1477,74 @@ export type Database = {
         }
         Relationships: []
       }
+      reward_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          item_id: string
+          redeemed_at: string | null
+          redeemed_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          item_id: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_codes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "reward_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_items: {
+        Row: {
+          active: boolean
+          cost: number
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          sponsor: string
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          cost: number
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          sponsor?: string
+          title: string
+        }
+        Update: {
+          active?: boolean
+          cost?: number
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          sponsor?: string
+          title?: string
+        }
+        Relationships: []
+      }
       rewards_catalog: {
         Row: {
           active: boolean
@@ -1693,6 +1797,30 @@ export type Database = {
           thumbnail?: string | null
           title?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      task_rewards: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          task_ref: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          task_ref: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          task_ref?: string
           user_id?: string
         }
         Relationships: []
@@ -2086,6 +2214,13 @@ export type Database = {
           tx_id: string
         }[]
       }
+      ibc_task_reward: {
+        Args: { _priority: string; _task_ref: string }
+        Returns: {
+          balance: number
+          delta: number
+        }[]
+      }
       is_org_member: { Args: { _org: string; _user: string }; Returns: boolean }
       is_premium_user: { Args: { _user_id: string }; Returns: boolean }
       redeem_reward: {
@@ -2094,6 +2229,20 @@ export type Database = {
           asset_url: string
           points: number
           reward_code: string
+        }[]
+      }
+      redeem_reward_code: {
+        Args: { _item: string }
+        Returns: {
+          balance: number
+          code: string
+        }[]
+      }
+      reward_stock: {
+        Args: never
+        Returns: {
+          available: number
+          item_id: string
         }[]
       }
     }

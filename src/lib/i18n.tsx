@@ -113,7 +113,7 @@ export const STRINGS: Dict = {
   "reset.back": { es: "← Volver al inicio de sesión", en: "← Back to sign in" },
 
   // Landing
-  "landing.title": { es: "¡Bienvenida/o a IsaBot! 🌸", en: "Welcome to IsaBot! 🌸" },
+  "landing.title": { es: "¡Bienvenida/o a IsaHaven! 🌸", en: "Welcome to IsaHaven! 🌸" },
   "landing.tagline": {
     es: "La primera IA gamificada diseñada para estudiantes y creadores. Aprende, genera PDFs y diseños profesionales, mantén tu racha diaria y gana IsaBot Coins (IBC) 🪙 por cada logro.",
     en: "The first gamified AI designed for students and creators. Learn, generate professional PDFs and designs, maintain your daily streak, and earn IsaBot Coins (IBC) 🪙 for every milestone.",

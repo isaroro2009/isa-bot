@@ -1,4 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { listRewards, adminSaveReward, adminAddCodes, adminToggleReward } from "@/lib/haven.functions";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -356,6 +358,7 @@ function AdminPage() {
         {!error && <EmotionalAdminSection />}
 
         {!error && <FeedbackAdminSection />}
+        {!error && <RewardsAdminSection />}
 
         {!error && <B2BLeadsSection />}
 
@@ -1284,6 +1287,49 @@ function EmotionalAdminSection() {
             <b>{MOOD_EMOJI[r.mood] ?? "💬"} {r.author_name || r.author_email || "Usuaria"}</b>
             <span style={{ opacity: 0.6 }}> · {new Date(r.created_at).toLocaleString()}</span>
             {r.message && <p style={{ margin: "4px 0 0" }}>{r.message}</p>}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
+function RewardsAdminSection() {
+  const list = useServerFn(listRewards);
+  const save = useServerFn(adminSaveReward);
+  const addCodes = useServerFn(adminAddCodes);
+  const toggle = useServerFn(adminToggleReward);
+  const [items, setItems] = useState<Array<{ id: string; title: string; cost: number; stock: number; active: boolean; emoji: string }>>([]);
+  const [f, setF] = useState({ title: "", description: "", emoji: "🎁", sponsor: "", cost: 500, codes: "" });
+  const [extra, setExtra] = useState<Record<string, string>>({});
+  const refresh = () => list().then((d) => setItems(d.items)).catch(() => undefined);
+  useEffect(() => { void refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+  const lines = (t: string) => t.split("\n").map((x) => x.trim()).filter(Boolean);
+  return (
+    <section style={{ marginTop: 24, padding: 16, borderRadius: 16, border: "1px solid rgba(201,167,255,.35)" }}>
+      <h2>🎁 Tienda de Recompensas (códigos precargados)</h2>
+      <div style={{ display: "grid", gap: 8, maxWidth: 520 }}>
+        <input placeholder="Título (ej. Spotify Premium 1 mes)" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
+        <input placeholder="Descripción" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} />
+        <div style={{ display: "flex", gap: 8 }}>
+          <input style={{ width: 70 }} value={f.emoji} onChange={(e) => setF({ ...f, emoji: e.target.value })} />
+          <input placeholder="Patrocinador" value={f.sponsor} onChange={(e) => setF({ ...f, sponsor: e.target.value })} />
+          <input type="number" min={1} value={f.cost} onChange={(e) => setF({ ...f, cost: Number(e.target.value) })} />
+        </div>
+        <textarea rows={4} placeholder="Códigos, uno por línea" value={f.codes} onChange={(e) => setF({ ...f, codes: e.target.value })} />
+        <button onClick={async () => {
+          try { await save({ data: { ...f, codes: lines(f.codes) } }); toast.success("Premio creado"); setF({ ...f, title: "", description: "", codes: "" }); void refresh(); }
+          catch (e) { toast.error(e instanceof Error ? e.message : "Error"); }
+        }}>Crear premio</button>
+      </div>
+      <div style={{ marginTop: 16, display: "grid", gap: 8 }}>
+        {items.map((i) => (
+          <div key={i.id} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <b>{i.emoji} {i.title}</b> · 🪙 {i.cost} · {i.stock} códigos libres · {i.active ? "Activo" : "Oculto"}
+            <button onClick={async () => { await toggle({ data: { itemId: i.id, active: !i.active } }); void refresh(); }}>{i.active ? "Ocultar" : "Activar"}</button>
+            <textarea rows={1} placeholder="Más códigos" value={extra[i.id] ?? ""} onChange={(e) => setExtra({ ...extra, [i.id]: e.target.value })} />
+            <button onClick={async () => { const c = lines(extra[i.id] ?? ""); if (!c.length) return; await addCodes({ data: { itemId: i.id, codes: c } }); setExtra({ ...extra, [i.id]: "" }); void refresh(); }}>Añadir</button>
           </div>
         ))}
       </div>

@@ -6,10 +6,10 @@ import "../../isabot.css";
 export const Route = createFileRoute("/_authenticated/bienvenida")({
   head: () => ({
     meta: [
-      { title: "Bienvenida a IsaBot" },
-      { name: "description", content: "Tu espacio en IsaBot está listo: estudia, emprende y crea con tu co-piloto de IA." },
-      { property: "og:title", content: "Bienvenida a IsaBot" },
-      { property: "og:description", content: "Tu espacio en IsaBot está listo." },
+      { title: "Bienvenida a IsaHaven" },
+      { name: "description", content: "Tu espacio en IsaHaven está listo: estudia, emprende y crea con tu co-piloto de IA." },
+      { property: "og:title", content: "Bienvenida a IsaHaven" },
+      { property: "og:description", content: "Tu espacio en IsaHaven está listo." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -36,9 +36,9 @@ function Welcome() {
       <div className="auth-card" style={{ textAlign: "center" }}>
         <div className="auth-emoji">🌸</div>
         <h1 className="auth-title">{greet}{name ? `, ${name}` : ""} ✨</h1>
-        <p className="auth-sub">Qué alegría tenerte aquí. Tu espacio en IsaBot está listo para estudiar, emprender y crear sin bloqueos.</p>
+        <p className="auth-sub">Qué alegría tenerte aquí. Tu espacio en IsaHaven está listo para estudiar, emprender y crear sin bloqueos.</p>
         <Link to="/" className="auth-submit-btn" style={{ display: "block", marginTop: 18, textDecoration: "none" }}>
-          Entrar a IsaBot 💬
+          Entrar a IsaHaven 💬
         </Link>
       </div>
     </div>
