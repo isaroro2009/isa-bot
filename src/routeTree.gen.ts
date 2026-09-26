@@ -19,8 +19,10 @@ import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as ICodeRouteImport } from './routes/i.$code'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
+import { Route as AuthenticatedRecompensasRouteImport } from './routes/_authenticated/recompensas'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPadresRouteImport } from './routes/_authenticated/padres'
+import { Route as AuthenticatedMuseoRouteImport } from './routes/_authenticated/museo'
 import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
 import { Route as AuthenticatedBienvenidaRouteImport } from './routes/_authenticated/bienvenida'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -97,6 +99,12 @@ const ApiAgentRoute = ApiAgentRouteImport.update({
   path: '/api/agent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRecompensasRoute =
+  AuthenticatedRecompensasRouteImport.update({
+    id: '/recompensas',
+    path: '/recompensas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -105,6 +113,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
 const AuthenticatedPadresRoute = AuthenticatedPadresRouteImport.update({
   id: '/padres',
   path: '/padres',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMuseoRoute = AuthenticatedMuseoRouteImport.update({
+  id: '/museo',
+  path: '/museo',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
@@ -257,8 +270,10 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
+  '/museo': typeof AuthenticatedMuseoRoute
   '/padres': typeof AuthenticatedPadresRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
   '/i/$code': typeof ICodeRoute
@@ -296,8 +311,10 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/isaspace': typeof AuthenticatedIsaspaceRoute
+  '/museo': typeof AuthenticatedMuseoRoute
   '/padres': typeof AuthenticatedPadresRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
   '/i/$code': typeof ICodeRoute
@@ -336,8 +353,10 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/_authenticated/isaspace': typeof AuthenticatedIsaspaceRoute
+  '/_authenticated/museo': typeof AuthenticatedMuseoRoute
   '/_authenticated/padres': typeof AuthenticatedPadresRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/recompensas': typeof AuthenticatedRecompensasRoute
   '/api/agent': typeof ApiAgentRoute
   '/api/chat': typeof ApiChatRoute
   '/i/$code': typeof ICodeRoute
@@ -377,8 +396,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bienvenida'
     | '/isaspace'
+    | '/museo'
     | '/padres'
     | '/profile'
+    | '/recompensas'
     | '/api/agent'
     | '/api/chat'
     | '/i/$code'
@@ -416,8 +437,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bienvenida'
     | '/isaspace'
+    | '/museo'
     | '/padres'
     | '/profile'
+    | '/recompensas'
     | '/api/agent'
     | '/api/chat'
     | '/i/$code'
@@ -455,8 +478,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/bienvenida'
     | '/_authenticated/isaspace'
+    | '/_authenticated/museo'
     | '/_authenticated/padres'
     | '/_authenticated/profile'
+    | '/_authenticated/recompensas'
     | '/api/agent'
     | '/api/chat'
     | '/i/$code'
@@ -585,6 +610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/recompensas': {
+      id: '/_authenticated/recompensas'
+      path: '/recompensas'
+      fullPath: '/recompensas'
+      preLoaderRoute: typeof AuthenticatedRecompensasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -597,6 +629,13 @@ declare module '@tanstack/react-router' {
       path: '/padres'
       fullPath: '/padres'
       preLoaderRoute: typeof AuthenticatedPadresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/museo': {
+      id: '/_authenticated/museo'
+      path: '/museo'
+      fullPath: '/museo'
+      preLoaderRoute: typeof AuthenticatedMuseoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/isaspace': {
@@ -807,8 +846,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBienvenidaRoute: typeof AuthenticatedBienvenidaRoute
   AuthenticatedIsaspaceRoute: typeof AuthenticatedIsaspaceRoute
+  AuthenticatedMuseoRoute: typeof AuthenticatedMuseoRoute
   AuthenticatedPadresRoute: typeof AuthenticatedPadresRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedRecompensasRoute: typeof AuthenticatedRecompensasRoute
   AuthenticatedESlugRouteRoute: typeof AuthenticatedESlugRouteRouteWithChildren
   AuthenticatedOnboardingOrgRoute: typeof AuthenticatedOnboardingOrgRoute
   AuthenticatedStudioIdRoute: typeof AuthenticatedStudioIdRoute
@@ -820,8 +861,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBienvenidaRoute: AuthenticatedBienvenidaRoute,
   AuthenticatedIsaspaceRoute: AuthenticatedIsaspaceRoute,
+  AuthenticatedMuseoRoute: AuthenticatedMuseoRoute,
   AuthenticatedPadresRoute: AuthenticatedPadresRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedRecompensasRoute: AuthenticatedRecompensasRoute,
   AuthenticatedESlugRouteRoute: AuthenticatedESlugRouteRouteWithChildren,
   AuthenticatedOnboardingOrgRoute: AuthenticatedOnboardingOrgRoute,
   AuthenticatedStudioIdRoute: AuthenticatedStudioIdRoute,
