@@ -182,8 +182,9 @@ import { openPdfGallery } from "@/lib/pdf-gallery";
 import { ISA_THEMES, activeTheme, applyCustomTheme, applyTheme, ownTheme, ownedThemes, restoreCustomTheme } from "@/lib/themes";
 import { generateCustomTheme } from "@/lib/creative-ai.functions";
 import { useI18n } from "@/lib/i18n";
-import { Settings } from "lucide-react";
+import { ArrowRight, LockKeyhole, MessageCircle, Settings, Shield, UserRound } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import "@/lib/themes.css";
 
 
@@ -815,14 +816,16 @@ function generatePalette(): string[] {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IsaBot — Co-piloto de IA Creativa para Estudiantes y Emprendedores" },
-      { name: "description", content: "IsaBot: tu co-piloto de IA creativa. Estudia mejor, emprende con foco y crea sin bloqueo. Hecho por IsaRoRo Studio." },
+      { title: "IsaHaven — El mundo de Isa" },
+      { name: "description", content: "Explora herramientas de estudio, creatividad, productividad y recompensas junto a IsaBot en IsaHaven." },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "theme-color", content: "#e8d8ff" },
-      { property: "og:title", content: "IsaBot — Co-piloto de IA Creativa" },
-      { property: "og:description", content: "Tu co-piloto de IA para estudiantes y emprendedores. Hecho por IsaRoRo Studio." },
+      { property: "og:title", content: "IsaHaven — El mundo de Isa" },
+      { property: "og:description", content: "Tu mundo de estudio, creatividad, productividad y recompensas junto a IsaBot." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [
       {
@@ -1087,6 +1090,7 @@ function IsaBot() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [settingsExpanded, setSettingsExpanded] = useState(true);
+  const [dashboardOpen, setDashboardOpen] = useState(true);
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   // 🎨 Restaura el tema comprado con IBC
@@ -2538,6 +2542,57 @@ ${rows}
     </div>
   );
 
+  const streamingRows: Array<{
+    title: string;
+    eyebrow: string;
+    items: Array<{
+      title: string;
+      description: string;
+      icon: string;
+      art: string;
+      premium?: boolean;
+      open: () => void;
+    }>;
+  }> = [
+    {
+      title: "Tus Esenciales de Hoy",
+      eyebrow: "ENCUENTRA TU RITMO",
+      items: [
+        { title: "Mi Día con IsaBot", description: "Convierte tus metas en un plan claro para hoy.", icon: "🚀", art: "orbit", open: () => openTool("myday") },
+        { title: "Gestor de Tareas", description: "Organiza prioridades y gana IBC al avanzar.", icon: "✓", art: "tasks", open: () => openTool("tasks") },
+        { title: "Pomodoro 25/5", description: "Entra en foco y protege tus pausas.", icon: "⏱", art: "focus", premium: true, open: () => tryOpenPremium("pomodoro") },
+      ],
+    },
+    {
+      title: "Estudio y Creatividad",
+      eyebrow: "IDEAS QUE TOMAN FORMA",
+      items: [
+        { title: "Outlines para Procreate", description: "Bocetos listos para llevar a tu lienzo.", icon: "✦", art: "outline", premium: true, open: () => tryOpenPremium("outlines") },
+        { title: "Paletas de Colores", description: "Combinaciones visuales para cada proyecto.", icon: "◉", art: "palette", open: () => openTool("palette") },
+        { title: "Notas Rápidas", description: "Captura una idea antes de que desaparezca.", icon: "✎", art: "notes", open: () => openTool("notes") },
+      ],
+    },
+    {
+      title: "Magia e Inteligencia",
+      eyebrow: "POTENCIA TU CURIOSIDAD",
+      items: [
+        { title: "Agente Autónomo PDF", description: "Transforma una idea en un documento completo.", icon: "AI", art: "agent", open: () => openTool("ibcagent") },
+        { title: "Guía de IA Responsable", description: "Aprende a usar la IA con criterio y confianza.", icon: "✧", art: "guide", open: () => openTool("aiguide") },
+      ],
+    },
+    {
+      title: "Comunidad y Recompensas",
+      eyebrow: "COMPARTE, CRECE Y CELEBRA",
+      items: [
+        { title: "IsaMuseum", description: "Exhibe certificados y celebra tus logros.", icon: "🏛", art: "museum", open: () => openApp("/museo", "isahaven-museo") },
+        { title: "Tienda de Recompensas", description: "Convierte tus IsaBot Coins en premios.", icon: "◆", art: "rewards", open: () => openApp("/recompensas", "isahaven-tienda") },
+        { title: "Portal de Padres", description: "Acompañamiento seguro sin invadir conversaciones.", icon: "⌂", art: "parents", open: () => openApp("/padres", "isabot-padres") },
+      ],
+    },
+  ];
+
+  const showDashboard = dashboardOpen && !dedicatedTool && !currentMessages.some((message) => message.sender === "user");
+
 
 
 
@@ -2547,7 +2602,7 @@ ${rows}
   }
 
   return (
-    <div className={`chat-container ${dedicatedTool ? "tool-workspace-mode" : ""}`} data-tool={dedicatedTool ?? undefined}>
+    <div className={`chat-container ${dedicatedTool ? "tool-workspace-mode" : ""} ${showDashboard ? "haven-dashboard-active" : ""}`} data-tool={dedicatedTool ?? undefined}>
       <button
         type="button"
         className="menu-btn text-gray-800"
@@ -2719,22 +2774,45 @@ ${rows}
       
 
 
-      <header className="header">
-        <h1 className="logo">IsaBot ✨</h1>
-        <span className="motor-badge" title={homeCopy.modelTitle}>⚙️ {ISABOT_MODEL_LABEL}</span>
-        <LanguageToggle compact lang={lang} onChange={setLang} />
-        <IbcHud />
-        <Popover>
-          <PopoverTrigger asChild>
-            <button type="button" className="header-settings-btn" aria-label="Ajustes del chat" title="Ajustes del chat">
-              <Settings size={18} strokeWidth={2} />
+      {showDashboard ? (
+        <header className="haven-stream-header">
+          <div className="haven-stream-brand">
+            <strong>IsaHaven</strong>
+            <span>El mundo de Isa</span>
+          </div>
+          <nav aria-label="Accesos de cuenta">
+            <button type="button" className="haven-balance-chip" onClick={ibc.openVault} aria-label={`Saldo: ${ibc.balance} IsaBot Coins`}>
+              <span aria-hidden="true">✦</span>
+              <span><small>Saldo actual</small><b>{ibc.unlimited ? "∞" : ibc.balance} IBC</b></span>
             </button>
-          </PopoverTrigger>
-          <PopoverContent align="end" sideOffset={8} className="w-64 p-3">
-            {chatSettingsContent}
-          </PopoverContent>
-        </Popover>
-      </header>
+            {isAdmin && (
+              <Button asChild variant="ghost" size="icon" className="haven-header-icon" title="Panel de administración">
+                <Link to="/admin" aria-label="Panel de administración"><Shield /></Link>
+              </Button>
+            )}
+            <Button asChild variant="ghost" size="icon" className="haven-header-icon" title="Mi perfil">
+              <Link to="/profile" aria-label="Mi perfil"><UserRound /></Link>
+            </Button>
+          </nav>
+        </header>
+      ) : (
+        <header className="header">
+          <h1 className="logo">IsaBot ✨</h1>
+          <span className="motor-badge" title={homeCopy.modelTitle}>⚙️ {ISABOT_MODEL_LABEL}</span>
+          <LanguageToggle compact lang={lang} onChange={setLang} />
+          <IbcHud />
+          <Popover>
+            <PopoverTrigger asChild>
+              <button type="button" className="header-settings-btn" aria-label="Ajustes del chat" title="Ajustes del chat">
+                <Settings size={18} strokeWidth={2} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" sideOffset={8} className="w-64 p-3">
+              {chatSettingsContent}
+            </PopoverContent>
+          </Popover>
+        </header>
+      )}
 
 
       {!online && (
@@ -2764,7 +2842,7 @@ ${rows}
           }}
         />
       )}
-      <PromoCarousel
+      {!showDashboard && <PromoCarousel
         onAction={(a) => {
           if (a.kind === "store") ibc.openStore();
           else if (a.kind === "panel") setPanel(a.panel);
@@ -2773,80 +2851,56 @@ ${rows}
             else window.location.href = a.href;
           }
         }}
-      />
+      />}
 
       <div className="main">
-        {!currentMessages.some((m) => m.sender === "user") && (
-          <div className="intro-hero">
-            <div className="hub-grid" role="navigation" aria-label={homeCopy.hubNav}>
-              <article className="hub-card hub-space">
-                <button
-                  className="hub-main"
-                  onClick={() => {
-                    const url = `${window.location.origin}/isaspace?popup=1`;
-                    const win = window.open(url, "IsaSpace", "width=1280,height=860");
-                    if (!win) window.location.href = url;
-                  }}
-                >
-                  <span className="hub-preview" aria-hidden="true">
-                    <i className="hub-dot a" /><i className="hub-dot b" /><i className="hub-dot c" />
-                    <em>🪐</em>
-                  </span>
-                  <span className="hub-text">
-                    <strong>IsaSpace</strong>
-                    <small>{homeCopy.spaceDesc}</small>
-                  </span>
-                </button>
-                <div className="hub-quick">
-                  <button onClick={() => openApp("/isaspace", "IsaSpace")}>{homeCopy.feed}</button>
-                  <button onClick={() => { openApp("/isaspace?compose=1", "IsaSpace"); }}>{homeCopy.post}</button>
+        {showDashboard && (
+          <main className="haven-stream-dashboard">
+            <section className="haven-stream-hero" aria-labelledby="haven-dashboard-title">
+              <div className="haven-stream-hero-copy">
+                <span className="haven-featured-label">Tu espacio personal</span>
+                <h1 id="haven-dashboard-title">IsaHaven</h1>
+                <p className="haven-stream-tagline">El mundo de Isa</p>
+                <p className="haven-stream-intro">Ideas, enfoque y aprendizaje reunidos en un lugar hecho para crear a tu manera.</p>
+                <div className="haven-stream-actions">
+                  <Button className="haven-primary-action" onClick={() => { setDashboardOpen(false); window.setTimeout(() => inputRef.current?.focus(), 0); }}>
+                    <MessageCircle /> Hablar con IsaBot
+                  </Button>
+                  <Button variant="outline" className="haven-secondary-action" onClick={() => openTool("myday")}>
+                    Planear mi día <ArrowRight />
+                  </Button>
                 </div>
-              </article>
+              </div>
+              <img className="haven-stream-mascot" src="/icons/isabot-icon-192.png" alt="IsaBot, tu copiloto dentro de IsaHaven" />
+            </section>
 
-              <article className="hub-card hub-academy">
-                <button className="hub-main" onClick={() => openApp("/academy", "IsaAcademy")}>
-                  <span className="hub-preview" aria-hidden="true">
-                    <i className="hub-bar w1" /><i className="hub-bar w2" /><i className="hub-bar w3" />
-                    <em>🎓</em>
-                  </span>
-                  <span className="hub-text">
-                    <strong>IsaAcademy</strong>
-                    <small>{homeCopy.academyDesc}</small>
-                  </span>
-                </button>
-                <div className="hub-quick">
-                  <button onClick={() => openApp("/academy", "IsaAcademy")}>{homeCopy.classes}</button>
-                  <button onClick={() => setPanel("technews")}>{homeCopy.news}</button>
-                </div>
-              </article>
-
-              <article className="hub-card hub-studio">
-                <button className="hub-main" onClick={() => openApp("/studio", "IsaStudio")}>
-                  <span className="hub-preview" aria-hidden="true">
-                    <i className="hub-shape sq" /><i className="hub-shape ci" /><i className="hub-shape tx" />
-                    <em>🎨</em>
-                  </span>
-                  <span className="hub-text">
-                    <strong>IsaStudio</strong>
-                    <small>{homeCopy.studioDesc}</small>
-                  </span>
-                </button>
-                <div className="hub-quick">
-                  <button onClick={() => openApp("/studio?new=design", "IsaStudio")}>{homeCopy.design}</button>
-                  <button onClick={openPdfGallery}>{homeCopy.pdfs}</button>
-                </div>
-              </article>
+            <div className="haven-stream-catalog" aria-label="Catálogo de herramientas">
+              {streamingRows.map((row) => (
+                <section className="haven-stream-row" key={row.title}>
+                  <div className="haven-row-heading">
+                    <div><span>{row.eyebrow}</span><h2>{row.title}</h2></div>
+                    <span aria-hidden="true">Explorar →</span>
+                  </div>
+                  <div className="haven-card-rail">
+                    {row.items.map((item) => (
+                      <button type="button" className="haven-poster" data-art={item.art} key={item.title} onClick={item.open}>
+                        <span className="haven-poster-art" aria-hidden="true"><b>{item.icon}</b></span>
+                        {item.premium && !isPremium && <span className="haven-poster-lock"><LockKeyhole /> PRO</span>}
+                        <span className="haven-poster-copy">
+                          <strong>{item.title}</strong>
+                          <small>{item.description}</small>
+                          <i>ABRIR <ArrowRight /></i>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
-
-            <div className="intro-actions">
-              <button className="intro-cta primary" onClick={() => openTool("myday")}>
-                {homeCopy.planDay}
-              </button>
-            </div>
-          </div>
+          </main>
         )}
 
-        <div className="messages" ref={messagesRef}>
+        <div className="messages" ref={messagesRef} hidden={showDashboard}>
           {currentMessages.map((m, i) => {
             if (m.sender === "user") return (
               <div key={i} className="user">
@@ -2888,7 +2942,7 @@ ${rows}
         </div>
       </div>
 
-      <footer className="footer" ref={footerRef}>
+      <footer className="footer" ref={footerRef} hidden={showDashboard}>
         {attachedImage && (
           <div className="attach-preview">
             <img src={attachedImage} alt="adjunto" />

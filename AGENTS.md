@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- The authenticated root opens with a streaming-style IsaHaven catalog; the existing chat becomes visible through its dedicated action so tool and conversation logic stay isolated.

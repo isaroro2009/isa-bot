@@ -95,6 +95,16 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --haven-night: oklch(0.075 0.025 290);
+  --haven-night-soft: oklch(0.12 0.04 292);
+  --haven-surface: oklch(0.17 0.045 292 / 88%);
+  --haven-text: oklch(0.97 0.012 290);
+  --haven-muted: oklch(0.74 0.035 290);
+  --haven-purple: oklch(0.67 0.23 306);
+  --haven-purple-deep: oklch(0.46 0.2 300);
+  --haven-gold: oklch(0.82 0.15 82);
+  --haven-line: oklch(0.92 0.025 292 / 14%);
+  --haven-shadow: 0 24px 56px oklch(0.02 0.01 290 / 55%);
 }
 
 .dark {
@@ -130,6 +140,16 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --haven-night: oklch(0.075 0.025 290);
+  --haven-night-soft: oklch(0.12 0.04 292);
+  --haven-surface: oklch(0.17 0.045 292 / 88%);
+  --haven-text: oklch(0.97 0.012 290);
+  --haven-muted: oklch(0.74 0.035 290);
+  --haven-purple: oklch(0.67 0.23 306);
+  --haven-purple-deep: oklch(0.46 0.2 300);
+  --haven-gold: oklch(0.82 0.15 82);
+  --haven-line: oklch(0.92 0.025 292 / 14%);
+  --haven-shadow: 0 24px 56px oklch(0.02 0.01 290 / 55%);
 }
 
 @layer base {

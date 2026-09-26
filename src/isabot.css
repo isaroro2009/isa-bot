@@ -7367,3 +7367,248 @@ body.tool-workspace-active .chat-container.tool-workspace-mode {
     radial-gradient(circle at 84% 82%, oklch(0.3 0.1 275 / 25%), transparent 34%),
     linear-gradient(145deg, oklch(0.075 0.025 290), oklch(0.12 0.035 292)) !important;
 }
+
+/* ══════════ IsaHaven · inicio streaming ══════════ */
+.chat-container.haven-dashboard-active {
+  height: auto;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--haven-text);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--haven-purple-deep) 18%, transparent), transparent 32rem),
+    var(--haven-night) !important;
+  color-scheme: dark;
+}
+
+.haven-dashboard-active > .menu-btn { display: none !important; }
+.haven-dashboard-active > .main {
+  display: block;
+  flex: none;
+  min-height: auto;
+  padding: 0 !important;
+  overflow: visible;
+  color: var(--haven-text) !important;
+  background: var(--haven-night) !important;
+}
+
+.haven-stream-header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  min-height: 72px;
+  padding: 12px clamp(18px, 4vw, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-sizing: border-box;
+  color: var(--haven-text);
+  background: color-mix(in oklab, var(--haven-night) 82%, transparent);
+  border-bottom: 1px solid var(--haven-line);
+  backdrop-filter: blur(22px);
+}
+
+.haven-stream-brand { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+.haven-stream-brand strong {
+  color: var(--haven-text);
+  font-size: clamp(1.28rem, 2vw, 1.8rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  font-style: italic;
+}
+.haven-stream-brand span { color: var(--haven-gold); font-size: .78rem; font-weight: 800; white-space: nowrap; }
+.haven-stream-header nav { display: flex; align-items: center; gap: 10px; }
+.haven-balance-chip {
+  min-height: 44px;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--haven-text);
+  background: color-mix(in oklab, var(--haven-surface) 88%, transparent);
+  border: 1px solid var(--haven-line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.haven-balance-chip > span:first-child { color: var(--haven-gold); font-size: 1.25rem; }
+.haven-balance-chip > span:last-child { display: grid; text-align: left; }
+.haven-balance-chip small { color: var(--haven-muted); font-size: .58rem; font-weight: 800; text-transform: uppercase; }
+.haven-balance-chip b { font-size: .82rem; }
+.haven-header-icon {
+  color: var(--haven-muted) !important;
+  background: transparent !important;
+  border: 1px solid transparent;
+}
+.haven-header-icon:hover { color: var(--haven-text) !important; border-color: var(--haven-line); background: var(--haven-surface) !important; }
+
+.haven-stream-dashboard {
+  min-height: calc(100dvh - 72px);
+  padding-bottom: 72px;
+  color: var(--haven-text) !important;
+  background: var(--haven-night) !important;
+}
+.haven-stream-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(390px, 56vh, 610px);
+  padding: clamp(50px, 8vw, 108px) clamp(22px, 6vw, 92px) 110px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, var(--haven-night) 4%, color-mix(in oklab, var(--haven-night) 75%, transparent) 48%, transparent 78%),
+    linear-gradient(0deg, var(--haven-night), transparent 55%),
+    linear-gradient(120deg, color-mix(in oklab, var(--haven-purple-deep) 65%, var(--haven-night)), var(--haven-night-soft));
+}
+.haven-stream-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: .34;
+  background-image:
+    radial-gradient(circle at 72% 22%, var(--haven-gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 34%, var(--haven-text) 0 1px, transparent 2px),
+    radial-gradient(circle at 62% 18%, var(--haven-purple) 0 1px, transparent 2px),
+    radial-gradient(circle at 91% 14%, var(--haven-text) 0 1px, transparent 2px);
+  background-size: 150px 150px, 190px 190px, 230px 230px, 280px 280px;
+}
+.haven-stream-hero-copy { position: relative; z-index: 2; width: min(650px, 60vw); }
+.haven-featured-label {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 5px 9px;
+  color: var(--haven-night);
+  background: var(--haven-gold);
+  border-radius: 4px;
+  font-size: .65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.haven-stream-hero h1 {
+  margin: 0;
+  color: var(--haven-text);
+  font-size: clamp(3.5rem, 8vw, 7.6rem);
+  font-weight: 900;
+  line-height: .84;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  font-style: italic;
+}
+.haven-stream-tagline { margin: 12px 0 18px; color: var(--haven-gold); font-size: clamp(1.1rem, 2vw, 1.65rem); font-weight: 800; }
+.haven-stream-intro { max-width: 560px; margin: 0; color: var(--haven-muted); font-size: clamp(.95rem, 1.4vw, 1.12rem); line-height: 1.6; }
+.haven-stream-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.haven-primary-action,
+.haven-secondary-action { min-height: 46px; border-radius: 6px !important; font-weight: 850 !important; }
+.haven-primary-action { color: var(--haven-night) !important; background: var(--haven-text) !important; }
+.haven-primary-action:hover { background: color-mix(in oklab, var(--haven-text) 88%, var(--haven-purple)) !important; }
+.haven-secondary-action { color: var(--haven-text) !important; background: color-mix(in oklab, var(--haven-surface) 80%, transparent) !important; border-color: var(--haven-line) !important; }
+.haven-stream-mascot {
+  position: absolute;
+  right: clamp(2%, 7vw, 10%);
+  bottom: 22px;
+  z-index: 1;
+  width: min(30vw, 330px);
+  max-height: 88%;
+  object-fit: contain;
+  border-radius: 50%;
+  filter: saturate(.78) contrast(1.04) drop-shadow(0 24px 44px color-mix(in oklab, var(--haven-purple) 28%, transparent));
+  mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
+}
+
+.haven-stream-catalog { position: relative; z-index: 4; margin-top: -68px; display: grid; gap: 42px; background: var(--haven-night) !important; }
+.haven-stream-row { min-width: 0; color: var(--haven-text) !important; background: var(--haven-night) !important; }
+.haven-row-heading { padding: 0 clamp(22px, 4vw, 64px) 13px; display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.haven-row-heading div > span { color: var(--haven-purple); font-size: .62rem; font-weight: 900; text-transform: uppercase; }
+.haven-row-heading h2 { margin: 3px 0 0; color: var(--haven-text); font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.2; }
+.haven-row-heading > span { color: var(--haven-muted); font-size: .72rem; font-weight: 750; }
+.haven-card-rail {
+  display: flex;
+  gap: 15px;
+  padding: 6px clamp(22px, 4vw, 64px) 24px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--haven-purple-deep) transparent;
+}
+.haven-poster {
+  position: relative;
+  flex: 0 0 clamp(260px, 29vw, 410px);
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  overflow: hidden;
+  scroll-snap-align: start;
+  text-align: left;
+  color: var(--haven-text);
+  background: var(--haven-surface);
+  border: 1px solid var(--haven-line);
+  border-radius: 8px;
+  box-shadow: 0 14px 34px color-mix(in oklab, var(--haven-night) 70%, transparent);
+  cursor: pointer;
+  transform-origin: center;
+  transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
+}
+.haven-poster:hover,
+.haven-poster:focus-visible {
+  z-index: 5;
+  transform: translateY(-5px) scale(1.025);
+  border-color: color-mix(in oklab, var(--haven-purple) 64%, var(--haven-gold));
+  box-shadow: 0 22px 50px color-mix(in oklab, var(--haven-purple) 22%, transparent);
+  outline: none;
+}
+.haven-poster-art { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+.haven-poster-art::before,
+.haven-poster-art::after { content: ""; position: absolute; inset: 0; }
+.haven-poster-art::before {
+  background:
+    linear-gradient(125deg, transparent 35%, color-mix(in oklab, var(--haven-purple) 28%, transparent)),
+    repeating-linear-gradient(135deg, transparent 0 24px, color-mix(in oklab, var(--haven-text) 4%, transparent) 25px 26px),
+    var(--haven-night-soft);
+}
+.haven-poster-art::after { background: linear-gradient(0deg, color-mix(in oklab, var(--haven-night) 96%, transparent), transparent 78%); }
+.haven-poster[data-art="tasks"] .haven-poster-art::before,
+.haven-poster[data-art="notes"] .haven-poster-art::before { background: linear-gradient(140deg, color-mix(in oklab, var(--haven-gold) 28%, var(--haven-night)), var(--haven-night-soft)); }
+.haven-poster[data-art="palette"] .haven-poster-art::before,
+.haven-poster[data-art="rewards"] .haven-poster-art::before { background: linear-gradient(135deg, color-mix(in oklab, var(--haven-purple) 55%, var(--haven-night)), color-mix(in oklab, var(--haven-gold) 24%, var(--haven-night))); }
+.haven-poster[data-art="museum"] .haven-poster-art::before,
+.haven-poster[data-art="parents"] .haven-poster-art::before { background: linear-gradient(135deg, color-mix(in oklab, var(--haven-purple-deep) 52%, var(--haven-night)), var(--haven-night)); }
+.haven-poster-art b { position: relative; z-index: 2; color: color-mix(in oklab, var(--haven-text) 84%, var(--haven-gold)); font-size: clamp(2.5rem, 5vw, 4.8rem); font-weight: 900; font-style: normal; text-shadow: 0 0 34px color-mix(in oklab, var(--haven-purple) 50%, transparent); }
+.haven-poster-copy { position: absolute; inset: auto 0 0; z-index: 3; padding: 38px 18px 15px; display: grid; gap: 4px; background: linear-gradient(0deg, var(--haven-night) 2%, transparent); }
+.haven-poster-copy strong { font-size: clamp(.95rem, 1.5vw, 1.16rem); line-height: 1.15; }
+.haven-poster-copy small { color: var(--haven-muted); font-size: .73rem; line-height: 1.35; }
+.haven-poster-copy i { display: flex; align-items: center; gap: 5px; margin-top: 5px; color: var(--haven-gold); font-size: .62rem; font-weight: 900; font-style: normal; }
+.haven-poster-copy i svg,
+.haven-poster-lock svg { width: 13px; height: 13px; }
+.haven-poster-lock { position: absolute; top: 10px; right: 10px; z-index: 4; display: flex; align-items: center; gap: 5px; padding: 5px 8px; color: var(--haven-night); background: var(--haven-gold); border-radius: 4px; font-size: .62rem; font-weight: 900; }
+
+@media (max-width: 680px) {
+  .haven-stream-header { min-height: 62px; padding: 9px 14px; }
+  .haven-stream-brand { display: grid; gap: 2px; }
+  .haven-stream-brand strong { font-size: 1.08rem; }
+  .haven-stream-brand span { font-size: .64rem; }
+  .haven-balance-chip { min-height: 38px; padding: 4px 8px; }
+  .haven-balance-chip small { display: none; }
+  .haven-header-icon { width: 36px !important; height: 36px !important; }
+  .haven-stream-hero { min-height: 430px; padding: 55px 20px 88px; align-items: flex-end; }
+  .haven-stream-hero-copy { width: 100%; }
+  .haven-stream-hero h1 { font-size: clamp(3.2rem, 16vw, 5rem); }
+  .haven-stream-intro { max-width: 92%; font-size: .9rem; }
+  .haven-stream-mascot { width: min(66vw, 300px); right: -8%; bottom: 130px; opacity: .52; }
+  .haven-stream-actions { gap: 8px; }
+  .haven-stream-actions > * { flex: 1 1 145px; padding-inline: 14px !important; }
+  .haven-stream-catalog { margin-top: -42px; gap: 29px; }
+  .haven-row-heading { padding-inline: 18px; }
+  .haven-row-heading > span { display: none; }
+  .haven-card-rail { gap: 12px; padding: 4px 18px 17px; }
+  .haven-poster { flex-basis: min(78vw, 310px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .haven-poster { transition: none; }
+  .haven-poster:hover,
+  .haven-poster:focus-visible { transform: none; }
+}
