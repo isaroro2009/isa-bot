@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient as useHavenQC } from "@tanstack/react-query";
 import { toast as havenToast } from "sonner";
@@ -1048,10 +1049,24 @@ function IsaBot() {
   const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [authPromptOpen, setAuthPromptOpen] = useState(false);
+  useEffect(() => {
+    const onAuthPrompt = () => setAuthPromptOpen(true);
+    window.addEventListener("isahaven:auth-prompt", onAuthPrompt);
+    return () => window.removeEventListener("isahaven:auth-prompt", onAuthPrompt);
+  }, []);
+  useEffect(() => {
+    if (!authPromptOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAuthPromptOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [authPromptOpen]);
   // Portada pública: solo pedimos cuenta al usar funciones protegidas.
   const needAuth = () => {
     if (authUser) return false;
     setAuthPromptOpen(true);
+    window.dispatchEvent(new Event("isahaven:auth-prompt"));
     return true;
   };
   const openApp = (path: string, name: string) => { if (!needAuth()) openAppRaw(path, name); };
@@ -3016,16 +3031,17 @@ ${rows}
 
       {privacyOpen && <PrivacyPolicyModal onClose={() => setPrivacyOpen(false)} />}
 
-      {authPromptOpen && (
-        <div className="modal-overlay haven-auth-prompt" role="dialog" aria-modal="true" aria-label="Inicia sesión" onClick={() => setAuthPromptOpen(false)}>
+      {authPromptOpen && typeof document !== "undefined" && createPortal(
+        <div className="modal-overlay haven-auth-prompt" role="dialog" aria-modal="true" aria-labelledby="haven-auth-title" onClick={() => setAuthPromptOpen(false)}>
           <div className="settings-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, textAlign: "center" }}>
             <div style={{ fontSize: 40 }}>🔑</div>
-            <h2 style={{ margin: "8px 0" }}>Entra a IsaHaven</h2>
+            <h2 id="haven-auth-title" style={{ margin: "8px 0" }}>Entra a IsaHaven</h2>
             <p style={{ marginBottom: 16 }}>Crea tu cuenta o entra con tu llave para chatear con IsaBot, usar herramientas y guardar tus coins y rachas.</p>
             <Link to="/auth" className="landing-btn primary" onClick={() => setAuthPromptOpen(false)}>Iniciar sesión o crear cuenta</Link>
             <button type="button" className="landing-signup" onClick={() => setAuthPromptOpen(false)} style={{ marginTop: 10 }}>Seguir explorando</button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
 
 

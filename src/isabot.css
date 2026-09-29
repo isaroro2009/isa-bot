@@ -418,6 +418,9 @@ body.sidebar-open .header { opacity: 0; pointer-events: none; }
   z-index: 10000;
   padding: 16px;
 }
+.haven-auth-prompt {
+  z-index: 2147483647;
+}
 .login-overlay {
   background: rgba(255, 182, 193, 0.6);
   backdrop-filter: blur(8px);

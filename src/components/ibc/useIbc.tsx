@@ -47,6 +47,11 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const [emptyOpen, setEmptyOpen] = useState(false);
 
   const enabled = Boolean(userId);
+  const requireAuth = useCallback(() => {
+    if (enabled) return false;
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("isahaven:auth-prompt"));
+    return true;
+  }, [enabled]);
 
   const wallet = useQuery({
     queryKey: ["ibc-wallet", userId],
@@ -77,6 +82,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
   const lastTxRef = useRef<string | null>(null);
 
   const doCheckin = useCallback(async () => {
+    if (requireAuth()) return { delta: 0, milestone: 0, streakDays: 0 };
     const res = await checkinFn();
     invalidate();
     if (res.milestone > 0) {
@@ -85,7 +91,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       setStreakToast(`🔥 Racha de ${res.streakDays} día(s) · +${res.delta} coin`);
     }
     return res;
-  }, [checkinFn, invalidate]);
+  }, [checkinFn, invalidate, requireAuth]);
 
   // Check-in automático una vez al día para que la racha nunca se pierda.
   const autoDone = useRef(false);
@@ -98,7 +104,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
 
   const charge = useCallback(
     async (action: IbcActionKey, note?: string) => {
-      if (!enabled) return true; // invitados: sin economía hasta iniciar sesión
+      if (requireAuth()) return false;
       if (unlimited) return true; // ♾️ cuentas con coins infinitas nunca gastan
 
       const cost = effectiveCost(action, isPro);
@@ -120,7 +126,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
         return true;
       }
     },
-    [enabled, isPro, balance, unlimited, spendFn, invalidate],
+    [requireAuth, isPro, balance, unlimited, spendFn, invalidate],
   );
 
   // 🪙 Confirmación manual: nunca se descuentan coins sin un "sí" explícito.
@@ -133,7 +139,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
 
   const confirmCharge = useCallback(
     async (action: IbcActionKey, note?: string) => {
-      if (!enabled) return true;
+      if (requireAuth()) return false;
       if (unlimited) return true;
       const cost = effectiveCost(action, isPro);
       if (cost <= 0) return charge(action, note);
@@ -145,7 +151,7 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       if (!ok) return false;
       return charge(action, note);
     },
-    [enabled, isPro, balance, unlimited, charge],
+    [requireAuth, isPro, balance, unlimited, charge],
   );
 
 
@@ -176,9 +182,10 @@ export function IbcProvider({ userId, children }: { userId: string | null; child
       vaultOpen,
       storeOpen,
       emptyOpen,
-      openVault: () => setVaultOpen(true),
+      openVault: () => { if (!requireAuth()) setVaultOpen(true); },
       closeVault: () => setVaultOpen(false),
       openStore: () => {
+        if (requireAuth()) return;
         setEmptyOpen(false);
         setStoreOpen(true);
       },
