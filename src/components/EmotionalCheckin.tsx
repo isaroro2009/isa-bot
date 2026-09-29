@@ -8,6 +8,11 @@ const MOODS = [
   { v: "normal", e: "😐", l: "Normal" },
   { v: "confundida", e: "😕", l: "Confundida" },
   { v: "frustrada", e: "😣", l: "Frustrada" },
+  { v: "cansada", e: "😴", l: "Cansada" },
+  { v: "enfocada", e: "🎯", l: "Enfocada" },
+  { v: "ansiosa", e: "😰", l: "Ansiosa" },
+  { v: "triste", e: "😢", l: "Triste" },
+  { v: "motivada", e: "🔥", l: "Motivada" },
 ] as const;
 
 const PROMPTS = [

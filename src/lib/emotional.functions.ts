@@ -2,6 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const EMOTIONAL_MOODS = [
+  "feliz", "bien", "normal", "confundida", "frustrada",
+  "cansada", "enfocada", "ansiosa", "triste", "motivada",
+] as const;
+
 export type EmotionalRow = {
   id: string;
   user_id: string;
@@ -16,9 +21,9 @@ export const submitEmotional = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { mood: string; message?: string }) =>
     z.object({
-      mood: z.enum(["feliz", "bien", "normal", "confundida", "frustrada"]),
+      mood: z.enum(EMOTIONAL_MOODS),
       message: z.string().trim().max(1000).optional(),
-    }).parse(i),
+    }).strict().parse(i),
   )
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("emotional_feedback").insert({
