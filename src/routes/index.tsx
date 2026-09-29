@@ -173,7 +173,6 @@ import isabotMascot from "@/assets/isabot-mascot.png.asset.json";
 import accGlasses from "@/assets/acc-glasses.png.asset.json";
 import accCap from "@/assets/acc-cap.png.asset.json";
 import accBrush from "@/assets/acc-brush.png.asset.json";
-import LandingModal from "@/components/LandingModal";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
 import { PromoCarousel } from "@/components/PromoCarousel";
@@ -871,15 +870,15 @@ const TOOL_KEYS = new Set<ToolKey>([
   "myday", "tasks", "planner", "pomodoro", "outlines", "palette", "notes", "ibcagent", "weekly", "aiguide",
 ]);
 
-function openApp(path: string, name: string) {
+function openAppRaw(path: string, name: string) {
   const url = `${window.location.origin}${path}`;
   const win = window.open(url, name, "width=1280,height=900");
   if (win) win.opener = null;
   if (!win) window.location.href = url;
 }
 
-function openTool(key: ToolKey) {
-  openApp(`/?tool=${key}`, `isabot-tool-${key}`);
+function openToolRaw(key: ToolKey) {
+  openAppRaw(`/?tool=${key}`, `isabot-tool-${key}`);
 }
 
 
@@ -1048,6 +1047,15 @@ function IsaBot() {
 
   const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [authPromptOpen, setAuthPromptOpen] = useState(false);
+  // Portada pública: solo pedimos cuenta al usar funciones protegidas.
+  const needAuth = () => {
+    if (authUser) return false;
+    setAuthPromptOpen(true);
+    return true;
+  };
+  const openApp = (path: string, name: string) => { if (!needAuth()) openAppRaw(path, name); };
+  const openTool = (key: ToolKey) => { if (!needAuth()) openToolRaw(key); };
 
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -1614,6 +1622,7 @@ ${rows}
   // Evita envíos duplicados (Enter repetido, doble clic) que hacían que IsaBot
   // respondiera varios mensajes seguidos muy rápido.
   async function sendMessage(overrideText?: string, overrideImage?: string | null) {
+    if (needAuth()) return;
     if (sendingRef.current) return;
     sendingRef.current = true;
     setSending(true);
@@ -2152,6 +2161,7 @@ ${rows}
   const [processing, setProcessing] = useState(false);
 
   function tryOpenPremium(key: PanelKey) {
+    if (needAuth()) return;
     if (isPremium && key && TOOL_KEYS.has(key as ToolKey)) openTool(key as ToolKey);
     else if (isPremium) setPanel(key);
     else setPanel("subscribe");
@@ -2597,9 +2607,6 @@ ${rows}
 
 
   // Sin sesión: la primera pantalla es la bienvenida con Iniciar sesión / Crear cuenta.
-  if (authChecked && !authUser) {
-    return <LandingModal />;
-  }
 
   return (
     <div className={`chat-container ${dedicatedTool ? "tool-workspace-mode" : ""} ${showDashboard ? "haven-dashboard-active" : ""}`} data-tool={dedicatedTool ?? undefined}>
@@ -2711,7 +2718,7 @@ ${rows}
           ) : (
             <div className="premium-badge">👑 Premium activo ✨</div>
           )}
-          <button className="kawaii-sidebar-btn" onClick={createNewChat}>✨ Nuevo chat ➕</button>
+          <button className="kawaii-sidebar-btn" onClick={() => { if (!needAuth()) createNewChat(); }}>✨ Nuevo chat ➕</button>
           <button className="kawaii-sidebar-btn" onClick={() => { exportChatToPdf(); setSidebarOpen(false); }}>📄 Exportar chat a PDF</button>
 
           {isDesktopApp() && (
@@ -2863,7 +2870,7 @@ ${rows}
                 <p className="haven-stream-tagline">El mundo de Isa</p>
                 <p className="haven-stream-intro">Ideas, enfoque y aprendizaje reunidos en un lugar hecho para crear a tu manera.</p>
                 <div className="haven-stream-actions">
-                  <Button className="haven-primary-action" onClick={() => { setDashboardOpen(false); window.setTimeout(() => inputRef.current?.focus(), 0); }}>
+                  <Button className="haven-primary-action" onClick={() => { if (needAuth()) return; setDashboardOpen(false); window.setTimeout(() => inputRef.current?.focus(), 0); }}>
                     <MessageCircle /> Hablar con IsaBot
                   </Button>
                   <Button variant="outline" className="haven-secondary-action" onClick={() => openTool("myday")}>
@@ -3009,7 +3016,17 @@ ${rows}
 
       {privacyOpen && <PrivacyPolicyModal onClose={() => setPrivacyOpen(false)} />}
 
-      {/* La presentación de IsaBot (LandingModal) ya cubre el estado sin sesión */}
+      {authPromptOpen && (
+        <div className="modal-overlay haven-auth-prompt" role="dialog" aria-modal="true" aria-label="Inicia sesión" onClick={() => setAuthPromptOpen(false)}>
+          <div className="settings-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, textAlign: "center" }}>
+            <div style={{ fontSize: 40 }}>🔑</div>
+            <h2 style={{ margin: "8px 0" }}>Entra a IsaHaven</h2>
+            <p style={{ marginBottom: 16 }}>Crea tu cuenta o entra con tu llave para chatear con IsaBot, usar herramientas y guardar tus coins y rachas.</p>
+            <Link to="/auth" className="landing-btn primary" onClick={() => setAuthPromptOpen(false)}>Iniciar sesión o crear cuenta</Link>
+            <button type="button" className="landing-signup" onClick={() => setAuthPromptOpen(false)} style={{ marginTop: 10 }}>Seguir explorando</button>
+          </div>
+        </div>
+      )}
 
 
 

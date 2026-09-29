@@ -1,8 +1,12 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter, createHashHistory } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { assertSafeClientKey } from "./lib/supabase-key-guard";
 
 export const getRouter = () => {
+  if (typeof window !== "undefined") {
+    assertSafeClientKey(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+  }
   const queryClient = new QueryClient();
 
   // On the server / during prerender we must use memory history (there is no

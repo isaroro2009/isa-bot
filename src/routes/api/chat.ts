@@ -634,7 +634,23 @@ export const Route = createFileRoute("/api/chat")({
 
 
 
-          const body = (await request.json()) as {
+          const MAX_BODY = 7 * 1024 * 1024;
+          const declared = Number(request.headers.get("content-length") ?? "0");
+          if (declared > MAX_BODY) {
+            return Response.json({ respuesta: "El mensaje es demasiado grande 💔" }, { status: 413 });
+          }
+          const rawText = await request.text();
+          if (rawText.length > MAX_BODY) {
+            return Response.json({ respuesta: "El mensaje es demasiado grande 💔" }, { status: 413 });
+          }
+          let parsedBody: unknown;
+          try { parsedBody = JSON.parse(rawText); } catch {
+            return Response.json({ respuesta: "Solicitud inválida" }, { status: 400 });
+          }
+          if (!parsedBody || typeof parsedBody !== "object" || Array.isArray(parsedBody)) {
+            return Response.json({ respuesta: "Solicitud inválida" }, { status: 400 });
+          }
+          const body = parsedBody as {
             mensaje?: string;
             personalidad?: string;
             personalidadCustom?: string;
@@ -647,10 +663,15 @@ export const Route = createFileRoute("/api/chat")({
             customVibe?: string; // tono descrito por el usuario cuando vibe = custom
 
           };
-          const mensaje = (body.mensaje ?? "").toString().trim();
-          const imagenIn = typeof body.imagen === "string" && body.imagen.startsWith("data:image/")
-            ? body.imagen
-            : null;
+          const mensaje = typeof body.mensaje === "string" ? body.mensaje.trim() : "";
+          if (mensaje.length > 8000) {
+            return Response.json({ respuesta: "Tu mensaje supera los 8.000 caracteres 💕" }, { status: 413 });
+          }
+          const IMG_RE = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
+          if (body.imagen != null && (typeof body.imagen !== "string" || !IMG_RE.test(body.imagen))) {
+            return Response.json({ respuesta: "Solo acepto imágenes PNG, JPEG o WebP 💕" }, { status: 400 });
+          }
+          const imagenIn = typeof body.imagen === "string" ? body.imagen : null;
           const voiceMode = !!body.voiceMode;
           const crackMode = !!(body as { crackMode?: boolean }).crackMode;
           const emocionDetectada = typeof body.emocionDetectada === "string"
@@ -715,9 +736,23 @@ export const Route = createFileRoute("/api/chat")({
 
 
           let taskContext = "";
-          if (Array.isArray(body.tareas) && body.tareas.length > 0) {
-            const list = body.tareas
-              .slice(0, 30)
+          const cleanLine = (v: unknown, max: number) =>
+            typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, max) : "";
+          const safeTasks = Array.isArray(body.tareas)
+            ? body.tareas
+                .filter((t): t is { text: string; done: boolean; priority?: string; due?: string | null } =>
+                  !!t && typeof t === "object" && typeof (t as { text?: unknown }).text === "string")
+                .slice(0, 30)
+                .map((t) => ({
+                  text: cleanLine(t.text, 200),
+                  done: t.done === true,
+                  priority: ["high", "medium", "low"].includes(String(t.priority)) ? String(t.priority) : "",
+                  due: typeof t.due === "string" && /^\d{4}-\d{2}-\d{2}/.test(t.due) ? t.due.slice(0, 10) : "",
+                }))
+                .filter((t) => t.text)
+            : [];
+          if (safeTasks.length > 0) {
+            const list = safeTasks
               .map((t) => {
                 const status = t.done ? "✅ hecha" : "⏳ pendiente";
                 const prio = t.priority ? ` [prioridad: ${t.priority}]` : "";
@@ -780,7 +815,14 @@ export const Route = createFileRoute("/api/chat")({
           const dateStr = nowDate.toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
           const dateBlock = `\n\n📅 FECHA ACTUAL (referencia real): hoy es ${dateStr} (${nowDate.toISOString().slice(0,10)}). El año actual es ${nowDate.getUTCFullYear()}. NUNCA digas que estamos en un año anterior; si no sabes algo posterior a tu entrenamiento, dilo con honestidad pero respeta la fecha real.`;
           const system = baseSystem + dateBlock + nameHint + aboutBlock + memoryBlock + isaspaceBlock + planBlock + growthBlock + taskContext + weatherContext + voiceInstruction + visionInstruction + GUARDRAILS;
-          const historial = Array.isArray(body.historial) ? body.historial.slice(-20) : [];
+          const historial: Msg[] = Array.isArray(body.historial)
+            ? body.historial
+                .filter((m): m is Msg =>
+                  !!m && typeof m === "object" &&
+                  (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+                .slice(-20)
+                .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }))
+            : [];
 
           // Sin GROQ_API_KEY, groqChat usa automáticamente el motor de Lovable AI.
           const key = process.env.GROQ_API_KEY ?? "";

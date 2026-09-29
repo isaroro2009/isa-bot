@@ -7445,6 +7445,8 @@ body.tool-workspace-active .chat-container.tool-workspace-mode {
 .haven-header-icon:hover { color: var(--haven-text) !important; border-color: var(--haven-line); background: var(--haven-surface) !important; }
 
 .haven-stream-dashboard {
+  height: auto !important;
+  overflow-y: auto !important;
   min-height: calc(100dvh - 72px);
   padding-bottom: 72px;
   color: var(--haven-text) !important;

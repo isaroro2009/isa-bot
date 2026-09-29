@@ -1,0 +1,17 @@
+[Unit]
+Description=JEV local API (IsaHaven)
+After=network-online.target ollama.service
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/jev
+EnvironmentFile=/home/pi/jev/.env
+ExecStart=/home/pi/jev/.venv/bin/python api.py
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
