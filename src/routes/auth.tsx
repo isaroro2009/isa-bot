@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
 import { ensureGuestVip } from "@/lib/guest.functions";
-import { registerWithKey, loginWithKey } from "@/lib/passwordless.functions";
+import { registerWithKey, loginWithKey, recoverKey } from "@/lib/passwordless.functions";
 import { getStoredKey, storeKey, clearStoredKey } from "@/lib/access-key";
 import "../isabot.css";
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-type Mode = "signup" | "key";
+type Mode = "signup" | "key" | "recover";
 
 function AuthPage() {
   const navigate = useNavigate();
