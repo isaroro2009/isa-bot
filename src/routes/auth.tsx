@@ -129,6 +129,26 @@ function AuthPage() {
     }
   };
 
+  const handleRecover = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const creds = await recoverKey({ data: { email: email.trim() } });
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (err) throw err;
+      storeKey(creds.accessKey);
+      setNewKey(creds.accessKey);
+    } catch (err) {
+      fail(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGuestVip = async () => {
     setError(null);
     setLoading(true);
@@ -204,12 +224,16 @@ function AuthPage() {
           <LanguageToggle />
         </div>
         <div className="auth-header">
-          <div className="auth-emoji">{mode === "signup" ? "✨" : "🔑"}</div>
-          <h1 className="auth-title">{mode === "signup" ? "Crea tu cuenta" : "Entra con tu llave"}</h1>
+          <div className="auth-emoji">{mode === "signup" ? "✨" : mode === "recover" ? "🗝️" : "🔑"}</div>
+          <h1 className="auth-title">
+            {mode === "signup" ? "Crea tu cuenta" : mode === "recover" ? "Recupera tu llave" : "Entra con tu llave"}
+          </h1>
           <p className="auth-sub">
             {mode === "signup"
               ? "Solo tu nombre y tu correo. Te daremos una llave personal, sin contraseñas."
-              : "Escribe tu llave personal (ISA-XXXX-XXXX) una sola vez en este dispositivo."}
+              : mode === "recover"
+                ? "Escribe el correo de tu cuenta y te daremos una llave nueva. La anterior dejará de funcionar."
+                : "Escribe tu llave personal (ISA-XXXX-XXXX) una sola vez en este dispositivo."}
           </p>
         </div>
 
