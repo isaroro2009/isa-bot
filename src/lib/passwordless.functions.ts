@@ -97,7 +97,7 @@ export const recoverKey = createServerFn({ method: "POST" })
       .select("id")
       .eq("email", data.email)
       .maybeSingle();
-    if (!profile) throw new Error("No encontré una cuenta con ese correo");
+    if (!profile) return { email: data.email, password: null, accessKey: null, notFound: true as const };
 
     const password = randomPassword();
     await supabaseAdmin.auth.admin.updateUserById(profile.id, { password, email_confirm: true });
@@ -108,7 +108,7 @@ export const recoverKey = createServerFn({ method: "POST" })
       .upsert({ user_id: profile.id, key_hash: await sha256(accessKey), last_used_at: new Date().toISOString() });
     if (keyErr) throw new Error("No pude generar tu nueva llave");
 
-    return { email: data.email, password, accessKey };
+    return { email: data.email, password, accessKey, notFound: false as const };
   });
 
 export const loginWithKey = createServerFn({ method: "POST" })
