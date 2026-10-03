@@ -238,7 +238,7 @@ function AuthPage() {
         </div>
 
         <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-          {(["signup", "key"] as Mode[]).map((m) => (
+          {(["signup", "key", "recover"] as Mode[]).map((m) => (
             <button
               key={m}
               type="button"
@@ -246,7 +246,7 @@ function AuthPage() {
               className="auth-submit-btn"
               style={{ flex: 1, opacity: mode === m ? 1 : 0.55, padding: "8px 10px" }}
             >
-              {m === "signup" ? "Crear cuenta" : "Tengo mi llave"}
+              {m === "signup" ? "Crear cuenta" : m === "recover" ? "Recuperar llave" : "Tengo mi llave"}
             </button>
           ))}
         </div>
@@ -260,6 +260,15 @@ function AuthPage() {
             {error && <div className="auth-alert auth-alert-error">{error}</div>}
             <button type="submit" disabled={loading} className="auth-submit-btn">
               {loading ? "..." : "Crear mi cuenta y mi llave ✨"}
+            </button>
+          </form>
+        ) : mode === "recover" ? (
+          <form onSubmit={handleRecover} className="auth-form">
+            <input type="email" placeholder={t("auth.email")} required value={email}
+              onChange={(e) => setEmail(e.target.value)} className="auth-input" autoComplete="email" />
+            {error && <div className="auth-alert auth-alert-error">{error}</div>}
+            <button type="submit" disabled={loading} className="auth-submit-btn">
+              {loading ? "..." : "Generar mi llave nueva 🗝️"}
             </button>
           </form>
         ) : (
