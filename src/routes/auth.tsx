@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
 import { ensureGuestVip } from "@/lib/guest.functions";
-import { registerWithKey, loginWithKey } from "@/lib/passwordless.functions";
+import { registerWithKey, loginWithKey, recoverKey } from "@/lib/passwordless.functions";
 import { getStoredKey, storeKey, clearStoredKey } from "@/lib/access-key";
 import "../isabot.css";
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-type Mode = "signup" | "key";
+type Mode = "signup" | "key" | "recover";
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -129,6 +129,31 @@ function AuthPage() {
     }
   };
 
+  const handleRecover = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const creds = await recoverKey({ data: { email: email.trim() } });
+      if (creds.notFound || !creds.password || !creds.accessKey) {
+        setError("No encontré una cuenta con ese correo. ¿Quieres crear una cuenta nueva? ✨");
+        setLoading(false);
+        return;
+      }
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (err) throw err;
+      storeKey(creds.accessKey);
+      setNewKey(creds.accessKey);
+    } catch (err) {
+      fail(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGuestVip = async () => {
     setError(null);
     setLoading(true);
@@ -204,17 +229,21 @@ function AuthPage() {
           <LanguageToggle />
         </div>
         <div className="auth-header">
-          <div className="auth-emoji">{mode === "signup" ? "✨" : "🔑"}</div>
-          <h1 className="auth-title">{mode === "signup" ? "Crea tu cuenta" : "Entra con tu llave"}</h1>
+          <div className="auth-emoji">{mode === "signup" ? "✨" : mode === "recover" ? "🗝️" : "🔑"}</div>
+          <h1 className="auth-title">
+            {mode === "signup" ? "Crea tu cuenta" : mode === "recover" ? "Recupera tu llave" : "Entra con tu llave"}
+          </h1>
           <p className="auth-sub">
             {mode === "signup"
               ? "Solo tu nombre y tu correo. Te daremos una llave personal, sin contraseñas."
-              : "Escribe tu llave personal (ISA-XXXX-XXXX) una sola vez en este dispositivo."}
+              : mode === "recover"
+                ? "Escribe el correo de tu cuenta y te daremos una llave nueva. La anterior dejará de funcionar."
+                : "Escribe tu llave personal (ISA-XXXX-XXXX) una sola vez en este dispositivo."}
           </p>
         </div>
 
         <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-          {(["signup", "key"] as Mode[]).map((m) => (
+          {(["signup", "key", "recover"] as Mode[]).map((m) => (
             <button
               key={m}
               type="button"
@@ -222,7 +251,7 @@ function AuthPage() {
               className="auth-submit-btn"
               style={{ flex: 1, opacity: mode === m ? 1 : 0.55, padding: "8px 10px" }}
             >
-              {m === "signup" ? "Crear cuenta" : "Tengo mi llave"}
+              {m === "signup" ? "Crear cuenta" : m === "recover" ? "Recuperar llave" : "Tengo mi llave"}
             </button>
           ))}
         </div>
@@ -238,6 +267,15 @@ function AuthPage() {
               {loading ? "..." : "Crear mi cuenta y mi llave ✨"}
             </button>
           </form>
+        ) : mode === "recover" ? (
+          <form onSubmit={handleRecover} className="auth-form">
+            <input type="email" placeholder={t("auth.email")} required value={email}
+              onChange={(e) => setEmail(e.target.value)} className="auth-input" autoComplete="email" />
+            {error && <div className="auth-alert auth-alert-error">{error}</div>}
+            <button type="submit" disabled={loading} className="auth-submit-btn">
+              {loading ? "..." : "Generar mi llave nueva 🗝️"}
+            </button>
+          </form>
         ) : (
           <form onSubmit={handleKey} className="auth-form">
             <input type="text" placeholder="ISA-XXXX-XXXX" required value={keyInput}
@@ -246,6 +284,10 @@ function AuthPage() {
             {error && <div className="auth-alert auth-alert-error">{error}</div>}
             <button type="submit" disabled={loading} className="auth-submit-btn">
               {loading ? "..." : "Entrar 🔑"}
+            </button>
+            <button type="button" onClick={() => { setMode("recover"); setError(null); }}
+              style={{ background: "none", border: "none", color: "#7a5c9e", cursor: "pointer", fontSize: 14, textDecoration: "underline", padding: 4 }}>
+              ¿Olvidaste tu llave? Recupérala con tu correo
             </button>
           </form>
         )}

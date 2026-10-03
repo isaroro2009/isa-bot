@@ -84,6 +84,33 @@ export const registerWithKey = createServerFn({ method: "POST" })
     return { email: data.email, password, accessKey, isNew: !existing };
   });
 
+export const recoverKey = createServerFn({ method: "POST" })
+  .inputValidator((input: { email: string }) => {
+    const email = (input.email ?? "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Escribe un correo válido");
+    return { email };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("email", data.email)
+      .maybeSingle();
+    if (!profile) return { email: data.email, password: null, accessKey: null, notFound: true as const };
+
+    const password = randomPassword();
+    await supabaseAdmin.auth.admin.updateUserById(profile.id, { password, email_confirm: true });
+
+    const accessKey = newKey();
+    const { error: keyErr } = await supabaseAdmin
+      .from("access_keys")
+      .upsert({ user_id: profile.id, key_hash: await sha256(accessKey), last_used_at: new Date().toISOString() });
+    if (keyErr) throw new Error("No pude generar tu nueva llave");
+
+    return { email: data.email, password, accessKey, notFound: false as const };
+  });
+
 export const loginWithKey = createServerFn({ method: "POST" })
   .inputValidator((input: { key: string }) => {
     const key = normalizeKey(input.key ?? "");
