@@ -135,6 +135,11 @@ function AuthPage() {
     setLoading(true);
     try {
       const creds = await recoverKey({ data: { email: email.trim() } });
+      if (creds.notFound || !creds.password || !creds.accessKey) {
+        setError("No encontré una cuenta con ese correo. ¿Quieres crear una cuenta nueva? ✨");
+        setLoading(false);
+        return;
+      }
       const { error: err } = await supabase.auth.signInWithPassword({
         email: creds.email,
         password: creds.password,
