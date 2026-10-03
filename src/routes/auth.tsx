@@ -280,6 +280,10 @@ function AuthPage() {
             <button type="submit" disabled={loading} className="auth-submit-btn">
               {loading ? "..." : "Entrar 🔑"}
             </button>
+            <button type="button" onClick={() => { setMode("recover"); setError(null); }}
+              style={{ background: "none", border: "none", color: "#7a5c9e", cursor: "pointer", fontSize: 14, textDecoration: "underline", padding: 4 }}>
+              ¿Olvidaste tu llave? Recupérala con tu correo
+            </button>
           </form>
         )}
 
