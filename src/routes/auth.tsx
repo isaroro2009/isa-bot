@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import LandingModal from "@/components/LandingModal";
-import { ensureGuestVip } from "@/lib/guest.functions";
 import { registerWithKey, loginWithKey, recoverKey } from "@/lib/passwordless.functions";
 import { getStoredKey, storeKey, clearStoredKey } from "@/lib/access-key";
 import "../isabot.css";
@@ -154,20 +153,6 @@ function AuthPage() {
     }
   };
 
-  const handleGuestVip = async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const creds = await ensureGuestVip();
-      const { error: err } = await supabase.auth.signInWithPassword(creds);
-      if (err) throw err;
-      goWelcome();
-    } catch (err) {
-      fail(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (autoLogin) {
     return (
