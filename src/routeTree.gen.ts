@@ -9,60 +9,54 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PitchRouteImport } from './routes/pitch'
-import { Route as EmpresasRouteImport } from './routes/empresas'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UUsernameRouteImport } from './routes/u.$username'
-import { Route as ICodeRouteImport } from './routes/i.$code'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiAgentRouteImport } from './routes/api/agent'
-import { Route as AuthenticatedRecompensasRouteImport } from './routes/_authenticated/recompensas'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedPadresRouteImport } from './routes/_authenticated/padres'
-import { Route as AuthenticatedMuseoRouteImport } from './routes/_authenticated/museo'
-import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
-import { Route as AuthenticatedBienvenidaRouteImport } from './routes/_authenticated/bienvenida'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as EmpresasRouteImport } from './routes/empresas'
+import { Route as PitchRouteImport } from './routes/pitch'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
-import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
-import { Route as ApiVoiceVisionRouteImport } from './routes/api/voice/vision'
-import { Route as ApiVoiceTranscribeRouteImport } from './routes/api/voice/transcribe'
-import { Route as ApiVoiceSpeakRouteImport } from './routes/api/voice/speak'
-import { Route as ApiPublicWhatsappRouteImport } from './routes/api/public/whatsapp'
-import { Route as ApiPublicUnsubscribeRouteImport } from './routes/api/public/unsubscribe'
-import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticated/studio.$id'
-import { Route as AuthenticatedOnboardingOrgRouteImport } from './routes/_authenticated/onboarding.org'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBienvenidaRouteImport } from './routes/_authenticated/bienvenida'
+import { Route as AuthenticatedIsaspaceRouteImport } from './routes/_authenticated/isaspace'
+import { Route as AuthenticatedMuseoRouteImport } from './routes/_authenticated/museo'
+import { Route as AuthenticatedPadresRouteImport } from './routes/_authenticated/padres'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedRecompensasRouteImport } from './routes/_authenticated/recompensas'
+import { Route as ApiAgentRouteImport } from './routes/api/agent'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ICodeRouteImport } from './routes/i.$code'
+import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as AuthenticatedESlugRouteRouteImport } from './routes/_authenticated/e.$slug.route'
+import { Route as AuthenticatedOnboardingOrgRouteImport } from './routes/_authenticated/onboarding.org'
+import { Route as AuthenticatedStudioIndexRouteImport } from './routes/_authenticated/studio.index'
+import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticated/studio.$id'
+import { Route as ApiPublicUnsubscribeRouteImport } from './routes/api/public/unsubscribe'
+import { Route as ApiPublicWhatsappRouteImport } from './routes/api/public/whatsapp'
+import { Route as ApiVoiceSpeakRouteImport } from './routes/api/voice/speak'
+import { Route as ApiVoiceTranscribeRouteImport } from './routes/api/voice/transcribe'
+import { Route as ApiVoiceVisionRouteImport } from './routes/api/voice/vision'
 import { Route as AuthenticatedESlugIndexRouteImport } from './routes/_authenticated/e.$slug.index'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
-import { Route as ApiPublicHooksWeeklyGiftPublishRouteImport } from './routes/api/public/hooks/weekly-gift-publish'
-import { Route as ApiPublicHooksWeeklyFeedbackRouteImport } from './routes/api/public/hooks/weekly-feedback'
-import { Route as ApiPublicHooksWeeklyDigestRouteImport } from './routes/api/public/hooks/weekly-digest'
-import { Route as ApiPublicHooksTechNewsRouteImport } from './routes/api/public/hooks/tech-news'
-import { Route as ApiPublicHooksNightSalesRouteImport } from './routes/api/public/hooks/night-sales'
-import { Route as ApiPublicHooksInactivityRemindersRouteImport } from './routes/api/public/hooks/inactivity-reminders'
-import { Route as ApiPublicHooksDueRemindersRouteImport } from './routes/api/public/hooks/due-reminders'
-import { Route as ApiPublicHooksBirthdayGreetingsRouteImport } from './routes/api/public/hooks/birthday-greetings'
-import { Route as AuthenticatedESlugJoinRouteImport } from './routes/_authenticated/e.$slug.join'
 import { Route as AuthenticatedESlugAdminRouteImport } from './routes/_authenticated/e.$slug.admin'
+import { Route as AuthenticatedESlugJoinRouteImport } from './routes/_authenticated/e.$slug.join'
+import { Route as ApiPublicHooksBirthdayGreetingsRouteImport } from './routes/api/public/hooks/birthday-greetings'
+import { Route as ApiPublicHooksDueRemindersRouteImport } from './routes/api/public/hooks/due-reminders'
+import { Route as ApiPublicHooksInactivityRemindersRouteImport } from './routes/api/public/hooks/inactivity-reminders'
+import { Route as ApiPublicHooksNightSalesRouteImport } from './routes/api/public/hooks/night-sales'
+import { Route as ApiPublicHooksTechNewsRouteImport } from './routes/api/public/hooks/tech-news'
+import { Route as ApiPublicHooksWeeklyDigestRouteImport } from './routes/api/public/hooks/weekly-digest'
+import { Route as ApiPublicHooksWeeklyFeedbackRouteImport } from './routes/api/public/hooks/weekly-feedback'
+import { Route as ApiPublicHooksWeeklyGiftPublishRouteImport } from './routes/api/public/hooks/weekly-gift-publish'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PitchRoute = PitchRouteImport.update({
-  id: '/pitch',
-  path: '/pitch',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmpresasRoute = EmpresasRouteImport.update({
-  id: '/empresas',
-  path: '/empresas',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -70,64 +64,24 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const EmpresasRoute = EmpresasRouteImport.update({
+  id: '/empresas',
+  path: '/empresas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const PitchRoute = PitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UUsernameRoute = UUsernameRouteImport.update({
-  id: '/u/$username',
-  path: '/u/$username',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ICodeRoute = ICodeRouteImport.update({
-  id: '/i/$code',
-  path: '/i/$code',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAgentRoute = ApiAgentRouteImport.update({
-  id: '/api/agent',
-  path: '/api/agent',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRecompensasRoute =
-  AuthenticatedRecompensasRouteImport.update({
-    id: '/recompensas',
-    path: '/recompensas',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPadresRoute = AuthenticatedPadresRouteImport.update({
-  id: '/padres',
-  path: '/padres',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMuseoRoute = AuthenticatedMuseoRouteImport.update({
-  id: '/museo',
-  path: '/museo',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
-  id: '/isaspace',
-  path: '/isaspace',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedBienvenidaRoute = AuthenticatedBienvenidaRouteImport.update({
-  id: '/bienvenida',
-  path: '/bienvenida',
+const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -135,45 +89,60 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
-  id: '/academy',
-  path: '/academy',
+const AuthenticatedBienvenidaRoute = AuthenticatedBienvenidaRouteImport.update({
+  id: '/bienvenida',
+  path: '/bienvenida',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedStudioIndexRoute =
-  AuthenticatedStudioIndexRouteImport.update({
-    id: '/studio/',
-    path: '/studio/',
+const AuthenticatedIsaspaceRoute = AuthenticatedIsaspaceRouteImport.update({
+  id: '/isaspace',
+  path: '/isaspace',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMuseoRoute = AuthenticatedMuseoRouteImport.update({
+  id: '/museo',
+  path: '/museo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPadresRoute = AuthenticatedPadresRouteImport.update({
+  id: '/padres',
+  path: '/padres',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRecompensasRoute =
+  AuthenticatedRecompensasRouteImport.update({
+    id: '/recompensas',
+    path: '/recompensas',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiVoiceVisionRoute = ApiVoiceVisionRouteImport.update({
-  id: '/api/voice/vision',
-  path: '/api/voice/vision',
+const ApiAgentRoute = ApiAgentRouteImport.update({
+  id: '/api/agent',
+  path: '/api/agent',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiVoiceTranscribeRoute = ApiVoiceTranscribeRouteImport.update({
-  id: '/api/voice/transcribe',
-  path: '/api/voice/transcribe',
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiVoiceSpeakRoute = ApiVoiceSpeakRouteImport.update({
-  id: '/api/voice/speak',
-  path: '/api/voice/speak',
+const ICodeRoute = ICodeRouteImport.update({
+  id: '/i/$code',
+  path: '/i/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWhatsappRoute = ApiPublicWhatsappRouteImport.update({
-  id: '/api/public/whatsapp',
-  path: '/api/public/whatsapp',
+const UUsernameRoute = UUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicUnsubscribeRoute = ApiPublicUnsubscribeRouteImport.update({
-  id: '/api/public/unsubscribe',
-  path: '/api/public/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedStudioIdRoute = AuthenticatedStudioIdRouteImport.update({
-  id: '/studio/$id',
-  path: '/studio/$id',
+const AuthenticatedESlugRouteRoute = AuthenticatedESlugRouteRouteImport.update({
+  id: '/e/$slug',
+  path: '/e/$slug',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOnboardingOrgRoute =
@@ -182,59 +151,61 @@ const AuthenticatedOnboardingOrgRoute =
     path: '/onboarding/org',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedESlugRouteRoute = AuthenticatedESlugRouteRouteImport.update({
-  id: '/e/$slug',
-  path: '/e/$slug',
+const AuthenticatedStudioIndexRoute =
+  AuthenticatedStudioIndexRouteImport.update({
+    id: '/studio/',
+    path: '/studio/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStudioIdRoute = AuthenticatedStudioIdRouteImport.update({
+  id: '/studio/$id',
+  path: '/studio/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicUnsubscribeRoute = ApiPublicUnsubscribeRouteImport.update({
+  id: '/api/public/unsubscribe',
+  path: '/api/public/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWhatsappRoute = ApiPublicWhatsappRouteImport.update({
+  id: '/api/public/whatsapp',
+  path: '/api/public/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVoiceSpeakRoute = ApiVoiceSpeakRouteImport.update({
+  id: '/api/voice/speak',
+  path: '/api/voice/speak',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVoiceTranscribeRoute = ApiVoiceTranscribeRouteImport.update({
+  id: '/api/voice/transcribe',
+  path: '/api/voice/transcribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVoiceVisionRoute = ApiVoiceVisionRouteImport.update({
+  id: '/api/voice/vision',
+  path: '/api/voice/vision',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedESlugIndexRoute = AuthenticatedESlugIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedESlugRouteRoute,
 } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedESlugAdminRoute = AuthenticatedESlugAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedESlugRouteRoute,
 } as any)
-const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
-  id: '/lovable/email/auth/preview',
-  path: '/lovable/email/auth/preview',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedESlugJoinRoute = AuthenticatedESlugJoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => AuthenticatedESlugRouteRoute,
 } as any)
-const ApiPublicHooksWeeklyGiftPublishRoute =
-  ApiPublicHooksWeeklyGiftPublishRouteImport.update({
-    id: '/api/public/hooks/weekly-gift-publish',
-    path: '/api/public/hooks/weekly-gift-publish',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicHooksWeeklyFeedbackRoute =
-  ApiPublicHooksWeeklyFeedbackRouteImport.update({
-    id: '/api/public/hooks/weekly-feedback',
-    path: '/api/public/hooks/weekly-feedback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicHooksWeeklyDigestRoute =
-  ApiPublicHooksWeeklyDigestRouteImport.update({
-    id: '/api/public/hooks/weekly-digest',
-    path: '/api/public/hooks/weekly-digest',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicHooksTechNewsRoute = ApiPublicHooksTechNewsRouteImport.update({
-  id: '/api/public/hooks/tech-news',
-  path: '/api/public/hooks/tech-news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicHooksNightSalesRoute =
-  ApiPublicHooksNightSalesRouteImport.update({
-    id: '/api/public/hooks/night-sales',
-    path: '/api/public/hooks/night-sales',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicHooksInactivityRemindersRoute =
-  ApiPublicHooksInactivityRemindersRouteImport.update({
-    id: '/api/public/hooks/inactivity-reminders',
-    path: '/api/public/hooks/inactivity-reminders',
+const ApiPublicHooksBirthdayGreetingsRoute =
+  ApiPublicHooksBirthdayGreetingsRouteImport.update({
+    id: '/api/public/hooks/birthday-greetings',
+    path: '/api/public/hooks/birthday-greetings',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicHooksDueRemindersRoute =
@@ -243,21 +214,50 @@ const ApiPublicHooksDueRemindersRoute =
     path: '/api/public/hooks/due-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicHooksBirthdayGreetingsRoute =
-  ApiPublicHooksBirthdayGreetingsRouteImport.update({
-    id: '/api/public/hooks/birthday-greetings',
-    path: '/api/public/hooks/birthday-greetings',
+const ApiPublicHooksInactivityRemindersRoute =
+  ApiPublicHooksInactivityRemindersRouteImport.update({
+    id: '/api/public/hooks/inactivity-reminders',
+    path: '/api/public/hooks/inactivity-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedESlugJoinRoute = AuthenticatedESlugJoinRouteImport.update({
-  id: '/join',
-  path: '/join',
-  getParentRoute: () => AuthenticatedESlugRouteRoute,
+const ApiPublicHooksNightSalesRoute =
+  ApiPublicHooksNightSalesRouteImport.update({
+    id: '/api/public/hooks/night-sales',
+    path: '/api/public/hooks/night-sales',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksTechNewsRoute = ApiPublicHooksTechNewsRouteImport.update({
+  id: '/api/public/hooks/tech-news',
+  path: '/api/public/hooks/tech-news',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedESlugAdminRoute = AuthenticatedESlugAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedESlugRouteRoute,
+const ApiPublicHooksWeeklyDigestRoute =
+  ApiPublicHooksWeeklyDigestRouteImport.update({
+    id: '/api/public/hooks/weekly-digest',
+    path: '/api/public/hooks/weekly-digest',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksWeeklyFeedbackRoute =
+  ApiPublicHooksWeeklyFeedbackRouteImport.update({
+    id: '/api/public/hooks/weekly-feedback',
+    path: '/api/public/hooks/weekly-feedback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksWeeklyGiftPublishRoute =
+  ApiPublicHooksWeeklyGiftPublishRouteImport.update({
+    id: '/api/public/hooks/weekly-gift-publish',
+    path: '/api/public/hooks/weekly-gift-publish',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -540,32 +540,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pitch': {
-      id: '/pitch'
-      path: '/pitch'
-      fullPath: '/pitch'
-      preLoaderRoute: typeof PitchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/empresas': {
-      id: '/empresas'
-      path: '/empresas'
-      fullPath: '/empresas'
-      preLoaderRoute: typeof EmpresasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -575,81 +554,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/u/$username': {
-      id: '/u/$username'
-      path: '/u/$username'
-      fullPath: '/u/$username'
-      preLoaderRoute: typeof UUsernameRouteImport
+    '/empresas': {
+      id: '/empresas'
+      path: '/empresas'
+      fullPath: '/empresas'
+      preLoaderRoute: typeof EmpresasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/i/$code': {
-      id: '/i/$code'
-      path: '/i/$code'
-      fullPath: '/i/$code'
-      preLoaderRoute: typeof ICodeRouteImport
+    '/pitch': {
+      id: '/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof PitchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/agent': {
-      id: '/api/agent'
-      path: '/api/agent'
-      fullPath: '/api/agent'
-      preLoaderRoute: typeof ApiAgentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/recompensas': {
-      id: '/_authenticated/recompensas'
-      path: '/recompensas'
-      fullPath: '/recompensas'
-      preLoaderRoute: typeof AuthenticatedRecompensasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/padres': {
-      id: '/_authenticated/padres'
-      path: '/padres'
-      fullPath: '/padres'
-      preLoaderRoute: typeof AuthenticatedPadresRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/museo': {
-      id: '/_authenticated/museo'
-      path: '/museo'
-      fullPath: '/museo'
-      preLoaderRoute: typeof AuthenticatedMuseoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/isaspace': {
-      id: '/_authenticated/isaspace'
-      path: '/isaspace'
-      fullPath: '/isaspace'
-      preLoaderRoute: typeof AuthenticatedIsaspaceRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/bienvenida': {
-      id: '/_authenticated/bienvenida'
-      path: '/bienvenida'
-      fullPath: '/bienvenida'
-      preLoaderRoute: typeof AuthenticatedBienvenidaRouteImport
+    '/_authenticated/academy': {
+      id: '/_authenticated/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AuthenticatedAcademyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
@@ -659,60 +596,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/academy': {
-      id: '/_authenticated/academy'
-      path: '/academy'
-      fullPath: '/academy'
-      preLoaderRoute: typeof AuthenticatedAcademyRouteImport
+    '/_authenticated/bienvenida': {
+      id: '/_authenticated/bienvenida'
+      path: '/bienvenida'
+      fullPath: '/bienvenida'
+      preLoaderRoute: typeof AuthenticatedBienvenidaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/studio/': {
-      id: '/_authenticated/studio/'
-      path: '/studio'
-      fullPath: '/studio/'
-      preLoaderRoute: typeof AuthenticatedStudioIndexRouteImport
+    '/_authenticated/isaspace': {
+      id: '/_authenticated/isaspace'
+      path: '/isaspace'
+      fullPath: '/isaspace'
+      preLoaderRoute: typeof AuthenticatedIsaspaceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/voice/vision': {
-      id: '/api/voice/vision'
-      path: '/api/voice/vision'
-      fullPath: '/api/voice/vision'
-      preLoaderRoute: typeof ApiVoiceVisionRouteImport
+    '/_authenticated/museo': {
+      id: '/_authenticated/museo'
+      path: '/museo'
+      fullPath: '/museo'
+      preLoaderRoute: typeof AuthenticatedMuseoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/padres': {
+      id: '/_authenticated/padres'
+      path: '/padres'
+      fullPath: '/padres'
+      preLoaderRoute: typeof AuthenticatedPadresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recompensas': {
+      id: '/_authenticated/recompensas'
+      path: '/recompensas'
+      fullPath: '/recompensas'
+      preLoaderRoute: typeof AuthenticatedRecompensasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/agent': {
+      id: '/api/agent'
+      path: '/api/agent'
+      fullPath: '/api/agent'
+      preLoaderRoute: typeof ApiAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/voice/transcribe': {
-      id: '/api/voice/transcribe'
-      path: '/api/voice/transcribe'
-      fullPath: '/api/voice/transcribe'
-      preLoaderRoute: typeof ApiVoiceTranscribeRouteImport
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/voice/speak': {
-      id: '/api/voice/speak'
-      path: '/api/voice/speak'
-      fullPath: '/api/voice/speak'
-      preLoaderRoute: typeof ApiVoiceSpeakRouteImport
+    '/i/$code': {
+      id: '/i/$code'
+      path: '/i/$code'
+      fullPath: '/i/$code'
+      preLoaderRoute: typeof ICodeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/whatsapp': {
-      id: '/api/public/whatsapp'
-      path: '/api/public/whatsapp'
-      fullPath: '/api/public/whatsapp'
-      preLoaderRoute: typeof ApiPublicWhatsappRouteImport
+    '/u/$username': {
+      id: '/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof UUsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/unsubscribe': {
-      id: '/api/public/unsubscribe'
-      path: '/api/public/unsubscribe'
-      fullPath: '/api/public/unsubscribe'
-      preLoaderRoute: typeof ApiPublicUnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/studio/$id': {
-      id: '/_authenticated/studio/$id'
-      path: '/studio/$id'
-      fullPath: '/studio/$id'
-      preLoaderRoute: typeof AuthenticatedStudioIdRouteImport
+    '/_authenticated/e/$slug': {
+      id: '/_authenticated/e/$slug'
+      path: '/e/$slug'
+      fullPath: '/e/$slug'
+      preLoaderRoute: typeof AuthenticatedESlugRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/onboarding/org': {
@@ -722,12 +680,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingOrgRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/e/$slug': {
-      id: '/_authenticated/e/$slug'
-      path: '/e/$slug'
-      fullPath: '/e/$slug'
-      preLoaderRoute: typeof AuthenticatedESlugRouteRouteImport
+    '/_authenticated/studio/': {
+      id: '/_authenticated/studio/'
+      path: '/studio'
+      fullPath: '/studio/'
+      preLoaderRoute: typeof AuthenticatedStudioIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/studio/$id': {
+      id: '/_authenticated/studio/$id'
+      path: '/studio/$id'
+      fullPath: '/studio/$id'
+      preLoaderRoute: typeof AuthenticatedStudioIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/unsubscribe': {
+      id: '/api/public/unsubscribe'
+      path: '/api/public/unsubscribe'
+      fullPath: '/api/public/unsubscribe'
+      preLoaderRoute: typeof ApiPublicUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whatsapp': {
+      id: '/api/public/whatsapp'
+      path: '/api/public/whatsapp'
+      fullPath: '/api/public/whatsapp'
+      preLoaderRoute: typeof ApiPublicWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/voice/speak': {
+      id: '/api/voice/speak'
+      path: '/api/voice/speak'
+      fullPath: '/api/voice/speak'
+      preLoaderRoute: typeof ApiVoiceSpeakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/voice/transcribe': {
+      id: '/api/voice/transcribe'
+      path: '/api/voice/transcribe'
+      fullPath: '/api/voice/transcribe'
+      preLoaderRoute: typeof ApiVoiceTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/voice/vision': {
+      id: '/api/voice/vision'
+      path: '/api/voice/vision'
+      fullPath: '/api/voice/vision'
+      preLoaderRoute: typeof ApiVoiceVisionRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/e/$slug/': {
       id: '/_authenticated/e/$slug/'
@@ -736,60 +736,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedESlugIndexRouteImport
       parentRoute: typeof AuthenticatedESlugRouteRoute
     }
-    '/lovable/email/auth/webhook': {
-      id: '/lovable/email/auth/webhook'
-      path: '/lovable/email/auth/webhook'
-      fullPath: '/lovable/email/auth/webhook'
-      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/e/$slug/admin': {
+      id: '/_authenticated/e/$slug/admin'
+      path: '/admin'
+      fullPath: '/e/$slug/admin'
+      preLoaderRoute: typeof AuthenticatedESlugAdminRouteImport
+      parentRoute: typeof AuthenticatedESlugRouteRoute
     }
-    '/lovable/email/auth/preview': {
-      id: '/lovable/email/auth/preview'
-      path: '/lovable/email/auth/preview'
-      fullPath: '/lovable/email/auth/preview'
-      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/e/$slug/join': {
+      id: '/_authenticated/e/$slug/join'
+      path: '/join'
+      fullPath: '/e/$slug/join'
+      preLoaderRoute: typeof AuthenticatedESlugJoinRouteImport
+      parentRoute: typeof AuthenticatedESlugRouteRoute
     }
-    '/api/public/hooks/weekly-gift-publish': {
-      id: '/api/public/hooks/weekly-gift-publish'
-      path: '/api/public/hooks/weekly-gift-publish'
-      fullPath: '/api/public/hooks/weekly-gift-publish'
-      preLoaderRoute: typeof ApiPublicHooksWeeklyGiftPublishRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hooks/weekly-feedback': {
-      id: '/api/public/hooks/weekly-feedback'
-      path: '/api/public/hooks/weekly-feedback'
-      fullPath: '/api/public/hooks/weekly-feedback'
-      preLoaderRoute: typeof ApiPublicHooksWeeklyFeedbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hooks/weekly-digest': {
-      id: '/api/public/hooks/weekly-digest'
-      path: '/api/public/hooks/weekly-digest'
-      fullPath: '/api/public/hooks/weekly-digest'
-      preLoaderRoute: typeof ApiPublicHooksWeeklyDigestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hooks/tech-news': {
-      id: '/api/public/hooks/tech-news'
-      path: '/api/public/hooks/tech-news'
-      fullPath: '/api/public/hooks/tech-news'
-      preLoaderRoute: typeof ApiPublicHooksTechNewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hooks/night-sales': {
-      id: '/api/public/hooks/night-sales'
-      path: '/api/public/hooks/night-sales'
-      fullPath: '/api/public/hooks/night-sales'
-      preLoaderRoute: typeof ApiPublicHooksNightSalesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hooks/inactivity-reminders': {
-      id: '/api/public/hooks/inactivity-reminders'
-      path: '/api/public/hooks/inactivity-reminders'
-      fullPath: '/api/public/hooks/inactivity-reminders'
-      preLoaderRoute: typeof ApiPublicHooksInactivityRemindersRouteImport
+    '/api/public/hooks/birthday-greetings': {
+      id: '/api/public/hooks/birthday-greetings'
+      path: '/api/public/hooks/birthday-greetings'
+      fullPath: '/api/public/hooks/birthday-greetings'
+      preLoaderRoute: typeof ApiPublicHooksBirthdayGreetingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/due-reminders': {
@@ -799,26 +764,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDueRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/hooks/birthday-greetings': {
-      id: '/api/public/hooks/birthday-greetings'
-      path: '/api/public/hooks/birthday-greetings'
-      fullPath: '/api/public/hooks/birthday-greetings'
-      preLoaderRoute: typeof ApiPublicHooksBirthdayGreetingsRouteImport
+    '/api/public/hooks/inactivity-reminders': {
+      id: '/api/public/hooks/inactivity-reminders'
+      path: '/api/public/hooks/inactivity-reminders'
+      fullPath: '/api/public/hooks/inactivity-reminders'
+      preLoaderRoute: typeof ApiPublicHooksInactivityRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/e/$slug/join': {
-      id: '/_authenticated/e/$slug/join'
-      path: '/join'
-      fullPath: '/e/$slug/join'
-      preLoaderRoute: typeof AuthenticatedESlugJoinRouteImport
-      parentRoute: typeof AuthenticatedESlugRouteRoute
+    '/api/public/hooks/night-sales': {
+      id: '/api/public/hooks/night-sales'
+      path: '/api/public/hooks/night-sales'
+      fullPath: '/api/public/hooks/night-sales'
+      preLoaderRoute: typeof ApiPublicHooksNightSalesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/e/$slug/admin': {
-      id: '/_authenticated/e/$slug/admin'
-      path: '/admin'
-      fullPath: '/e/$slug/admin'
-      preLoaderRoute: typeof AuthenticatedESlugAdminRouteImport
-      parentRoute: typeof AuthenticatedESlugRouteRoute
+    '/api/public/hooks/tech-news': {
+      id: '/api/public/hooks/tech-news'
+      path: '/api/public/hooks/tech-news'
+      fullPath: '/api/public/hooks/tech-news'
+      preLoaderRoute: typeof ApiPublicHooksTechNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/weekly-digest': {
+      id: '/api/public/hooks/weekly-digest'
+      path: '/api/public/hooks/weekly-digest'
+      fullPath: '/api/public/hooks/weekly-digest'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/weekly-feedback': {
+      id: '/api/public/hooks/weekly-feedback'
+      path: '/api/public/hooks/weekly-feedback'
+      fullPath: '/api/public/hooks/weekly-feedback'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/weekly-gift-publish': {
+      id: '/api/public/hooks/weekly-gift-publish'
+      path: '/api/public/hooks/weekly-gift-publish'
+      fullPath: '/api/public/hooks/weekly-gift-publish'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyGiftPublishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
