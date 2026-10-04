@@ -277,10 +277,6 @@ function AuthPage() {
           </form>
         )}
 
-        <button type="button" onClick={handleGuestVip} disabled={loading} className="auth-submit-btn"
-          style={{ marginTop: 10, background: "linear-gradient(135deg, #ffd980, #ffb3d1)", color: "#4a2f5c" }}>
-          👑 Probar como invitado VIP
-        </button>
 
         <p className="auth-back">
           <Link to="/">{t("auth.back")}</Link>
